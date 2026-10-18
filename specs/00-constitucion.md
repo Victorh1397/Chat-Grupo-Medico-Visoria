@@ -4,7 +4,7 @@ Principios no negociables. Toda spec, plan y tarea debe respetarlos; si alguno t
 
 1. **Trazabilidad con el enunciado.** Cada requisito obligatorio del PDF tiene al menos una spec con un criterio de aceptación verificable, y aparece en la matriz de `specs/README.md`.
 2. **Latencia < 5 s por turno.** El OCR es offline y nunca se ejecuta dentro de una petición. Toda llamada al LLM lleva timeout, `try/except` y una respuesta de reserva.
-3. **Sin alucinaciones.** El LLM responde únicamente con el texto extraído por OCR. Si la respuesta no está en los documentos, el sistema lo dice explícitamente y ofrece una alternativa.
+3. **Sin alucinaciones.** El LLM responde únicamente con información extraída por OCR de los documentos, nunca con conocimiento propio. Si la respuesta no está en los documentos, el sistema lo dice explícitamente y ofrece una alternativa. El mecanismo de recuperación (texto completo en el prompt o fragmentos desde ChromaDB) no cambia este principio.
 4. **Secretos fuera del repositorio.** Claves y credenciales solo en `.env` o en rutas fuera del repo. `.env.example` documenta las variables necesarias.
 5. **Agente como código.** El agente Dialogflow ES se versiona descomprimido en `agente/`. El ZIP de entrega se genera desde ahí.
 6. **Diseñado para voz.** Respuestas en español, breves (2–3 frases), con SSML cuando mejore la naturalidad. Voz únicamente con STT/TTS nativos de Dialogflow.
