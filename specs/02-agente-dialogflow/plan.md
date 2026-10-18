@@ -136,7 +136,7 @@ Al anotar las frases, Dialogflow crea parámetros con nombres en inglés (`date`
 | 1 | ✅ | `nombre` | `@sys.given-name` | `$nombre` | ¿Me indica su nombre y apellido, por favor? |
 | 2 | ✅ | `apellido` | `@sys.last-name` | `$apellido` | Gracias. ¿Me indica también su apellido? |
 | 3 | ✅ | `nacionalidad` | `@nacionalidad` | `$nacionalidad` | ¿Usted es venezolano o extranjero? |
-| 4 | ✅ | `cedula` | `@cedula` | `$cedula` | ¿Me indica su número de cédula, sin la letra? Por ejemplo: 14 523 987. |
+| 4 | ✅ | `cedula` | `@cedula` | `$cedula` | ¿Me indica su número de cédula, sin la letra? Por ejemplo: 14523987. |
 | 5 | ✅ | `especialidad` | `@especialidad` | `$especialidad` | ¿Con qué especialidad desea la cita? Tenemos dermatología, endocrinología, cirugía plástica, urología, cardiología y oftalmología. |
 | 6 | ✅ | `fecha` | `@sys.date` | `$fecha` | ¿Para qué fecha desea la cita? |
 | 7 | ✅ | `hora` | `@sys.time` | `$hora` | ¿A qué hora le conviene? |
