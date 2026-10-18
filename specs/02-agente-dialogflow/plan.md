@@ -63,7 +63,7 @@ Menú izquierdo → **Entities** → **CREATE ENTITY** para cada una.
 
 ### 1.3 `cedula` (entidad regex)
 1. **Entity name:** `cedula`.
-2. **Desmarca** Define synonyms y **marca Regexp entity**.
+2. **Desmarca** Define synonyms y Allow automated expansion. Luego abre el menú **⋮** (a la derecha de SAVE) y marca **Regexp entity**.
 3. Una sola fila con esta expresión:
    ```
    [1-9][0-9]{0,2}([.,\s]?[0-9]{3}){1,2}
