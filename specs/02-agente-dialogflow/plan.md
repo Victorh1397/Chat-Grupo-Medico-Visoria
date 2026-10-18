@@ -31,6 +31,10 @@ Así el interruptor de webhook de cada intención funciona desde ya. La URL real
 
 Menú izquierdo → **Entities** → **CREATE ENTITY** para cada una.
 
+> **Importante — sinónimos uno a uno:** la consola **no separa por comas**. Si escribes "venezolano, venezolana" en una celda, se guarda como **un único sinónimo**
+> y "venezolano" a secas no se reconocerá. Pulsa **Enter** tras cada sinónimo, o mejor usa el modo texto: **⋮ → Switch to raw mode**, pega las líneas CSV
+> de abajo (formato `"valor","sinónimo1","sinónimo2",…`) y **SAVE**.
+
 ### 1.1 `especialidad`
 1. **Entity name:** `especialidad`.
 2. Deja marcado **Define synonyms**. Marca **Fuzzy matching** (tolera pequeños errores del reconocimiento de voz).
@@ -45,6 +49,16 @@ Menú izquierdo → **Entities** → **CREATE ENTITY** para cada una.
 | `Cardiología` | cardiología, cardiologia, cardiólogo, cardióloga, corazón, presión arterial |
 | `Oftalmología` | oftalmología, oftalmologia, oftalmólogo, oftalmóloga, oculista, ojos, vista |
 
+CSV para raw mode:
+```
+"Dermatología","Dermatología","dermatología","dermatologia","dermatólogo","dermatóloga","piel","manchas en la piel","acné"
+"Endocrinología","Endocrinología","endocrinología","endocrinologia","endocrino","endocrinólogo","endocrinóloga","tiroides","diabetes","hormonas"
+"Cirugía plástica","Cirugía plástica","cirugía plástica","cirugia plastica","cirujano plástico","cirujana plástica","cirugía estética","plástica"
+"Urología","Urología","urología","urologia","urólogo","uróloga","próstata","vías urinarias"
+"Cardiología","Cardiología","cardiología","cardiologia","cardiólogo","cardióloga","corazón","presión arterial"
+"Oftalmología","Oftalmología","oftalmología","oftalmologia","oftalmólogo","oftalmóloga","oculista","ojos","vista"
+```
+
 4. **SAVE**.
 
 ### 1.2 `nacionalidad`
@@ -56,6 +70,12 @@ Menú izquierdo → **Entities** → **CREATE ENTITY** para cada una.
 |---|---|
 | `V` | venezolano, venezolana, venezuela, de venezuela, soy de aquí, nacional |
 | `E` | extranjero, extranjera, de otro país, colombiano, colombiana, colombia, peruano, peruana, perú, ecuatoriano, ecuatoriana, ecuador, chileno, chilena, argentino, argentina, español, española, españa, portugués, portuguesa, portugal, italiano, italiana, italia, cubano, cubana, dominicano, dominicana, mexicano, mexicana, estadounidense, americano, americana, brasileño, brasileña, panameño, panameña, boliviano, boliviana, uruguayo, uruguaya, paraguayo, paraguaya, haitiano, haitiana, libanés, libanesa, sirio, siria, chino, china, alemán, alemana, francés, francesa, canadiense |
+
+CSV para raw mode:
+```
+"V","V","venezolano","venezolana","venezuela","de venezuela","soy de aquí","nacional"
+"E","E","extranjero","extranjera","de otro país","colombiano","colombiana","colombia","peruano","peruana","perú","ecuatoriano","ecuatoriana","ecuador","chileno","chilena","argentino","argentina","español","española","españa","portugués","portuguesa","portugal","italiano","italiana","italia","cubano","cubana","dominicano","dominicana","mexicano","mexicana","estadounidense","americano","americana","brasileño","brasileña","panameño","panameña","boliviano","boliviana","uruguayo","uruguaya","paraguayo","paraguaya","haitiano","haitiana","libanés","libanesa","sirio","siria","chino","china","alemán","alemana","francés","francesa","canadiense"
+```
 
 4. **SAVE**.
 
