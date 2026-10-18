@@ -133,13 +133,15 @@ Al anotar las frases, Dialogflow crea parámetros con nombres en inglés (`date`
 
 | Orden | REQUIRED | PARAMETER NAME | ENTITY | VALUE | Pregunta (PROMPTS) |
 |---|---|---|---|---|---|
-| 1 | ✅ | `nombre` | `@sys.given-name` | `$nombre` | ¿Me indica su nombre, por favor? |
-| 2 | ✅ | `apellido` | `@sys.last-name` | `$apellido` | Gracias. ¿Y su apellido? |
+| 1 | ✅ | `nombre` | `@sys.given-name` | `$nombre` | ¿Me indica su nombre y apellido, por favor? |
+| 2 | ✅ | `apellido` | `@sys.last-name` | `$apellido` | Gracias. ¿Me indica también su apellido? |
 | 3 | ✅ | `nacionalidad` | `@nacionalidad` | `$nacionalidad` | ¿Usted es venezolano o extranjero? |
 | 4 | ✅ | `cedula` | `@cedula` | `$cedula` | ¿Me indica su número de cédula, sin la letra? Por ejemplo: 14 523 987. |
 | 5 | ✅ | `especialidad` | `@especialidad` | `$especialidad` | ¿Con qué especialidad desea la cita? Tenemos dermatología, endocrinología, cirugía plástica, urología, cardiología y oftalmología. |
 | 6 | ✅ | `fecha` | `@sys.date` | `$fecha` | ¿Para qué fecha desea la cita? |
 | 7 | ✅ | `hora` | `@sys.time` | `$hora` | ¿A qué hora le conviene? |
+
+> **Una sola pregunta para nombre y apellido:** cuando Vicky pregunta "¿Me indica su nombre y apellido?" y el usuario responde "María González", Dialogflow rellena **todos los parámetros que encuentra en esa frase**: `nombre` y `apellido` a la vez. La pregunta de la fila 2 solo se usa si el usuario dijo únicamente el nombre.
 
 Pasos:
 1. **Renombra** los parámetros creados automáticamente: haz clic en el nombre (`given-name`, `last-name`, `date`, `time`) y cámbialo por `nombre`, `apellido`, `fecha`, `hora`. El **VALUE** debe quedar igual al nombre con `$` delante.
@@ -347,7 +349,8 @@ Usa el panel **Try it now** (derecha). Debajo de cada respuesta, **DIAGNOSTIC IN
 |---|---|---|
 | P1 | `hola` | `Default Welcome Intent`, saludo de Vicky |
 | P2 | `quiero una cita con el dermatólogo` | `agendar_cita`, especialidad = Dermatología, pregunta el nombre |
-| P3 | `María` → `González` → `venezolana` → `14.523.987` → `el próximo martes` → `a las 10 de la mañana` | Pide cada dato en orden y termina con la respuesta de reserva de confirmación |
+| P3 | `María González` → `venezolana` → `14.523.987` → `el próximo martes` → `a las 10 de la mañana` | Con "María González" rellena nombre y apellido a la vez (no pregunta el apellido); pide el resto en orden y termina con la respuesta de reserva de confirmación |
+| P3b | Repite P2 y responde solo `María` | Pregunta "¿Me indica también su apellido?" |
 | P4 | `sí` (tras P3) | `agendar_cita - yes` (respuesta de reserva, porque aún no hay webhook) |
 | P5 | Repite P2–P3 y responde `no` | `agendar_cita - no`, "¿Desea empezar de nuevo?" |
 | P6 | `soy colombiano` cuando pregunte la nacionalidad | nacionalidad = `E` |

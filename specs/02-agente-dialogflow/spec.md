@@ -39,6 +39,7 @@ siguiendo la guía paso a paso del `plan.md`. El resultado se exporta y se versi
 5. **`Default Welcome Intent`**: presentación de Vicky y de lo que puede hacer, de usted.
 6. **`agendar_cita`**:
    - Frases de entrenamiento variadas (≥ 15), con y sin datos dentro de la frase, anotando especialidad, fecha, hora, nombre y apellido cuando aparezcan.
+   - Nombre y apellido se piden con **una sola pregunta** ("¿Me indica su nombre y apellido?"); si el usuario solo dice el nombre, se pregunta únicamente el apellido.
    - 7 parámetros **obligatorios**, en este orden y con su pregunta: `nombre` (@sys.given-name), `apellido` (@sys.last-name), `nacionalidad` (@nacionalidad), `cedula` (@cedula), `especialidad` (@especialidad), `fecha` (@sys.date), `hora` (@sys.time).
    - Contexto de salida `ctx_cita_en_curso` y el contexto de follow-up que crea Dialogflow.
    - Webhook activado, **también para el slot filling**, para validar la cédula en el turno en que se dice (spec 03).
