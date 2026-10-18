@@ -138,7 +138,7 @@ Al anotar las frases, Dialogflow crea parámetros con nombres en inglés (`date`
 | 1 | ✅ | `nombre` | `@sys.given-name` | `$nombre` | ¿Me indica su nombre y apellido, por favor? |
 | 2 | ✅ | `apellido` | `@sys.last-name` | `$apellido` | Gracias. ¿Me indica también su apellido? |
 | 3 | ✅ | `nacionalidad` | `@nacionalidad` | `$nacionalidad` | ¿Usted es venezolano o extranjero? |
-| 4 | ✅ | `cedula` | `@cedula` | `$cedula` | ¿Me indica su número de cédula, sin la letra? Por ejemplo: 14523987. |
+| 4 | ✅ | `cedula` | `@cedula` | `$cedula` | ¿Me indica su número de cédula? Por ejemplo: 14523987. |
 | 5 | ✅ | `especialidad` | `@especialidad` | `$especialidad` | ¿Con qué especialidad desea la cita? Tenemos dermatología, endocrinología, cirugía plástica, urología, cardiología y oftalmología. |
 | 6 | ✅ | `fecha` | `@sys.date` | `$fecha` | ¿Para qué fecha desea la cita? |
 | 7 | ✅ | `hora` | `@sys.time` | `$hora` | ¿A qué hora le conviene? |
@@ -294,7 +294,7 @@ Revisar mis consultas anteriores
 ¿Me puede decir mis citas pasadas?
 ```
 - En la frase con "14523987", si no se resalta, selecciona el número y elige `@cedula`.
-- Parámetro: `cedula` · `@cedula` · **REQUIRED** · prompt: *Con gusto. ¿Me indica su número de cédula, sin la letra?*
+- Parámetro: `cedula` · `@cedula` · **REQUIRED** · prompt: *Con gusto. ¿Me indica su número de cédula?*
 - Si se creó `especialidad` por "dermatólogo", déjalo **no obligatorio**.
 - **Responses:**
   > Disculpe, ahora mismo no puedo consultar su historial. ¿Desea que le comunique con recepción?
@@ -315,7 +315,7 @@ Mi cédula es 14523987, cancele mi cita
 Quiero anular la consulta que tengo
 Por favor, cancele mi turno
 ```
-- Parámetro: `cedula` · `@cedula` · **REQUIRED** · prompt: *Entiendo. ¿Me indica su número de cédula, sin la letra?*
+- Parámetro: `cedula` · `@cedula` · **REQUIRED** · prompt: *Entiendo. ¿Me indica su número de cédula?*
 - **Responses:**
   > Disculpe, ahora mismo no puedo cancelar su cita. Puede llamar a recepción para hacerlo.
 
