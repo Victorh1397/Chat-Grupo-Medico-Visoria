@@ -20,7 +20,7 @@ respuesta de reserva. Esta spec construye el **webhook en FastAPI**, expuesto a 
 - Servidor FastAPI con `POST /webhook` y `GET /` (comprobación de estado).
 - Datos ficticios de la clínica en un **único módulo** (fuente de verdad que también usará la spec 04 para generar los documentos D2 y D3).
 - Lógica de las intenciones `agendar_cita` (durante la recogida y al final), `agendar_cita - yes`, `agendar_cita - no - yes`, `consultar_horarios`, `consultar_historial`, `cancelar_cita`, `transferir_humano` y `Default Fallback Intent` (solo despedida).
-- Exposición con VS Code Dev Tunnels y conexión en Fulfillment.
+- Exposición con ngrok y conexión en Fulfillment.
 - Tests automáticos de la lógica y del endpoint.
 
 **Fuera de alcance**
@@ -77,7 +77,7 @@ Las citas pendientes (la de Miguel Torres y las que se agenden) sirven para `can
 2. `GET /` devuelve el estado del servicio.
 3. El webhook exige una cabecera secreta (`X-Visoria-Token`) cuyo valor está en `.env` y se configura en Fulfillment; sin ella responde 401. Evita que cualquiera con la URL del túnel use el webhook.
 4. Cada turno responde en **menos de 1 segundo** (sin llamadas externas en esta spec), muy por debajo del límite de 5 s.
-5. Se expone con VS Code Dev Tunnels (puerto 8000, público) y la URL `…/webhook` se configura en Fulfillment junto con la cabecera `X-Tunnel-Skip-AntiPhishing-Page: true`.
+5. Se expone con ngrok (`ngrok http 8000`, dominio fijo gratuito de la cuenta) y la URL `…/webhook` se configura en Fulfillment.
 
 ### R2. Validación durante la recogida de datos de `agendar_cita`
 Con el webhook de slot filling, en cada turno el webhook revisa los datos recibidos. Si alguno no es válido, **lo borra y lo vuelve a pedir explicando el motivo**; si todo es válido, deja que Dialogflow siga con su siguiente pregunta.
@@ -141,6 +141,7 @@ Con los 7 datos válidos, el webhook:
 | Cita pendiente | Se guarda por sesión al proponerla y se confirma en `- yes` | Al confirmar, los contextos ya se han cerrado; guardar la propuesta evita depender de ellos |
 | Rechazo de un dato | Borrar el parámetro en el contexto de recogida de Dialogflow y responder con la nueva pregunta | Permite volver a pedir solo ese dato sin reiniciar el flujo |
 | Seguridad | Cabecera secreta `X-Visoria-Token` | La URL del túnel es pública |
+| Túnel | **ngrok** con dominio fijo gratuito, en lugar del túnel de VS Code previsto inicialmente | Medido con 10 peticiones intercaladas: VS Code mediana 2,57 s, 4/10 por encima de 3 s y 2 bloqueos de 30 s (en Dialogflow, 30–42 % de turnos con tiempo agotado); ngrok mediana 0,69 s y máximo 1,19 s. Cloud Run se descartó porque exige facturación, incompatible con el plan gratuito de Gemini |
 | Zona horaria | `America/Caracas` en el webhook | El agente usa `America/Barbados` (equivalente) solo para resolver fechas relativas |
 
 ## Preguntas abiertas

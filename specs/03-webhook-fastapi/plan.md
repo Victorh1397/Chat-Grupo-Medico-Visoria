@@ -75,24 +75,32 @@ uv run uvicorn webhook.main:app --reload --port 8000
 ```
 Déjala abierta: ahí verás cada petición que llega (intención, parámetros, respuesta y tiempo).
 
-### Paso C — Túnel de VS Code
-1. Panel inferior → pestaña **PORTS** (Puertos) → **Forward a Port** → `8000`.
-2. Clic derecho sobre la fila → **Port Visibility** → **Public**.
-3. Copia la **Forwarded Address** (`https://xxxx-8000.xxx.devtunnels.ms`).
-4. Comprueba en el navegador `https://…devtunnels.ms/` → debe mostrar `{"estado": "ok", …}`.
+### Paso C — Túnel con ngrok
+> Inicialmente se usó el túnel de VS Code (pestaña PORTS, visibilidad Public), pero su latencia provocaba tiempos agotados
+> en Dialogflow (ver "Decisiones técnicas" en la spec). Se sustituyó por ngrok.
+
+Una sola vez:
+1. `brew install ngrok` y cuenta gratuita en https://dashboard.ngrok.com/signup.
+2. `ngrok config add-authtoken <token>` (el token queda en la configuración de ngrok del Mac, fuera del repositorio).
+
+Cada vez que trabajes con el agente, en una segunda terminal:
+```bash
+ngrok http 8000
+```
+La cuenta gratuita tiene un **dominio fijo**: `https://reenter-fled-lyricist.ngrok-free.dev`. Comprueba en el navegador
+`https://reenter-fled-lyricist.ngrok-free.dev/` → debe mostrar `{"estado": "ok", …}` (ngrok puede mostrar antes una página de aviso: pulsa **Visit Site**).
 
 ### Paso D — Fulfillment en Dialogflow
 1. **Fulfillment** → **Webhook** (ya está ENABLED).
-2. **URL:** `https://xxxx-8000.xxx.devtunnels.ms/webhook` (tu dirección + `/webhook`).
-3. **HEADERS** → añade dos filas:
+2. **URL:** borra el contenido del campo y pega `https://reenter-fled-lyricist.ngrok-free.dev/webhook`.
+3. **HEADERS** → una fila:
    | Key | Value |
    |---|---|
    | `X-Visoria-Token` | el valor de `WEBHOOK_TOKEN` de tu `.env` |
-   | `X-Tunnel-Skip-AntiPhishing-Page` | `true` |
 4. **SAVE**.
 
-> Si cierras VS Code o el Mac se duerme, el túnel se corta y Vicky responderá con las respuestas de reserva. La dirección
-> del túnel suele mantenerse entre sesiones; si cambia, repite el paso D con la nueva.
+> Si cierras la terminal de ngrok o el Mac se duerme, el túnel se corta y Vicky responderá con las respuestas de reserva.
+> Como el dominio es fijo, basta con volver a ejecutar `ngrok http 8000`; Fulfillment no hay que tocarlo.
 
 ## Riesgos y mitigación
 
@@ -102,7 +110,8 @@ Déjala abierta: ahí verás cada petición que llega (intención, parámetros, 
 | La hora llega con la fecha de hoy | Se combina el día de `fecha` con la hora de `hora` |
 | "A las 3" se interpreta como 3:00 de la madrugada | Horas 1–7 se pasan a la tarde si encajan en el horario |
 | Estado en memoria se pierde al reiniciar | Aceptado (demo); la cita de Miguel Torres se siembra en cada arranque |
-| Cuota por minuto de Dialogflow Trial | Pruebas end-to-end espaciadas (~1 consulta/1,2 s) |
+| Cuota por minuto de Dialogflow Trial | Pruebas end-to-end espaciadas (~1 consulta/2 s) |
+| Latencia del túnel (con VS Code: 30–42 % de turnos > 5 s) | Cambio a ngrok (mediana 0,69 s, máximo 1,19 s en la medición) |
 
 ## Verificación
 

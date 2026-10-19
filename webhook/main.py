@@ -4,9 +4,8 @@ Webhook de Dialogflow ES en FastAPI para Vicky, la asistente de Grupo Médico Vi
 Arrancar (desde la raíz del repositorio):
     uv run uvicorn webhook.main:app --reload --port 8000
 
-Después: exponer el puerto 8000 con VS Code (PORTS -> Port Visibility -> Public) y poner
-la URL + /webhook en Fulfillment, con las cabeceras X-Visoria-Token y
-X-Tunnel-Skip-AntiPhishing-Page (ver specs/03-webhook-fastapi/plan.md).
+Después, en otra terminal: ngrok http 8000. En Fulfillment, la URL del dominio de ngrok
++ /webhook y la cabecera X-Visoria-Token (ver specs/03-webhook-fastapi/plan.md).
 """
 
 import logging
