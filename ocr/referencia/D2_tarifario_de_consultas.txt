@@ -1,0 +1,19 @@
+Grupo Médico Visoria
+Av. Principal de Los Palos Grandes, Torre Visoria, piso 3, Caracas · Tel. (0212) 555-0142
+Tarifario de consultas
+Vigente desde el 01/09/2026. Precios en dólares estadounidenses (USD). Cada médico tiene un precio único por consulta, igual para la primera consulta y para los controles.
+Especialidad Médico Precio
+Dermatología Dra. Laura Rojas 40 USD
+Dermatología Dr. Andrés Salazar 35 USD
+Endocrinología Dra. Carmen Villalobos 50 USD
+Endocrinología Dr. Rafael Ortega 45 USD
+Cirugía plástica Dr. Alejandro Briceño 80 USD
+Cirugía plástica Dra. Valentina Pacheco 90 USD
+Urología Dr. Gustavo Hernández 45 USD
+Urología Dr. Luis Carrillo 50 USD
+Cardiología Dra. Patricia Medina 55 USD
+Cardiología Dr. Eduardo Rangel 50 USD
+Oftalmología Dra. Gabriela Quintero 40 USD
+Oftalmología Dr. José Luis Arismendi 45 USD
+Los exámenes y procedimientos se cotizan aparte. Los precios pueden cambiar sin previo aviso.
+Documento ficticio elaborado con fines académicos.

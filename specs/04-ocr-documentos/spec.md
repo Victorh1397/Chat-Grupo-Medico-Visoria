@@ -1,6 +1,6 @@
 # Spec 04 — Documentos sintéticos y pipeline OCR offline
 
-- **Estado:** Spec aprobada
+- **Estado:** Hecha
 - **Rúbrica:** OCR, validación con regex y respuesta documental (3 pts): esta spec cubre la **extracción** y la **validación**;
   la consulta con Gemini y el control de alucinaciones son la spec 05. Mejora opcional: documentos complejos (tablas).
 - **Depende de:** [Spec 01](../01-caso-de-uso/spec.md) (catálogo D1–D5), [Spec 03](../03-webhook-fastapi/spec.md) (`webhook/datos.py`)
@@ -49,7 +49,7 @@ Todos llevan cabecera "Grupo Médico Visoria" y el pie *"Documento ficticio elab
 ## Requisitos
 
 ### R1. Generación de los documentos
-1. Un script genera `ocr/documentos/D1_…png` … `D5_…png` (imágenes PNG, ~150 ppp, tamaño carta).
+1. Un script genera `ocr/documentos/D1_…jpg` … `D5_…jpg` (imágenes JPEG como las de un escáner, 150 ppp, tamaño carta).
 2. D2 y D3 se generan **desde `webhook/datos.py`**: si cambia un precio o un horario, se regeneran y Vicky no se contradice.
 3. Cada imagen simula un escaneo: tono de papel, inclinación de 0,5–1,5°, ruido y ligero desenfoque. Las imágenes no tienen capa de texto: extraer su texto **es** OCR.
 4. El texto de referencia de cada documento se guarda aparte (`ocr/referencia/`) solo para **medir** la calidad del OCR; nunca se usa como sustituto del OCR.
@@ -82,7 +82,7 @@ El script imprime un resumen por documento: caracteres, similitud con la referen
 
 ## Criterios de aceptación
 
-- **CA-1.** Existen 5 imágenes PNG en `ocr/documentos/`, sin capa de texto, con aspecto de documento escaneado.
+- **CA-1.** Existen 5 imágenes JPEG en `ocr/documentos/`, sin capa de texto, con aspecto de documento escaneado.
 - **CA-2.** El OCR procesa las 5 imágenes sin errores en menos de 1 minuto en total.
 - **CA-3.** La similitud media entre el texto OCR y la referencia es **≥ 90 %**; ningún documento por debajo del 85 %.
 - **CA-4.** La regex de importes extrae los 12 precios de D2 y **todos coinciden** con `webhook/datos.py`.

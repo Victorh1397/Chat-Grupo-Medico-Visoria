@@ -31,7 +31,10 @@ pérdida de nitidez por reescalado. Semilla fija por documento para que las imá
 2. Ampliación ×2 (Tesseract rinde mejor con letras de ~30 px de alto).
 3. Corrección de inclinación: se prueban ángulos de −3° a 3° y se elige el que maximiza la varianza del perfil horizontal (las líneas de texto quedan horizontales).
 4. Binarización con umbral de Otsu (separa tinta y papel aunque el fondo no sea blanco).
-5. Tesseract `lang="spa"`, `--psm 6` (bloque uniforme; funciona con las tablas de una fila por médico).
+5. **Quitar las líneas de las tablas**: tramos rectos de tinta mucho más largos que una letra (horizontales ≥ 1/30 del ancho,
+   verticales ≥ 60 px), ampliando la máscara 4 px porque los bordes escaneados son irregulares. *Añadido tras la primera prueba*:
+   sin él, Tesseract confundía las celdas con letras.
+6. Tesseract `lang="spa"`, `--psm 6` (bloque uniforme; funciona con las tablas de una fila por médico).
 
 ### Regex
 - Importes: `(\d{1,4})\s*(?:USD|\$|d[oó]lares)` y `\$\s*(\d{1,4})`.
@@ -51,6 +54,31 @@ pérdida de nitidez por reescalado. Semilla fija por documento para que las imá
 | Las líneas de las tablas se leen como `|` o `l` | Regex tolerantes; separadores ignorados al extraer pares |
 | Acentos mal reconocidos | `lang="spa"`; la similitud lo cuantifica |
 | Tesseract no disponible en otra máquina | `documentos.json` versionado; los tests no requieren Tesseract |
+
+## Tratamiento de errores de OCR
+- Confusiones de caracteres en cifras (O/0, l/1, S/5, B/8): corrección solo en fragmentos con dígitos, sobre una copia para las regex.
+- Confusión "rn" → "m" ("viemes", "Hemández") y letras perdidas ("vienes"): los nombres de médicos y los días se comparan por parecido
+  (`difflib`, umbrales 0,85 y 0,75), no por igualdad exacta. La validación sí detecta un precio u horario realmente distinto.
+- El texto que se guarda para el LLM es el OCR original, sin estas correcciones.
+
+## Resultados (19/10/2026)
+
+Similitud con el texto de referencia al ir añadiendo pasos (`uv run python -m ocr.ocr --comparar`):
+
+| Preprocesado | D1 | D2 | D3 | D4 | D5 | Media |
+|---|---|---|---|---|---|---|
+| Sin preprocesado | 99,9 % | 59,4 % | 49,9 % | 99,8 % | 99,9 % | 81,8 % |
+| + grises | 99,8 % | 85,3 % | 50,4 % | 99,9 % | 99,9 % | 87,0 % |
+| + ampliar | 99,9 % | 60,8 % | 45,5 % | 99,8 % | 99,9 % | 81,2 % |
+| + enderezar | 99,9 % | 63,1 % | 45,6 % | 99,9 % | 99,9 % | 81,7 % |
+| + binarizar | 99,9 % | 64,8 % | 45,6 % | 99,8 % | 99,9 % | 82,0 % |
+| **+ quitar líneas** | **99,9 %** | **99,9 %** | **99,4 %** | **99,8 %** | **99,9 %** | **99,8 %** |
+
+- En texto corrido Tesseract acierta casi todo sin ayuda; **las tablas dependen de quitar las líneas** (que exige binarizar antes).
+- Prueba de ablación sobre las tablas con líneas quitadas: sin enderezar D2 99,7 % / D3 99,4 %; sin ampliar 99,3 % / 99,2 %.
+  Ampliar y enderezar aportan poco en estos documentos, pero se mantienen como margen ante escaneos reales más torcidos o con letra pequeña.
+- Validación contra `webhook/datos.py`: precios 12/12 y horarios 12/12 (tras la tolerancia a "rn"→"m"). Teléfonos de D1 y fecha de
+  vigencia de D2 extraídos. Tiempo total del OCR: 4,3 s.
 
 ## Verificación
 - `uv run python -m ocr.generar_documentos` → 5 PNG (CA-1).
