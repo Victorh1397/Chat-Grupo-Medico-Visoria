@@ -28,7 +28,7 @@ siguiendo la guía paso a paso del `plan.md`. El resultado se exporta y se versi
 ## Requisitos
 
 ### Ajustes del agente
-1. Idioma `es`, zona horaria **`America/Caracas`**.
+1. Idioma `es`, zona horaria **`America/Caracas`** o, si la consola no la ofrece, una equivalente UTC-4 sin horario de verano (`America/Barbados`).
 
 ### Entidades
 2. **`@especialidad`** (personalizada, con sinónimos): Dermatología, Endocrinología, Cirugía plástica, Urología, Cardiología, Oftalmología, cada una con sinónimos de uso común (nombre del especialista, órgano o motivo frecuente).
@@ -71,7 +71,7 @@ Se verifican sobre el export (`agente/`) y con llamadas `detect_intent` de texto
 - **CA-6.** "Soy colombiano" y "venezolana" se reconocen como `E` y `V`; "14.523.987" y "14 523 987" se reconocen como `@cedula`.
 - **CA-7.** Cada una de las frases de prueba del plan activa la intención esperada (consulta documental, horarios, historial, cancelación, humano).
 - **CA-8.** Todas las intenciones que lo necesitan tienen el webhook activado (y el slot filling en `agendar_cita`) y una respuesta estática de reserva.
-- **CA-9.** La zona horaria del agente es `America/Caracas`.
+- **CA-9.** La zona horaria del agente es `America/Caracas` o equivalente UTC-4 sin horario de verano (`America/Barbados`).
 - **CA-10.** Todas las respuestas y preguntas estáticas tratan al paciente de usted.
 
 ## Decisiones técnicas
@@ -82,3 +82,4 @@ Se verifican sobre el export (`agente/`) y con llamadas `detect_intent` de texto
 | Validación de la cédula | Regex permisiva en la entidad + validación estricta en el webhook durante el slot filling | El enunciado pide validar con regex en el webhook; detectar el error en el turno en que se dice |
 | Reinicio tras "no" | Follow-up `- no - yes` + evento `INICIAR_CITA` lanzado por el webhook | Una respuesta estática no puede reactivar el slot filling de `agendar_cita` |
 | Respuestas de reserva | Estáticas en cada intención con webhook | Si el webhook falla o tarda, Vicky no se queda en silencio |
+| Zona horaria | `America/Barbados` | La consola no ofrece `America/Caracas`; ambas son UTC-4 sin horario de verano. Dialogflow solo la usa para resolver fechas relativas; el webhook trabaja con `America/Caracas` |

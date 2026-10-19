@@ -15,7 +15,7 @@ Implementa: [spec.md](spec.md)
 
 ### 0.1 Zona horaria
 1. Clic en el ⚙️ junto al nombre del agente → pestaña **General**.
-2. **Default time zone:** `(GMT-4:00) America/Caracas`.
+2. **Default time zone:** `(GMT-4:00) America/Caracas`. Si no aparece en la lista, elige `(GMT-4:00) America/Barbados` (misma hora todo el año, sin horario de verano).
 3. **SAVE**.
 
 ### 0.2 Activar el webhook (URL provisional)
