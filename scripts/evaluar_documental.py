@@ -24,7 +24,7 @@ from webhook.documentos import NO_DISPONIBLE_AHORA, SIN_INFO_DOCUMENTAL  # noqa:
 
 PREGUNTAS = RAIZ / "evaluacion" / "preguntas_documentales.json"
 RESULTADOS = RAIZ / "evaluacion" / "resultados_documental.json"
-PAUSA_S = 4  # ~15 preguntas por minuto
+PAUSA_S = 6  # ~10 preguntas por minuto: margen frente al límite gratuito de 15 por minuto
 
 
 def plano(texto: str) -> str:

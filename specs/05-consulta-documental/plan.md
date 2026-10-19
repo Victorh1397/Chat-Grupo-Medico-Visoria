@@ -65,7 +65,7 @@ Razonamiento `minimal` frente a `low` con `gemini-3.5-flash-lite`: 0,64–1,01 s
 | Riesgo | Mitigación |
 |---|---|
 | Picos de latencia de Gemini | Límite de 3 s en nuestro lado y mensaje de reserva |
-| Cuota gratuita (429) | Mensaje de reserva; evaluación espaciada 4 s; tests con modelo simulado |
+| Cuota gratuita (429): 15 peticiones/minuto y 500/día en el nivel gratuito | Mensaje de reserva; evaluación espaciada 6 s (~10/minuto, 27 peticiones por ejecución); tests con modelo simulado |
 | El modelo no usa la señal | Red de seguridad de negativas (con tests de falsos positivos: "No, los menores…", "No se recomienda…") |
 | Erratas de OCR en el texto ("Hemández") | El modelo las interpreta; corregir nombres queda como mejora futura |
 
