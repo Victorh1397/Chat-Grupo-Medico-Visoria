@@ -202,9 +202,9 @@ def test_ca12_despedida(cliente, frase):
     assert "Que tenga un buen día" in res["fulfillmentText"]
 
 
-def test_fallback_generico(cliente):
+def test_fallback_sin_informacion_en_los_documentos(cliente):
     res = respuesta(cliente, peticion("Default Fallback Intent", {}, "¿cuál es la capital de Francia?"))
-    assert "no le entendí" in res["fulfillmentText"]
+    assert res["fulfillmentText"].startswith("Disculpe, no tengo información sobre eso.")
 
 
 def test_intencion_desconocida_nunca_en_silencio(cliente):

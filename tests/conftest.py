@@ -16,6 +16,29 @@ SESION = "projects/visoria-chat-1397/agent/sessions/prueba"
 INTENT_ID = "e12a9d5b-1eb2-41a0-877f-05cfa9b6a5a2"
 
 
+class ModeloSimulado:
+    """Sustituye a Gemini en los tests: sin red ni cuota. Registra los prompts y devuelve `respuesta`."""
+
+    def __init__(self):
+        self.respuesta = "NO_DISPONIBLE"
+        self.prompts: list[str] = []
+
+    def __call__(self, prompt: str) -> str:
+        self.prompts.append(prompt)
+        if isinstance(self.respuesta, Exception):
+            raise self.respuesta
+        return self.respuesta
+
+
+@pytest.fixture(autouse=True)
+def modelo(monkeypatch):
+    from webhook import documentos
+
+    simulado = ModeloSimulado()
+    monkeypatch.setattr(documentos, "preguntar_al_modelo", simulado)
+    return simulado
+
+
 @pytest.fixture(autouse=True)
 def entorno(monkeypatch):
     monkeypatch.setattr(modulo_agenda, "ahora", lambda: AHORA)

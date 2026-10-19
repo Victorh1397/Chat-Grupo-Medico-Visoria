@@ -18,7 +18,7 @@ Plantillas en [`_plantillas/`](_plantillas/). Principios en [`00-constitucion.md
 | 02 | [Agente Dialogflow ES: intents, entidades, contexto, follow-up](02-agente-dialogflow/spec.md) | Agente (4) | Hecha |
 | 03 | [Webhook FastAPI: validación regex, lógica de negocio](03-webhook-fastapi/spec.md) | Agente / Webhook | Hecha |
 | 04 | [Documentos sintéticos y pipeline OCR offline + regex](04-ocr-documentos/spec.md) | OCR (3) | Hecha |
-| 05 | Consulta documental con Gemini + control de alucinaciones | OCR (3) | Pendiente |
+| 05 | [Consulta documental con Gemini + control de alucinaciones](05-consulta-documental/spec.md) | OCR (3) | Hecha |
 | 06 | Voz extremo a extremo (cliente de voz, SSML, latencia) | Voz (2) | Pendiente |
 | 07 | Extra: transferencia a agente humano | +1,5 | Pendiente |
 | 08 | Extra: Telegram (integración nativa, texto + botones) | +1,5 | Pendiente |
@@ -39,8 +39,8 @@ Estados: Pendiente → Spec redactada → Spec aprobada → En implementación �
 | Webhook FastAPI expuesto, valida parámetro con regex, respuesta dinámica | 03 | `webhook/` (regex en `webhook/cedula.py`) · `tests/test_cedula.py`, `test_agenda.py`, `test_webhook.py` · ngrok + 50 turnos `detect_intent` sin tiempos agotados |
 | OCR de 3–5 documentos (offline) | 04 | 5 imágenes en `ocr/documentos/` · `ocr/ocr.py` (Tesseract + preprocesado) · similitud media 99,8 % (`specs/04-ocr-documentos/plan.md`) |
 | Regex sobre el texto extraído | 04 | `ocr/extraccion.py` (importes, horarios, teléfonos, fechas) · validación 12/12 precios y horarios contra el webhook · `tests/test_ocr.py` |
-| Texto en fichero + LLM con contexto | 04, 05 | `ocr/salida/documentos.json` (spec 04) |
-| Control de alucinaciones | 05 | |
+| Texto en fichero + LLM con contexto | 04, 05 | `ocr/salida/documentos.json` (spec 04) · `webhook/documentos.py` con Gemini 3.5 Flash-Lite · evaluación 17/18 aciertos, mediana 0,8 s (`evaluacion/resultados_documental.json`) |
+| Control de alucinaciones | 05 | Instrucciones + señal `NO_DISPONIBLE` + red de seguridad · 9/9 preguntas sin respuesta (incluidas manipulación y consejo médico) sin inventar · `tests/test_documentos.py` |
 | ZIP del agente + script OCR + webhook | 02, 03, 04, 99 | `entrega/agente_dialogflow.zip` (generado sin secretos con `scripts/preparar_export.py`) · `webhook/` · `ocr/` |
 | README (caso de uso, diagrama, intenciones, decisiones, instrucciones) | 99 | |
 | Vídeo ≤ 3 min | 99 | |

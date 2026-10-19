@@ -14,6 +14,7 @@ from webhook.cedula import (
 )
 from webhook.datos import medico_por_nombre, medicos_de
 from webhook.dialogflow import PeticionDF, evento, leer_fecha, leer_hora, repreguntar, texto
+from webhook.documentos import SIN_INFO_DOCUMENTAL, SIN_INFO_FALLBACK, responder_con_documentos
 
 agenda = Agenda()
 
@@ -249,15 +250,15 @@ def transferir_humano(pet: PeticionDF) -> dict:
 
 
 def consulta_documental(pet: PeticionDF) -> dict:
-    # Provisional hasta la spec 05 (documentos OCR + Gemini)
-    return texto("En este momento no puedo consultar esa información. ¿Desea que le comunique con recepción?")
+    return texto(responder_con_documentos(pet.texto, SIN_INFO_DOCUMENTAL))
 
 
 def fallback(pet: PeticionDF) -> dict:
     if CIERRE.match(pet.texto.strip()):
         return texto("Gracias por comunicarse con Grupo Médico Visoria. Que tenga un buen día.")
-    return texto("Disculpe, no le entendí. Puedo agendarle una cita, consultar horarios o su historial, "
-                 "o responder sus dudas sobre la clínica.")
+    # Dialogflow clasifica comparando con frases de entrenamiento y nunca lee los documentos: una pregunta
+    # cuya respuesta está en ellos puede caer aquí. Se intenta responder con los documentos (spec 05, opción B).
+    return texto(responder_con_documentos(pet.texto, SIN_INFO_FALLBACK))
 
 
 MANEJADORES: dict[str, Callable[[PeticionDF], dict]] = {

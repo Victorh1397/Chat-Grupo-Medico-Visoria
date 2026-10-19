@@ -16,7 +16,8 @@ Asistente conversacional por voz (Dialogflow ES + webhook FastAPI + OCR + Gemini
 - Webhook: `uv run uvicorn webhook.main:app --reload --port 8000`, expuesto con **ngrok** (`ngrok http 8000`, dominio fijo `https://reenter-fled-lyricist.ngrok-free.dev`). En Fulfillment: `https://reenter-fled-lyricist.ngrok-free.dev/webhook` y cabecera `X-Visoria-Token` (valor de `WEBHOOK_TOKEN` en `.env`). Se descartó el túnel de VS Code por latencia (ver decisiones de la spec 03).
 - Datos ficticios de la clínica: fuente única en `webhook/datos.py` (los documentos de la spec 04 se generan desde ahí).
 - Documentos y OCR (offline, nunca en el webhook): `uv run python -m ocr.generar_documentos` y `uv run python -m ocr.ocr` (escribe `ocr/salida/documentos.json`, versionado). Si cambian precios u horarios en `webhook/datos.py`, regenerar ambos: `tests/test_ocr.py` falla si no coinciden.
-- Pruebas contra Dialogflow real (`detect_intent`): espaciarlas ~1,2 s; la edición Trial limita las consultas por minuto.
+- Pruebas contra Dialogflow real (`detect_intent`): espaciarlas ~2 s; la edición Trial limita las consultas por minuto.
+- Consulta documental: `webhook/documentos.py` (Gemini `gemini-3.5-flash-lite`). Los tests **siempre** simulan el modelo (`ModeloSimulado` en `tests/conftest.py`); la evaluación real es `uv run python -m scripts.evaluar_documental` (gasta cuota gratuita, ~2 min).
 - Tests: `uv run pytest`. Lint: `uv run ruff check .`.
 - Tesseract instalado con Homebrew (`spa` disponible).
 

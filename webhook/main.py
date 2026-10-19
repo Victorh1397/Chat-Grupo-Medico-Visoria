@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, Request
 
 from webhook.dialogflow import PeticionDF, texto
+from webhook.documentos import DOCUMENTOS, MODELO
 from webhook.intenciones import MANEJADORES, agenda
 
 load_dotenv()
@@ -37,7 +38,8 @@ def comprobar_token(token: str | None) -> None:
 @app.get("/")
 def estado():
     """Para comprobar de un vistazo que el túnel llega hasta aquí."""
-    return {"estado": "ok", "servicio": "Vicky - Grupo Médico Visoria", "citas_en_agenda": len(agenda.citas)}
+    return {"estado": "ok", "servicio": "Vicky - Grupo Médico Visoria", "citas_en_agenda": len(agenda.citas),
+            "documentos_cargados": len(DOCUMENTOS), "modelo": MODELO}
 
 
 @app.post("/webhook")
