@@ -63,7 +63,9 @@ CSV para raw mode:
 
 ### 1.2 `nacionalidad`
 1. **Entity name:** `nacionalidad`.
-2. Deja marcado **Define synonyms**. Marca **Allow automated expansion** (ayuda a reconocer gentilicios no listados).
+2. Deja marcado **Define synonyms**. **No** marques **Allow automated expansion**: con ella Dialogflow aceptaba cualquier
+   respuesta como nacionalidad (devolvió `Noruega` e incluso el número `81234567`). Los gentilicios no listados los resuelve el
+   webhook a partir del texto (spec 03).
 3. Dos filas:
 
 | Valor de referencia | Sinónimos |
@@ -79,7 +81,7 @@ CSV para raw mode:
 
 4. **SAVE**.
 
-> Si alguien dice una nacionalidad que no está en la lista y Dialogflow no la reconoce, en la spec 03 el webhook aplicará la regla "no es venezolano → E".
+> Si alguien dice una nacionalidad que no está en la lista, Dialogflow no la reconoce y el webhook aplica la regla "no es venezolano → E" (spec 03).
 
 ### 1.3 `cedula` (entidad regex)
 1. **Entity name:** `cedula`.
@@ -399,9 +401,14 @@ Si alguna falla, dime cuál y qué muestra DIAGNOSTIC INFO.
 
 ## Bloque 7 — Exportar el agente
 
-1. ⚙️ → pestaña **Export and Import** → **EXPORT AS ZIP**.
+1. ⚙️ → pestaña **Export and Import** → **EXPORT AS ZIP** (borra antes cualquier `Grupo-Medico-Visoria.zip` anterior de Descargas).
 2. Se descarga `Grupo-Medico-Visoria.zip` (en Descargas).
-3. Avísame. Yo lo descomprimo en `agente/`, guardo una copia del ZIP en `entrega/` y ejecuto la verificación automática de la spec.
+3. Se incorpora al repositorio **sin secretos** (el export incluye el token de la cabecera `X-Visoria-Token`):
+   ```bash
+   uv run python scripts/preparar_export.py ~/Downloads/Grupo-Medico-Visoria.zip
+   uv run pytest tests/test_agente_export.py
+   ```
+   El script escribe `agente/` y `entrega/agente_dialogflow.zip` con el token sustituido por `<WEBHOOK_TOKEN>`.
 
 ---
 

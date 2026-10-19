@@ -32,7 +32,7 @@ siguiendo la guía paso a paso del `plan.md`. El resultado se exporta y se versi
 
 ### Entidades
 2. **`@especialidad`** (personalizada, con sinónimos): Dermatología, Endocrinología, Cirugía plástica, Urología, Cardiología, Oftalmología, cada una con sinónimos de uso común (nombre del especialista, órgano o motivo frecuente).
-3. **`@nacionalidad`** (personalizada, con sinónimos y expansión automática): valor `V` (venezolano, venezolana, de Venezuela…) y valor `E` (extranjero, extranjera y gentilicios frecuentes en Venezuela: colombiano, peruano, ecuatoriano, español, portugués, italiano…).
+3. **`@nacionalidad`** (personalizada, con sinónimos, **sin** expansión automática; los gentilicios no listados los resuelve el webhook): valor `V` (venezolano, venezolana, de Venezuela…) y valor `E` (extranjero, extranjera y gentilicios frecuentes en Venezuela: colombiano, peruano, ecuatoriano, español, portugués, italiano…).
 4. **`@cedula`** (regex): número sin 0 inicial, escrito con dígitos seguidos (6–9) o con separadores de miles (punto, coma o espacio). Dos expresiones, con la de dígitos seguidos primero. La validación estricta del rango según V/E la hace el webhook (spec 03).
 4b. Ninguna frase de entrenamiento de `consultar_historial` ni `cancelar_cita` contiene una cédula, para que decir "mi cédula es…" durante `agendar_cita` no cambie de intención.
 
