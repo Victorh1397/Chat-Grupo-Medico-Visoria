@@ -86,11 +86,17 @@ CSV para raw mode:
 2. **Deja marcada** Define synonyms (si se desmarca, la casilla Regexp entity desaparece) y **marca Regexp entity** en la fila de casillas.
    Hazlo **al crear** la entidad: una entidad ya guardada no se puede convertir en regex (la consola desmarca la casilla al guardar sin avisar).
    Si te equivocas, borra la entidad (primero quítala de las intenciones que la usen) y créala de nuevo.
-3. Una sola fila con esta expresión:
-   ```
-   [1-9][0-9]{0,2}([.,\s]?[0-9]{3}){1,2}
-   ```
-   Acepta 4–9 dígitos con puntos, comas o espacios de miles (`14523987`, `14.523.987`, `14 523 987`). Es permisiva a propósito: el webhook rechazará lo que tenga menos de 6 dígitos o no cuadre con V/E.
+3. Dos filas, **en este orden**:
+
+   | Fila | Expresión | Reconoce |
+   |---|---|---|
+   | 1 | `[1-9][0-9]{5,8}` | Dígitos seguidos: `14523987`, `945123` |
+   | 2 | `[1-9][0-9]{0,2}([.,\s][0-9]{3}){1,2}` | Con separadores de miles: `14.523.987`, `14 523 987`, `14,523,987` |
+
+   **Por qué dos filas y en ese orden:** Dialogflow une las filas en una sola expresión y se queda con la **primera coincidencia,
+   aunque sea parcial**. Con una única fila de separador opcional (`[.,\s]?`), `14523987` coincidía solo como `145239` y la cédula
+   no se reconocía (fallaban justo las de 7 y 8 dígitos). Por eso el patrón de dígitos seguidos va primero y el segundo exige separador.
+   La regex de la entidad no comprueba V/E: el webhook valida el rango exacto (6–8 dígitos para V, 6–9 para E).
 4. **SAVE**.
 
 ---
@@ -309,11 +315,10 @@ Quiero saber con qué doctor me vi
 Consultar mi historial médico
 ¿Ya he venido antes a la clínica?
 ¿En qué especialidades me he atendido?
-Mi cédula es 14523987, ¿qué consultas tengo?
 Revisar mis consultas anteriores
 ¿Me puede decir mis citas pasadas?
 ```
-- En la frase con "14523987", si no se resalta, selecciona el número y elige `@cedula`.
+- **No añadas frases que contengan una cédula** ("Mi cédula es…"): si el usuario dice "mi cédula es 14523987" mientras `agendar_cita` le pide la cédula, Dialogflow saltaría a esta intención y se perderían los datos ya recogidos.
 - Parámetro: `cedula` · `@cedula` · **REQUIRED** · prompt: *Con gusto. ¿Me indica su número de cédula?*
 - Si se creó `especialidad` por "dermatólogo", déjalo **no obligatorio**.
 - **Responses:**
@@ -331,10 +336,10 @@ Ya no necesito la cita
 Elimine mi cita
 Cancelar cita
 No puedo asistir, cancele la cita
-Mi cédula es 14523987, cancele mi cita
 Quiero anular la consulta que tengo
 Por favor, cancele mi turno
 ```
+- Igual que en 5.3: **sin frases que contengan una cédula**.
 - Parámetro: `cedula` · `@cedula` · **REQUIRED** · prompt: *Entiendo. ¿Me indica su número de cédula?*
 - **Responses:**
   > Disculpe, ahora mismo no puedo cancelar su cita. Puede llamar a recepción para hacerlo.
@@ -401,7 +406,8 @@ Si alguna falla, dime cuál y qué muestra DIAGNOSTIC INFO.
 | Riesgo | Mitigación |
 |---|---|
 | `@sys.given-name` no reconoce nombres poco comunes (habituales en Venezuela) | Se prueba en P3; si falla con nombres reales, se cambia a `@sys.any` y el webhook limpia el texto |
-| La regex de `@cedula` capta un año ("2026") dicho en la primera frase | El webhook rechaza menos de 6 dígitos y vuelve a pedir la cédula (spec 03) |
+| Una regex con separador opcional reconoce solo parte del número (fallaban 7–8 dígitos seguidos) | Dos filas ordenadas (bloque 1.3); verificado con `detect_intent` |
+| Frases con cédula en otras intenciones sacan al usuario de `agendar_cita` | Ninguna frase de entrenamiento contiene una cédula (bloques 5.3 y 5.4) |
 | La cédula dictada por voz llega como "14 millones 523 mil 987" | Normalización en el webhook (spec 03) y prueba por voz (spec 06) |
 | "Sí" tras "¿Desea que le comunique con recepción?" no tiene intención | Spec 07 |
 
