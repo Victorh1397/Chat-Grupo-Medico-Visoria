@@ -1,0 +1,44 @@
+{
+  "id": "5017906a-045d-4c28-9f21-c61292514368",
+  "parentId": "0cc4087a-0451-47d0-8814-84ebcf312d49",
+  "rootParentId": "e12a9d5b-1eb2-41a0-877f-05cfa9b6a5a2",
+  "name": "agendar_cita - no - no",
+  "auto": true,
+  "contexts": [
+    "agendar_cita-no-followup"
+  ],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "agendar_cita.agendar_cita-no.agendar_cita-no-no",
+      "affectedContexts": [
+        {
+          "name": "agendar_cita-no-followup",
+          "lifespan": 0
+        }
+      ],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "es",
+          "speech": [
+            "De acuerdo. ¿Le puedo ayudar en algo más?"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

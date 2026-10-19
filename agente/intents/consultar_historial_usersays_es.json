@@ -1,0 +1,155 @@
+[
+  {
+    "id": "29345bad-0d57-465e-beff-c6aa6e827a44",
+    "data": [
+      {
+        "text": "¿Me puede decir mis citas pasadas?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "92b5f987-3cb0-4396-8f29-a9c28f8b953e",
+    "data": [
+      {
+        "text": "Revisar mis consultas anteriores",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "067f66b4-20fd-470c-8cbe-be093bbc214e",
+    "data": [
+      {
+        "text": "¿En qué especialidades me he atendido?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "a3f75bf4-1280-4d59-ae43-6bf084850987",
+    "data": [
+      {
+        "text": "¿Ya he venido antes a la clínica?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "01408097-0e06-4e80-ae79-428271b26c02",
+    "data": [
+      {
+        "text": "Consultar mi historial médico",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "f31c9355-cbd5-4833-ad9f-6ce0fe209bab",
+    "data": [
+      {
+        "text": "Quiero saber con qué doctor me vi",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "032979b6-40a7-4ed2-8000-a08ddea103d9",
+    "data": [
+      {
+        "text": "¿Quién fue mi ",
+        "userDefined": false
+      },
+      {
+        "text": "dermatólogo",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 1,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "3e76d092-5e34-4ef1-abc1-e95fc87c5bb4",
+    "data": [
+      {
+        "text": "¿Cuándo fue mi última cita?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "f84f19a2-03b0-4424-a322-e26cafa92e52",
+    "data": [
+      {
+        "text": "¿Qué consultas he tenido?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "f988e0f3-8117-4ba9-986b-0a19066c40a1",
+    "data": [
+      {
+        "text": "Quiero ver mi historial",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "b718e13c-9285-4650-887a-34f85865c4bc",
+    "data": [
+      {
+        "text": "¿Con qué médico me atendí la última vez?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  }
+]

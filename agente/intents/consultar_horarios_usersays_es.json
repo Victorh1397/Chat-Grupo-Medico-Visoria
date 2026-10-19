@@ -1,0 +1,264 @@
+[
+  {
+    "id": "68badb4e-4939-43e1-868f-9204d491cbbc",
+    "data": [
+      {
+        "text": "¿Cuándo puedo ver al ",
+        "userDefined": false
+      },
+      {
+        "text": "endocrino",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "444a2270-0348-4b50-8e50-a7dd35bace9a",
+    "data": [
+      {
+        "text": "Horario de consulta",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "dc311fce-1353-452e-9c46-232c068e7a1e",
+    "data": [
+      {
+        "text": "¿El ",
+        "userDefined": false
+      },
+      {
+        "text": "oculista",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      },
+      {
+        "text": " atiende los sábados?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "13f28979-e4a7-458f-871e-236d9838e688",
+    "data": [
+      {
+        "text": "¿Qué días atienden los ",
+        "userDefined": false
+      },
+      {
+        "text": "dermatólogos",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "56783195-02a4-4657-a865-5a2a48f22a15",
+    "data": [
+      {
+        "text": "Quiero saber el horario de los médicos",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "472d8b24-90d4-4681-8b05-30def619326d",
+    "data": [
+      {
+        "text": "¿Qué médicos atienden ",
+        "userDefined": false
+      },
+      {
+        "text": "cardiología",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      },
+      {
+        "text": " y cuándo?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "b3f57b3e-8954-4a32-9d3a-e78cbdb7d91e",
+    "data": [
+      {
+        "text": "Horarios de ",
+        "userDefined": false
+      },
+      {
+        "text": "cirugía plástica",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "2cc0a996-5c25-4141-996c-e095b574fb16",
+    "data": [
+      {
+        "text": "¿Qué ",
+        "userDefined": false
+      },
+      {
+        "text": "días",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      },
+      {
+        "text": " hay ",
+        "userDefined": false
+      },
+      {
+        "text": "endocrinólogo",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "a599a13f-2224-4d5c-a400-9ccfdfb5d4d2",
+    "data": [
+      {
+        "text": "¿Cuándo hay consulta de ",
+        "userDefined": false
+      },
+      {
+        "text": "oftalmología",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "d3223665-3a5d-4a91-87b8-e5c95d378b4e",
+    "data": [
+      {
+        "text": "¿A qué hora atiende el ",
+        "userDefined": false
+      },
+      {
+        "text": "urólogo",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "1d92272c-f8a6-47e4-8d06-8d308d71c222",
+    "data": [
+      {
+        "text": "¿Qué días atiende el ",
+        "userDefined": false
+      },
+      {
+        "text": "cardiólogo",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "47c30536-3e69-42f3-9a26-17d68695bbcc",
+    "data": [
+      {
+        "text": "¿Qué horario tiene ",
+        "userDefined": false
+      },
+      {
+        "text": "dermatología",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  }
+]

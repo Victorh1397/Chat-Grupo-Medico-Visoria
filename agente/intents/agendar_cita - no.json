@@ -1,0 +1,53 @@
+{
+  "id": "0cc4087a-0451-47d0-8814-84ebcf312d49",
+  "parentId": "e12a9d5b-1eb2-41a0-877f-05cfa9b6a5a2",
+  "rootParentId": "e12a9d5b-1eb2-41a0-877f-05cfa9b6a5a2",
+  "name": "agendar_cita - no",
+  "auto": true,
+  "contexts": [
+    "ctx_cita_en_curso",
+    "agendar_cita-followup"
+  ],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "agendar_cita.agendar_cita-no",
+      "affectedContexts": [
+        {
+          "name": "ctx_cita_en_curso",
+          "lifespan": 0
+        },
+        {
+          "name": "agendar_cita-followup",
+          "lifespan": 0
+        },
+        {
+          "name": "agendar_cita-no-followup",
+          "lifespan": 2
+        }
+      ],
+      "parameters": [],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "es",
+          "speech": [
+            "Entendido, no he registrado la cita. ¿Desea empezar de nuevo?"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": false,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

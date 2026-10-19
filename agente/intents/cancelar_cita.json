@@ -1,0 +1,55 @@
+{
+  "id": "f623dafb-4aae-4a5b-8afe-eb366a5b7888",
+  "name": "cancelar_cita",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "id": "2ecddd1c-4ac0-48bf-a477-13cebecd9500",
+          "name": "cedula",
+          "required": true,
+          "dataType": "@cedula",
+          "value": "$cedula",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [
+            {
+              "lang": "es",
+              "value": "Entiendo. ¿Me indica su número de cédula?"
+            }
+          ],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        }
+      ],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "es",
+          "speech": [
+            "Disculpe, ahora mismo no puedo cancelar su cita. Puede llamar a recepción para hacerlo."
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": true,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

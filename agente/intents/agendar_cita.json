@@ -1,0 +1,182 @@
+{
+  "id": "e12a9d5b-1eb2-41a0-877f-05cfa9b6a5a2",
+  "name": "agendar_cita",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [
+        {
+          "name": "ctx_cita_en_curso",
+          "lifespan": 5
+        },
+        {
+          "name": "agendar_cita-followup",
+          "lifespan": 2
+        }
+      ],
+      "parameters": [
+        {
+          "id": "238f1b78-d2ef-43b3-ad90-071a2c78c439",
+          "name": "nombre",
+          "required": true,
+          "dataType": "@sys.given-name",
+          "value": "$nombre",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [
+            {
+              "lang": "es",
+              "value": "¿Me indica su nombre y apellido, por favor?"
+            }
+          ],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        },
+        {
+          "id": "d982cad9-15db-43b0-af28-98632dfc05c0",
+          "name": "apellido",
+          "required": true,
+          "dataType": "@sys.last-name",
+          "value": "$apellido",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [
+            {
+              "lang": "es",
+              "value": "Gracias. ¿Me indica también su apellido?"
+            }
+          ],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        },
+        {
+          "id": "9299f919-d943-4cca-95c1-fcb3588af010",
+          "name": "nacionalidad",
+          "required": true,
+          "dataType": "@nacionalidad",
+          "value": "$nacionalidad",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [
+            {
+              "lang": "es",
+              "value": "¿Usted es venezolano o extranjero?"
+            }
+          ],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        },
+        {
+          "id": "705aefc1-0d8f-4124-9e75-78ac50b4e01a",
+          "name": "cedula",
+          "required": true,
+          "dataType": "@cedula",
+          "value": "$cedula",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [
+            {
+              "lang": "es",
+              "value": "¿Me indica su número de cédula? Por ejemplo: 14523987"
+            }
+          ],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        },
+        {
+          "id": "5b80aae9-6769-420b-95a2-899f873f720e",
+          "name": "especialidad",
+          "required": true,
+          "dataType": "@especialidad",
+          "value": "$especialidad",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [
+            {
+              "lang": "es",
+              "value": "¿Con qué especialidad desea la cita? Tenemos dermatología, endocrinología, cirugía plástica, urología, cardiología y oftalmología."
+            }
+          ],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        },
+        {
+          "id": "8656b017-7bf4-4a02-969c-a80f94e47019",
+          "name": "fecha",
+          "required": true,
+          "dataType": "@sys.date",
+          "value": "$fecha",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [
+            {
+              "lang": "es",
+              "value": "¿Para qué fecha desea la cita?"
+            }
+          ],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        },
+        {
+          "id": "e88c44cb-8fe7-4a68-a5ef-93138ad05889",
+          "name": "hora",
+          "required": true,
+          "dataType": "@sys.time",
+          "value": "$hora",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [
+            {
+              "lang": "es",
+              "value": "¿A qué hora le conviene?"
+            }
+          ],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        }
+      ],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "es",
+          "speech": [
+            "Gracias, $nombre. ¿Confirma que desea agendar la cita de $especialidad en la fecha y hora indicadas?"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": true,
+  "webhookForSlotFilling": true,
+  "fallbackIntent": false,
+  "events": [
+    {
+      "name": "INICIAR_CITA"
+    }
+  ],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

@@ -68,7 +68,7 @@ Incluye al menos un paciente extranjero (`E-`) y pacientes con historial en vari
 
 1. La fecha no puede ser pasada ni domingo.
 2. La hora debe estar dentro del horario del médico que atiende esa especialidad ese día.
-3. **Paciente existente:** Vicky lo saluda por su nombre registrado y, si ya se atendió en esa especialidad, propone al **mismo médico**.
+3. **Paciente existente:** Vicky se dirige a él por su nombre registrado (sin "señor/señora", porque no se conoce el género) y, si ya se atendió en esa especialidad, propone al **mismo médico**.
 4. **Paciente nuevo:** se le registra con los datos dados y se asigna un médico disponible de la especialidad.
 5. Si no hay disponibilidad, Vicky lo explica y propone el horario más cercano del médico.
 6. Al confirmar, se genera un código de cita (p. ej. `CIT-48213`) y se da el precio en USD de la consulta de ese médico.
@@ -131,11 +131,11 @@ que usa el webhook para agendar (una única fuente de datos ficticios).
 
 > **Vicky:** Bienvenido a Grupo Médico Visoria, soy Vicky. Puedo agendarle una cita o responder sus dudas sobre la clínica. ¿En qué le puedo ayudar?
 > **Usuario:** Quiero una cita con el dermatólogo.
-> **Vicky:** Con gusto. ¿Cuál es su nombre? → **Usuario:** María. → **Vicky:** ¿Y su apellido? → **Usuario:** González.
+> **Vicky:** Con gusto. ¿Me indica su nombre y apellido? → **Usuario:** María González.
 > **Vicky:** ¿Usted es venezolana o extranjera? → **Usuario:** Venezolana.
 > **Vicky:** ¿Me indica su número de cédula? → **Usuario:** 14 523 987.
 > **Vicky:** ¿Para qué fecha desea la cita? → **Usuario:** El próximo martes. → **Vicky:** ¿A qué hora? → **Usuario:** A las 10 de la mañana.
-> **Vicky:** Señora González, veo que ya se atendió en dermatología con la doctora Rojas. Le propongo cita con ella el martes 21 a las 10:00. La consulta cuesta 40 dólares. ¿Confirmo la cita?
+> **Vicky:** María, veo que ya se atendió en dermatología con la doctora Rojas. Le propongo cita con ella el martes 21 a las 10:00. La consulta cuesta 40 dólares. ¿Confirmo la cita?
 > **Usuario:** Sí.
 > **Vicky:** Listo, su cita CIT-48213 está confirmada. Le recomendamos llegar 15 minutos antes. ¿Le puedo ayudar en algo más?
 > **Usuario:** ¿Tienen estacionamiento?
@@ -146,10 +146,10 @@ que usa el webhook para agendar (una única fuente de datos ficticios).
 ## Criterios de aceptación
 
 - **CA-1.** El agente tiene 6 intenciones significativas además de bienvenida y fallback, con el propósito descrito en el mapa.
-- **CA-2.** Dado un usuario que dice "quiero una cita con urología", cuando faltan datos, entonces Vicky los pide uno a uno hasta tener nombre, apellido, nacionalidad, cédula, especialidad, fecha y hora.
+- **CA-2.** Dado un usuario que dice "quiero una cita con urología", cuando faltan datos, entonces Vicky los pide uno a uno hasta tener nombre, apellido, nacionalidad, cédula, especialidad, fecha y hora. Nombre y apellido se piden en una sola pregunta; el apellido solo se vuelve a pedir si el usuario no lo dijo.
 - **CA-3.** Dada la respuesta "venezolano" o "venezolana", entonces se registra V; dada "extranjero", "extranjera" o cualquier otra nacionalidad (p. ej. "colombiano"), entonces se registra E y la nacionalidad concreta no se guarda.
 - **CA-4.** Dado el número `14523987`, `14.523.987` o `14 523 987`, entonces se reconoce y se guarda como `V-14523987` o `E-14523987` según la nacionalidad; dado `123`, `0123456` o un número de más de 9 dígitos, entonces se rechaza y Vicky lo vuelve a pedir.
-- **CA-5.** Dado un paciente registrado con historial en la especialidad pedida, entonces Vicky lo trata de usted por su apellido y propone al mismo médico.
+- **CA-5.** Dado un paciente registrado con historial en la especialidad pedida, entonces Vicky lo trata de usted, se dirige a él por su nombre y propone al mismo médico.
 - **CA-6.** Dada una fecha pasada, un domingo o una hora fuera del horario del médico, entonces Vicky lo explica y propone una alternativa.
 - **CA-7.** Al final del flujo Vicky resume los datos y pregunta si confirma; con "sí" da código de cita, médico y precio en USD; con "no" no registra nada y ofrece empezar de nuevo.
 - **CA-8.** Dado un número de cédula registrado, `consultar_historial` responde con las especialidades, médicos y fechas de sus consultas anteriores; dado uno no registrado, lo indica.

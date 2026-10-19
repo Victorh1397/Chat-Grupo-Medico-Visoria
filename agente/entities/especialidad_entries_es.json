@@ -1,0 +1,78 @@
+[
+  {
+    "value": "Dermatología",
+    "synonyms": [
+      "Dermatología",
+      "dermatología",
+      "dermatologia",
+      "dermatólogo",
+      "dermatóloga",
+      "piel",
+      "manchas en la piel",
+      "acné"
+    ]
+  },
+  {
+    "value": "Endocrinología",
+    "synonyms": [
+      "Endocrinología",
+      "endocrinología",
+      "endocrinologia",
+      "endocrino",
+      "endocrinólogo",
+      "endocrinóloga",
+      "tiroides",
+      "diabetes",
+      "hormonas"
+    ]
+  },
+  {
+    "value": "Cirugía plástica",
+    "synonyms": [
+      "Cirugía plástica",
+      "cirugía plástica",
+      "cirugia plastica",
+      "cirujano plástico",
+      "cirujana plástica",
+      "cirugía estética",
+      "plástica"
+    ]
+  },
+  {
+    "value": "Urología",
+    "synonyms": [
+      "Urología",
+      "urología",
+      "urologia",
+      "urólogo",
+      "uróloga",
+      "próstata",
+      "vías urinarias"
+    ]
+  },
+  {
+    "value": "Cardiología",
+    "synonyms": [
+      "Cardiología",
+      "cardiología",
+      "cardiologia",
+      "cardiólogo",
+      "cardióloga",
+      "corazón",
+      "presión arterial"
+    ]
+  },
+  {
+    "value": "Oftalmología",
+    "synonyms": [
+      "Oftalmología",
+      "oftalmología",
+      "oftalmologia",
+      "oftalmólogo",
+      "oftalmóloga",
+      "oculista",
+      "ojos",
+      "vista"
+    ]
+  }
+]

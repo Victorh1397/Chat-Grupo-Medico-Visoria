@@ -1,0 +1,69 @@
+{
+  "id": "99130b2c-1127-4298-bbcf-237118c9b05e",
+  "name": "consultar_historial",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "id": "dbc27985-1d10-4759-ae80-ee93c4651261",
+          "name": "especialidad",
+          "required": false,
+          "dataType": "@especialidad",
+          "value": "$especialidad",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        },
+        {
+          "id": "816467da-6b6e-4c26-934d-9fd0d249a0e4",
+          "name": "cedula",
+          "required": true,
+          "dataType": "@cedula",
+          "value": "$cedula",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [
+            {
+              "lang": "es",
+              "value": "Con gusto. ¿Me indica su número de cédula?"
+            }
+          ],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        }
+      ],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "es",
+          "speech": [
+            "Disculpe, ahora mismo no puedo consultar su historial. ¿Desea que le comunique con recepción?"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": true,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}
