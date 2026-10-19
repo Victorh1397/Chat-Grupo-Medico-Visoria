@@ -10,9 +10,11 @@ Los CA-n hacen referencia a los criterios de aceptación de specs/02-agente-dial
 import json
 import re
 import unicodedata
+import zipfile
 from pathlib import Path
 
 import pytest
+from dotenv import dotenv_values
 
 AGENTE = Path(__file__).resolve().parents[1] / "agente"
 
@@ -134,7 +136,8 @@ def test_ca2_nacionalidad_reconoce_gentilicios():
     sinonimos = {e["value"]: e["synonyms"] for e in leer("entities/nacionalidad_entries_es.json")}
     assert {"venezolano", "venezolana"} <= set(sinonimos["V"])
     assert {"extranjero", "extranjera", "colombiano", "española"} <= set(sinonimos["E"])
-    assert leer("entities/nacionalidad.json")["automatedExpansion"] is True
+    # Sin expansión automática: con ella Dialogflow aceptaba cualquier texto ("Noruega", un número)
+    assert leer("entities/nacionalidad.json")["automatedExpansion"] is False
 
 
 # CA-3: agendar_cita
@@ -221,6 +224,18 @@ def test_ca8_agendar_cita_webhook_en_slot_filling():
 
 def test_ca9_zona_horaria_utc_menos_4():
     assert leer("agent.json")["defaultTimezone"] in {"America/Caracas", "America/Barbados"}
+
+
+# Secretos: el export incluye las cabeceras de Fulfillment (scripts/preparar_export.py las limpia)
+
+def test_export_sin_el_token_del_webhook():
+    assert leer("agent.json")["webhook"]["headers"].get("X-Visoria-Token") == "<WEBHOOK_TOKEN>"
+    token = dotenv_values(AGENTE.parent / ".env").get("WEBHOOK_TOKEN")
+    if token:
+        zip_entrega = AGENTE.parent / "entrega" / "agente_dialogflow.zip"
+        with zipfile.ZipFile(zip_entrega) as z:
+            assert all(token not in z.read(n).decode("utf-8", "ignore") for n in z.namelist())
+        assert all(token not in p.read_text(encoding="utf-8") for p in AGENTE.rglob("*.json"))
 
 
 # CA-10: trato de usted

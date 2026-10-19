@@ -117,3 +117,11 @@ La cuenta gratuita tiene un **dominio fijo**: `https://reenter-fled-lyricist.ngr
 
 - `uv run pytest`: regex de cédula (CA-2), nacionalidad (CA-3), reglas de fecha/hora y doble reserva (CA-4, CA-6), propuesta del modelo (CA-5), horarios, historial, cancelación, transferencia, despedida (CA-8 a CA-12), token (CA-1), tiempos y trato de usted (CA-13).
 - End-to-end con `detect_intent` contra el agente real a través del túnel: conversación modelo, rechazos en mitad del flujo, reinicio tras "no" (CA-7).
+
+### Resultado (19/10/2026)
+- Con el túnel de VS Code: el mecanismo de repreguntar funcionó, pero el 30–42 % de los turnos agotó el tiempo → cambio a ngrok.
+- Con ngrok: **50 turnos, 0 tiempos agotados**, 0,4–1,3 s por turno (máximo 3,0 s). Verificados CA-2 a CA-13 en conversación real:
+  cédula inválida repreguntada, "soy de Noruega" → E, domingo y hora fuera de horario rechazados, propuesta del modelo, confirmación
+  `CIT-…`, reinicio con `INICIAR_CITA`, horarios, historial (con la cita recién confirmada), doble cancelación, transferencia y despedida.
+- Correcciones surgidas de estas pruebas (con test de regresión): pregunta del turno anterior por sesión, valores no válidos de
+  nacionalidad, repreguntar en el orden de recogida, nombre/apellido desde el texto, horas a 12 h de distancia.

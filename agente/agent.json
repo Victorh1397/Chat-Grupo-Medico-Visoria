@@ -9,9 +9,12 @@
   "disableStackdriverLogs": true,
   "defaultTimezone": "America/Barbados",
   "webhook": {
-    "url": "https://example.com/webhook",
+    "url": "https://reenter-fled-lyricist.ngrok-free.dev/webhook",
     "username": "",
-    "headers": {},
+    "headers": {
+      "X-Visoria-Token": "<WEBHOOK_TOKEN>",
+      "X-Tunnel-Skip-AntiPhishing-Page": "true"
+    },
     "available": true,
     "useForDomains": false,
     "cloudFunctionsEnabled": false,

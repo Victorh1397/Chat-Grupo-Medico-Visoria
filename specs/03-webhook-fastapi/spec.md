@@ -1,6 +1,6 @@
 # Spec 03 — Webhook FastAPI con la lógica de negocio
 
-- **Estado:** Spec aprobada
+- **Estado:** Hecha
 - **Rúbrica:** Webhook con lógica de negocio (requisito 3 del enunciado) y parte del bloque Agente (4 pts): el flujo con contexto y la confirmación se completan con respuestas dinámicas.
 - **Depende de:** [Spec 01](../01-caso-de-uso/spec.md), [Spec 02](../02-agente-dialogflow/spec.md)
 

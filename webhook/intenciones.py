@@ -22,13 +22,14 @@ agenda = Agenda()
 # hace falta recordar el turno anterior.
 pregunta_anterior: dict[str, str] = {}
 
-# Orden de recogida de agendar_cita (spec 02) y la pregunta de cada dato
+# Orden de recogida de agendar_cita (spec 02) y la pregunta de cada dato (mismo texto que en Dialogflow)
 PREGUNTAS = {
     "nombre": "¿Me indica su nombre y apellido, por favor?",
     "apellido": "¿Me indica también su apellido?",
     "nacionalidad": "¿Usted es venezolano o extranjero?",
-    "cedula": "¿Me indica su número de cédula?",
-    "especialidad": "¿Con qué especialidad desea la cita?",
+    "cedula": "¿Me indica su número de cédula? Por ejemplo: 14523987.",
+    "especialidad": ("¿Con qué especialidad desea la cita? Tenemos dermatología, endocrinología, cirugía plástica, "
+                     "urología, cardiología y oftalmología."),
     "fecha": "¿Para qué fecha desea la cita?",
     "hora": "¿A qué hora le conviene?",
 }
