@@ -55,6 +55,9 @@ EXTRANJERO = re.compile(
     r"|\b\w{3,}(?:ano|ana|ense|eño|eña|és|esa|ino|ina|ego|ega)\b",
     re.IGNORECASE,
 )
+# Expresiones inequívocas: sirven aunque no se sepa a qué pregunta respondía el usuario
+NACIONALIDAD_EXPLICITA = re.compile(
+    r"\bvenezolan[oa]s?\b|\bextranjer[oa]s?\b|\bsoy de\b|\bvengo de\b|\bnac[ií] en\b", re.IGNORECASE)
 DUDA = re.compile(r"\bno s[eé]\b|\bno lo s[eé]\b|\bprefiero no\b|\bninguna?\b", re.IGNORECASE)
 
 
@@ -67,6 +70,11 @@ def inferir_nacionalidad(texto: str) -> str | None:
     if EXTRANJERO.search(texto):
         return "E"
     return None
+
+
+def es_respuesta_de_nacionalidad(texto: str) -> bool:
+    """True si el texto solo puede ser una respuesta a "¿Usted es venezolano o extranjero?"."""
+    return bool(NACIONALIDAD_EXPLICITA.search(texto))
 
 
 def normalizar_nacionalidad(valor: str) -> str:

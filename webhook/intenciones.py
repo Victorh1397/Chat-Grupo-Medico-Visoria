@@ -5,7 +5,13 @@ from collections.abc import Callable
 
 from webhook import textos
 from webhook.agenda import Agenda, Propuesta, codigo_caso
-from webhook.cedula import inferir_nacionalidad, normalizar_nacionalidad, solo_digitos, validar
+from webhook.cedula import (
+    es_respuesta_de_nacionalidad,
+    inferir_nacionalidad,
+    normalizar_nacionalidad,
+    solo_digitos,
+    validar,
+)
 from webhook.datos import medico_por_nombre, medicos_de
 from webhook.dialogflow import PeticionDF, evento, leer_fecha, leer_hora, repreguntar, texto
 
@@ -100,7 +106,11 @@ def _agendar_cita(pet: PeticionDF, respondio_a: str) -> dict:
     nacionalidad = normalizar_nacionalidad(pet.parametro("nacionalidad"))
     if pet.parametro("nacionalidad") and not nacionalidad:
         return _corregir(pet, {"nacionalidad": ""}, "Disculpe, no le entendí.")
-    if not nacionalidad and respondio_a == "nacionalidad" and texto_usuario:
+    # Si el turno anterior se perdió (p. ej. por tiempo agotado), no se sabe a qué pregunta respondió el
+    # usuario: solo se interviene ante una respuesta inequívoca ("soy de Noruega", "extranjera").
+    respondio_nacionalidad = respondio_a == "nacionalidad" or (
+        not respondio_a and pet.esperando() == "nacionalidad" and es_respuesta_de_nacionalidad(texto_usuario))
+    if not nacionalidad and respondio_nacionalidad and texto_usuario:
         inferida = inferir_nacionalidad(texto_usuario)
         if not inferida:
             return _corregir(pet, {"nacionalidad": ""}, "Disculpe, no le entendí.")

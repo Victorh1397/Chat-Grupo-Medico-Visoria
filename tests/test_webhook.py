@@ -299,3 +299,11 @@ def test_a_las_9_entendido_como_21_se_corrige(cliente):
                         fecha="2026-10-24T12:00:00-04:00", hora="2026-10-19T21:00:00-04:00")
     res = respuesta(cliente, peticion("agendar_cita", params, "a las 9"))
     assert "Le propongo cita con él el sábado 24 de octubre a las 9:00" in res["fulfillmentText"]
+
+
+def test_nacionalidad_inequivoca_aunque_se_perdiera_el_turno_anterior(cliente):
+    # El turno "Ana Rodríguez" agotó el tiempo: el webhook no sabe qué se preguntó, pero "soy de Noruega" es inequívoco
+    res = respuesta(cliente, peticion("agendar_cita", SIN_NACIONALIDAD, "soy de Noruega", todos=False,
+                                      esperando="nacionalidad"))
+    assert parametros_devueltos(res)["nacionalidad"] == "E"
+    assert esperando(res) == "cedula"
