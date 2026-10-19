@@ -19,7 +19,7 @@ Plantillas en [`_plantillas/`](_plantillas/). Principios en [`00-constitucion.md
 | 03 | [Webhook FastAPI: validación regex, lógica de negocio](03-webhook-fastapi/spec.md) | Agente / Webhook | Hecha |
 | 04 | [Documentos sintéticos y pipeline OCR offline + regex](04-ocr-documentos/spec.md) | OCR (3) | Hecha |
 | 05 | [Consulta documental con Gemini + control de alucinaciones](05-consulta-documental/spec.md) | OCR (3) | Hecha |
-| 06 | Voz extremo a extremo (cliente de voz, SSML, latencia) | Voz (2) | Pendiente |
+| 06 | [Voz extremo a extremo (cliente de voz, SSML, latencia)](06-voz/spec.md) | Voz (2) | Spec aprobada |
 | 07 | Extra: transferencia a agente humano | +1,5 | Pendiente |
 | 08 | Extra: Telegram (integración nativa, texto + botones) | +1,5 | Pendiente |
 | 09 | Extra: corrección de datos a mitad de flujo con eventos | +1,5 | Pendiente |
