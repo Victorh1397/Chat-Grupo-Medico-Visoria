@@ -4,7 +4,7 @@
 
 1. **Spec** (`spec.md`): qué se necesita y por qué, alcance, criterios de aceptación. La aprueba el autor del proyecto.
 2. **Plan** (`plan.md`): cómo se implementa (ficheros, intents, contratos, riesgos).
-3. **Tareas** (`tareas.md`): checklist pequeño y ordenado.
+3. **Tareas** (`tareas.md`): checklist pequeño y ordenado. Plan y tareas **también los aprueba el autor** antes de empezar.
 4. **Implementación** y verificación contra los criterios de aceptación.
 5. **Cierre**: commit `feat(NN): …` y actualización de esta página.
 

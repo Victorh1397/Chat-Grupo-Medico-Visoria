@@ -6,7 +6,8 @@ Asistente conversacional por voz (Dialogflow ES + webhook FastAPI + OCR + Gemini
 ## Metodología: SDD (Spec-Driven Development)
 
 - No se escribe código de negocio sin una spec aprobada en `specs/NN-nombre/spec.md`.
-- Orden por spec: `spec.md` (qué y por qué) → aprobación del usuario → `plan.md` (cómo) → `tareas.md` → implementación → verificación contra criterios de aceptación → commit `feat(NN): …`.
+- Orden por spec: `spec.md` (qué y por qué) → **aprobación de la spec** → `plan.md` (cómo) + `tareas.md` → **presentarlos y esperar a que el usuario los lea y los apruebe** → implementación → verificación contra criterios de aceptación → commit `feat(NN): …`.
+- Aprobar la spec **no** autoriza a implementar: no se escribe código, ni se ejecutan scripts o pruebas contra APIs de esa spec, hasta aprobar plan y tareas. Si durante la ejecución cambia el enfoque (otro modelo, otra técnica, tareas nuevas), se consulta antes de seguir.
 - Plantillas en `specs/_plantillas/`. Principios en `specs/00-constitucion.md`. Estado y trazabilidad en `specs/README.md` (actualizar al cerrar cada spec).
 - Las specs, la documentación y las respuestas al usuario van siempre en español.
 
