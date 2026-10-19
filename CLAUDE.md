@@ -13,7 +13,9 @@ Asistente conversacional por voz (Dialogflow ES + webhook FastAPI + OCR + Gemini
 ## Entorno
 
 - Python 3.12 gestionado con `uv` (`uv sync`, `uv run …`, `uv add …`). No usar `pip` directamente.
-- Webhook: `uv run uvicorn webhook.main:app --reload --port 8000`, expuesto con VS Code Dev Tunnels (puerto 8000, visibilidad Public). En Fulfillment se añade la cabecera `X-Tunnel-Skip-AntiPhishing-Page: true`.
+- Webhook: `uv run uvicorn webhook.main:app --reload --port 8000`, expuesto con VS Code Dev Tunnels (puerto 8000, visibilidad Public). En Fulfillment: URL del túnel + `/webhook` y cabeceras `X-Visoria-Token` (valor de `WEBHOOK_TOKEN` en `.env`) y `X-Tunnel-Skip-AntiPhishing-Page: true`.
+- Datos ficticios de la clínica: fuente única en `webhook/datos.py` (los documentos de la spec 04 se generan desde ahí).
+- Pruebas contra Dialogflow real (`detect_intent`): espaciarlas ~1,2 s; la edición Trial limita las consultas por minuto.
 - Tests: `uv run pytest`. Lint: `uv run ruff check .`.
 - Tesseract instalado con Homebrew (`spa` disponible).
 

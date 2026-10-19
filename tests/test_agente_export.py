@@ -164,11 +164,15 @@ def test_ca3_agendar_cita_contexto_y_evento():
     assert [e["name"] for e in datos["events"]] == ["INICIAR_CITA"]
 
 
+CONFIRMACION = {"ctx_cita_en_curso", "agendar_cita-followup"}
+REINICIO = {"agendar_cita-no-followup"}
+
+
 @pytest.mark.parametrize("nombre, entrada, apagados, activos", [
-    ("agendar_cita - yes", {"ctx_cita_en_curso", "agendar_cita-followup"}, {"ctx_cita_en_curso", "agendar_cita-followup"}, set()),
-    ("agendar_cita - no", {"ctx_cita_en_curso", "agendar_cita-followup"}, {"ctx_cita_en_curso", "agendar_cita-followup"}, {"agendar_cita-no-followup"}),
-    ("agendar_cita - no - yes", {"agendar_cita-no-followup"}, {"agendar_cita-no-followup"}, set()),
-    ("agendar_cita - no - no", {"agendar_cita-no-followup"}, {"agendar_cita-no-followup"}, set()),
+    ("agendar_cita - yes", CONFIRMACION, CONFIRMACION, set()),
+    ("agendar_cita - no", CONFIRMACION, CONFIRMACION, REINICIO),
+    ("agendar_cita - no - yes", REINICIO, REINICIO, set()),
+    ("agendar_cita - no - no", REINICIO, REINICIO, set()),
 ])
 def test_ca5_follow_ups_abren_y_cierran_contextos(nombre, entrada, apagados, activos):
     datos = intencion(nombre)
