@@ -119,7 +119,7 @@ varía por especialidad y médico:
 | # | Documento | Contenido | Parte |
 |---|---|---|---|
 | D1 | Preguntas frecuentes | Dirección, cómo llegar (metro/autobús), estacionamiento, horario general, formas de pago, qué traer a la consulta | General |
-| D2 | Tarifario de consultas | Tabla: especialidad → médico → precio de consulta y de control (USD) | Por médico |
+| D2 | Tarifario de consultas | Tabla: especialidad → médico → precio único de la consulta (USD), igual para primera vez y control | Por médico |
 | D3 | Horarios de los médicos | Tabla: especialidad → médico → días y horas de consulta | Por médico |
 | D4 | Preparación para exámenes | Indicaciones por especialidad (p. ej. curva de glucosa en endocrinología, PSA en urología, biopsia en dermatología, valoración preoperatoria en cirugía plástica, prueba de esfuerzo en cardiología, fondo de ojo con dilatación en oftalmología) | Por especialidad |
 | D5 | Seguros y reglamento | Aseguradoras aceptadas (ficticias), política de cancelación (24 h), llegar 15 min antes, acompañantes | General |

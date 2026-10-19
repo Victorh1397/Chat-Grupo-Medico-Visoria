@@ -16,7 +16,7 @@ Plantillas en [`_plantillas/`](_plantillas/). Principios en [`00-constitucion.md
 |---|---|---|---|
 | 01 | [Caso de uso Visoria + mapa de intenciones](01-caso-de-uso/spec.md) | Agente (4) | Spec aprobada |
 | 02 | [Agente Dialogflow ES: intents, entidades, contexto, follow-up](02-agente-dialogflow/spec.md) | Agente (4) | Hecha |
-| 03 | Webhook FastAPI: validación regex, lógica de negocio, SSML | Agente / Voz | Pendiente |
+| 03 | [Webhook FastAPI: validación regex, lógica de negocio](03-webhook-fastapi/spec.md) | Agente / Webhook | Spec aprobada |
 | 04 | Pipeline OCR offline + regex sobre el texto | OCR (3) | Pendiente |
 | 05 | Consulta documental con Gemini + control de alucinaciones | OCR (3) | Pendiente |
 | 06 | Voz extremo a extremo (cliente de voz, SSML, latencia) | Voz (2) | Pendiente |
