@@ -44,3 +44,9 @@ Estados: Pendiente → Spec redactada → Spec aprobada → En implementación �
 | ZIP del agente + script OCR + webhook | 02, 03, 04, 99 | `entrega/agente_dialogflow.zip` (generado sin secretos con `scripts/preparar_export.py`) · `webhook/` · `ocr/` |
 | README (caso de uso, diagrama, intenciones, decisiones, instrucciones) | 99 | |
 | Vídeo ≤ 3 min | 99 | |
+
+## Mejoras futuras (fuera del alcance actual)
+
+| Origen | Mejora | Motivo |
+|---|---|---|
+| Spec 04 | Corregir en el texto para el LLM **solo los nombres de los médicos** que el OCR lee mal (p. ej. "Hemández" → "Hernández"), comparándolos con `webhook/datos.py` | Evitar que Vicky pronuncie un nombre con errores de OCR. Descartado por ahora: el LLM recibe el texto OCR sin modificar |

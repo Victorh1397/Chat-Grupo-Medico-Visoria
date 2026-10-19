@@ -60,6 +60,8 @@ pérdida de nitidez por reescalado. Semilla fija por documento para que las imá
 - Confusión "rn" → "m" ("viemes", "Hemández") y letras perdidas ("vienes"): los nombres de médicos y los días se comparan por parecido
   (`difflib`, umbrales 0,85 y 0,75), no por igualdad exacta. La validación sí detecta un precio u horario realmente distinto.
 - El texto que se guarda para el LLM es el OCR original, sin estas correcciones.
+  Errores que le llegan (comparación palabra a palabra con la referencia): `Dias`, `vienes`/`viemes` y `Hemández` en D3, y signos de
+  puntuación menores. Corregir los nombres de los médicos queda como mejora futura (`specs/README.md`).
 
 ## Resultados (19/10/2026)
 
