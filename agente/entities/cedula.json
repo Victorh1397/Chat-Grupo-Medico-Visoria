@@ -1,0 +1,9 @@
+{
+  "id": "f53ee019-b2d9-45c5-b625-4ae700f76e36",
+  "name": "cedula",
+  "isOverridable": true,
+  "isEnum": false,
+  "isRegexp": true,
+  "automatedExpansion": false,
+  "allowFuzzyExtraction": false
+}

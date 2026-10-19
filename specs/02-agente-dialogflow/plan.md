@@ -419,5 +419,5 @@ Si alguna falla, dime cuál y qué muestra DIAGNOSTIC INFO.
 ## Verificación
 
 - Bloque 6 en el simulador (CA-4 a CA-7).
-- Sobre el export en `agente/`, un script comprueba automáticamente nombres de intenciones, follow-ups, parámetros obligatorios y su orden, entidades, contextos, webhook y zona horaria (CA-1 a CA-3, CA-8 a CA-10).
+- Sobre el export en `agente/`, `uv run pytest tests/test_agente_export.py` comprueba nombres de intenciones, follow-ups y sus contextos, parámetros obligatorios y su orden, entidades (incluida la regex de la cédula), webhook, respuestas de reserva, zona horaria y trato de usted (CA-1 a CA-3, CA-5, CA-8 a CA-10).
 - Llamadas `detect_intent` de texto contra el agente real con las frases del bloque 6.

@@ -1,0 +1,158 @@
+[
+  {
+    "id": "43cd4412-5ee1-4037-b4e2-7192637f662b",
+    "data": [
+      {
+        "text": "Transferir a recepción",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "e358a073-7c03-42ea-9442-28fa5452d207",
+    "data": [
+      {
+        "text": "Comuníqueme con un agente",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "ccbe6de2-736c-47b2-a393-177d7694b94a",
+    "data": [
+      {
+        "text": "No quiero hablar con un robot",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "1cb69c59-6581-45a3-b50b-d04a247c68fb",
+    "data": [
+      {
+        "text": "Quiero atención personalizada",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "8bb7527c-f566-4637-aa6b-4bf41644a1b1",
+    "data": [
+      {
+        "text": "¿Me puede pasar con una secretaria?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "d7e786bc-f432-4bf9-8146-fedf9af23325",
+    "data": [
+      {
+        "text": "Hablar con recepción",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "5048de99-c959-4b51-b807-a3bcee5903b9",
+    "data": [
+      {
+        "text": "Prefiero hablar con una persona real",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "02b150a4-7164-44d5-920f-7cdb5663667a",
+    "data": [
+      {
+        "text": "Quiero hablar con un operador",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "b2cc93e6-6973-4c65-8915-cec95abb9974",
+    "data": [
+      {
+        "text": "Necesito hablar con alguien de la clínica",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "78240504-0e49-4556-a616-bcf79191eb0d",
+    "data": [
+      {
+        "text": "Páseme con un humano",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "c8140368-a57b-453a-9b19-7dca7e2c8e70",
+    "data": [
+      {
+        "text": "Comuníqueme con recepción",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "9fb45934-f61c-4023-a40f-0652fc89879b",
+    "data": [
+      {
+        "text": "Quiero hablar con una persona",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  }
+]

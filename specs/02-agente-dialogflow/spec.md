@@ -1,6 +1,6 @@
 # Spec 02 — Agente Dialogflow ES
 
-- **Estado:** Spec aprobada
+- **Estado:** Hecha
 - **Rúbrica:** Agente Dialogflow (4 pts): intenciones, entidad regex, contexto y confirmación.
 - **Depende de:** [Spec 01](../01-caso-de-uso/spec.md)
 

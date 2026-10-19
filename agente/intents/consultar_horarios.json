@@ -1,0 +1,55 @@
+{
+  "id": "276bea4e-0564-424a-b793-702df110dce3",
+  "name": "consultar_horarios",
+  "auto": true,
+  "contexts": [],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "",
+      "affectedContexts": [],
+      "parameters": [
+        {
+          "id": "933388a1-8cd7-4ba7-b758-2ea4e3018409",
+          "name": "especialidad",
+          "required": true,
+          "dataType": "@especialidad",
+          "value": "$especialidad",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [
+            {
+              "lang": "es",
+              "value": "¿De qué especialidad desea conocer el horario?"
+            }
+          ],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        }
+      ],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "es",
+          "speech": [
+            "Disculpe, ahora mismo no puedo consultar los horarios. Puede llamar a recepción para confirmarlos."
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": true,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

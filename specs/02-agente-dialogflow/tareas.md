@@ -9,8 +9,8 @@ Plan: [plan.md](plan.md)
 - [x] T5. Bloque 4: follow-ups `- yes`, `- no`, `- no - yes`, `- no - no` (usuario)
 - [x] T6. Bloque 5: `consulta_documental`, `consultar_horarios`, `consultar_historial`, `cancelar_cita`, `transferir_humano` (usuario)
 - [x] T7. Bloque 6: pruebas P1–P13 en el simulador (usuario)
-- [ ] T8. Bloque 7: exportar ZIP (usuario)
-- [ ] T9. Descomprimir en `agente/`, copiar ZIP a `entrega/`, script de verificación del export (Claude)
+- [x] T8. Bloque 7: exportar ZIP (usuario)
+- [x] T9. Descomprimir en `agente/`, copiar ZIP a `entrega/`, verificación del export en `tests/test_agente_export.py` (Claude)
 - [x] T10. Pruebas `detect_intent` de texto contra el agente real (Claude)
 - [x] T11. Corregir lo que falle y volver a exportar (ambos)
-- [ ] T12. Actualizar `specs/README.md` (estado + evidencia) y commit `feat(02): …`
+- [x] T12. Actualizar `specs/README.md` (estado + evidencia) y commit `feat(02): …`

@@ -1,0 +1,145 @@
+[
+  {
+    "id": "c3c633de-817c-4cc7-ac08-4e91e6eee88c",
+    "data": [
+      {
+        "text": "Por favor, cancele mi turno",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "cc3d99e9-1157-4f04-8be4-162dd9a45fa2",
+    "data": [
+      {
+        "text": "Quiero anular la consulta que tengo",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "99884141-82dd-46b5-96f1-c11e676a4363",
+    "data": [
+      {
+        "text": "No puedo asistir, cancele la cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "bf8274ae-002c-4cb0-abca-1d92bda5ab98",
+    "data": [
+      {
+        "text": "Cancelar cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "f5b30bca-ae12-4a0f-b58c-3123cf683964",
+    "data": [
+      {
+        "text": "Elimine mi cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "e70caa52-0d9c-4115-9fa8-5b4afb4e1969",
+    "data": [
+      {
+        "text": "Ya no necesito la cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "08d4946d-1458-4a17-8001-116d7f320f03",
+    "data": [
+      {
+        "text": "Quiero suspender mi cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "37b4cff8-5dec-4398-8cf1-9386d48e5885",
+    "data": [
+      {
+        "text": "Cancele mi consulta, por favor",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "16509259-0889-4aa7-82f1-f21307a91c7a",
+    "data": [
+      {
+        "text": "No voy a poder ir a mi cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "ae398d5f-7247-4b65-a1b8-0fa334214e79",
+    "data": [
+      {
+        "text": "Necesito anular una cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "d176dfd3-39e2-48cb-a6ed-35589a22a63c",
+    "data": [
+      {
+        "text": "Quiero cancelar mi cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  }
+]

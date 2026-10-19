@@ -1,0 +1,318 @@
+[
+  {
+    "id": "9bd0d57a-1e83-48c7-ab28-aa27c06972d2",
+    "data": [
+      {
+        "text": "¿Qué pasa si llego tarde?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "4badc74e-1a90-47fe-9f4b-578370ecdb2a",
+    "data": [
+      {
+        "text": "¿Puedo ir con un acompañante?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "15d15d59-a7d9-4b3a-ac09-d4415bfcc528",
+    "data": [
+      {
+        "text": "¿Con cuánta anticipación debo cancelar una cita?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "d2222e80-60e8-408b-994d-7fa8eb851ed7",
+    "data": [
+      {
+        "text": "¿Qué debo llevar a la consulta?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "93a5c3e0-08d9-4117-acc1-4e575a34ab6f",
+    "data": [
+      {
+        "text": "¿Qué preparación necesito para el examen de ",
+        "userDefined": false
+      },
+      {
+        "text": "próstata",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "eae8d69b-614a-4a9d-999c-0e7393dcaee4",
+    "data": [
+      {
+        "text": "¿Tengo que ir en ayunas?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "64f4903e-d824-49a5-b75d-1c2fd4d4bc4d",
+    "data": [
+      {
+        "text": "¿Cómo me preparo para la curva de glucosa?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "66cee295-6984-4a45-9045-ae7ee0c0bc0b",
+    "data": [
+      {
+        "text": "¿Trabajan con mi seguro?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "9a4a70e0-cbb8-470f-bc3e-ac2f818ede58",
+    "data": [
+      {
+        "text": "¿Qué seguros aceptan?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "803568d3-61a8-40bc-8985-9b4cfab71c61",
+    "data": [
+      {
+        "text": "¿Cuál es el precio de un control?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "1c8bed70-33b6-4ba0-9349-e691ba4ba946",
+    "data": [
+      {
+        "text": "¿Cuánto cobra el ",
+        "userDefined": false
+      },
+      {
+        "text": "cardiólogo",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "fd4a7064-dead-42b7-b9c5-9baadb57960e",
+    "data": [
+      {
+        "text": "¿Cuánto cuesta la consulta de ",
+        "userDefined": false
+      },
+      {
+        "text": "dermatología",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "6396cce3-0da4-46e5-93d4-705a82e996ec",
+    "data": [
+      {
+        "text": "¿Puedo pagar con tarjeta?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "6cdc3ffd-e699-4e95-ae81-ace57af34ad1",
+    "data": [
+      {
+        "text": "¿Aceptan pago móvil?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "77b1cd07-0d47-4620-894f-376fe08c37f9",
+    "data": [
+      {
+        "text": "¿Qué formas de pago aceptan?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "a7233a21-7e47-4e4c-a586-4cb4d29963fa",
+    "data": [
+      {
+        "text": "¿Abren los sábados?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "e77d2ab1-b6a7-42a1-8a45-1e2323582e6e",
+    "data": [
+      {
+        "text": "¿Cuál es el horario de la clínica?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "d556fd77-1c57-4a6d-8c42-9448df768f16",
+    "data": [
+      {
+        "text": "¿Hay dónde estacionar?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "b3e45a2e-96fe-4b0f-882e-66595e48531e",
+    "data": [
+      {
+        "text": "¿Tienen estacionamiento?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "048eadcb-21cc-45c7-b378-8adbd4b50b60",
+    "data": [
+      {
+        "text": "¿Cómo llego a la clínica en metro?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "5520dece-fcc8-4ad5-9d40-9aa9bcf6c1ee",
+    "data": [
+      {
+        "text": "¿Cuál es la dirección de la clínica?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "8f360adf-a2c0-474b-bb2c-7b84989364fb",
+    "data": [
+      {
+        "text": "¿Dónde queda la clínica?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  }
+]

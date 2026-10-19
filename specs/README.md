@@ -15,7 +15,7 @@ Plantillas en [`_plantillas/`](_plantillas/). Principios en [`00-constitucion.md
 | # | Spec | Rúbrica | Estado |
 |---|---|---|---|
 | 01 | [Caso de uso Visoria + mapa de intenciones](01-caso-de-uso/spec.md) | Agente (4) | Spec aprobada |
-| 02 | [Agente Dialogflow ES: intents, entidades, contexto, follow-up](02-agente-dialogflow/spec.md) | Agente (4) | En implementación |
+| 02 | [Agente Dialogflow ES: intents, entidades, contexto, follow-up](02-agente-dialogflow/spec.md) | Agente (4) | Hecha |
 | 03 | Webhook FastAPI: validación regex, lógica de negocio, SSML | Agente / Voz | Pendiente |
 | 04 | Pipeline OCR offline + regex sobre el texto | OCR (3) | Pendiente |
 | 05 | Consulta documental con Gemini + control de alucinaciones | OCR (3) | Pendiente |
@@ -32,15 +32,15 @@ Estados: Pendiente → Spec redactada → Spec aprobada → En implementación �
 
 | Requisito del enunciado | Spec | Evidencia |
 |---|---|---|
-| 5–6 intenciones + bienvenida + fallback | 01, 02 | |
-| Entidad regex + entidad de sistema/personalizada | 02 | |
-| Flujo multi-turno con contexto + confirmación sí/no | 02, 03 | |
+| 5–6 intenciones + bienvenida + fallback | 01, 02 | `agente/intents/` · `tests/test_agente_export.py` (CA-1) |
+| Entidad regex + entidad de sistema/personalizada | 02 | `agente/entities/cedula*.json` (regex), `especialidad`, `nacionalidad`, `@sys.date/time/given-name/last-name` · tests CA-2 |
+| Flujo multi-turno con contexto + confirmación sí/no | 02, 03 | `agendar_cita` + `ctx_cita_en_curso` + follow-ups · tests CA-3/CA-5 · pruebas `detect_intent` (spec 02) |
 | Voz extremo a extremo (STT/TTS nativos), SSML, < 5 s | 06 | |
 | Webhook FastAPI expuesto, valida parámetro con regex, respuesta dinámica | 03 | |
 | OCR de 3–5 documentos (offline) | 04 | |
 | Regex sobre el texto extraído | 04 | |
 | Texto en fichero + LLM con contexto | 05 | |
 | Control de alucinaciones | 05 | |
-| ZIP del agente + script OCR + webhook | 99 | |
+| ZIP del agente + script OCR + webhook | 02, 99 | `entrega/agente_dialogflow.zip` (export de la spec 02; se actualizará) |
 | README (caso de uso, diagrama, intenciones, decisiones, instrucciones) | 99 | |
 | Vídeo ≤ 3 min | 99 | |

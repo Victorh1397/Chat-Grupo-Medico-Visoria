@@ -1,0 +1,386 @@
+[
+  {
+    "id": "2b4fec26-16fb-419b-8c4e-e5482699a15e",
+    "data": [
+      {
+        "text": "Pedir cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "5e1c18fc-5564-453a-b3d1-b0932c778d15",
+    "data": [
+      {
+        "text": "Quiero programar una consulta",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "a0080a53-1fec-4885-abeb-6e24d879919e",
+    "data": [
+      {
+        "text": "Necesito ir al médico",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "fe25990d-952c-458b-9ecf-1727e46907fe",
+    "data": [
+      {
+        "text": "Quiero sacar una cita para los ",
+        "userDefined": false
+      },
+      {
+        "text": "ojos",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "c3324d00-8373-4111-ba09-82e0cdaaa47c",
+    "data": [
+      {
+        "text": "Me llamo ",
+        "userDefined": false
+      },
+      {
+        "text": "Carlos",
+        "meta": "@sys.given-name",
+        "alias": "nombre",
+        "userDefined": true
+      },
+      {
+        "text": " ",
+        "userDefined": false
+      },
+      {
+        "text": "Pérez,",
+        "meta": "@sys.last-name",
+        "alias": "apellido",
+        "userDefined": true
+      },
+      {
+        "text": " necesito una cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "1abb7733-f3ff-49b8-a4f4-53125cf6e1b6",
+    "data": [
+      {
+        "text": "Soy ",
+        "userDefined": false
+      },
+      {
+        "text": "María",
+        "meta": "@sys.given-name",
+        "alias": "nombre",
+        "userDefined": true
+      },
+      {
+        "text": " ",
+        "userDefined": false
+      },
+      {
+        "text": "González",
+        "meta": "@sys.last-name",
+        "alias": "apellido",
+        "userDefined": true
+      },
+      {
+        "text": " y quiero una cita con ",
+        "userDefined": false
+      },
+      {
+        "text": "dermatología",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "d3d3b12a-a5e8-4951-84d2-8da74c38114e",
+    "data": [
+      {
+        "text": "Agéndeme una cita con el ",
+        "userDefined": false
+      },
+      {
+        "text": "cardiólogo",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "15730861-41ae-4717-a794-9d4a2526d071",
+    "data": [
+      {
+        "text": "Quisiera una cita para ",
+        "userDefined": false
+      },
+      {
+        "text": "el viernes",
+        "meta": "@sys.date",
+        "alias": "fecha",
+        "userDefined": true
+      },
+      {
+        "text": " ",
+        "userDefined": false
+      },
+      {
+        "text": "a las 10",
+        "meta": "@sys.time",
+        "alias": "hora",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "d6e68d84-a872-4b24-b2e3-7729e5dfefbf",
+    "data": [
+      {
+        "text": "Quiero reservar una consulta para el ",
+        "userDefined": false
+      },
+      {
+        "text": "próximo lunes",
+        "meta": "@sys.date",
+        "alias": "fecha",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "78d3d1b5-73d0-482d-be10-e139b7ce0c86",
+    "data": [
+      {
+        "text": "¿Me puede dar una cita con ",
+        "userDefined": false
+      },
+      {
+        "text": "cirugía plástica",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": true
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "223a8f2a-8499-4487-9fca-bb8ec137f6c7",
+    "data": [
+      {
+        "text": "Necesito cita con ",
+        "userDefined": false
+      },
+      {
+        "text": "endocrinología",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": true
+      },
+      {
+        "text": " ",
+        "userDefined": false
+      },
+      {
+        "text": "mañana",
+        "meta": "@sys.date",
+        "alias": "fecha",
+        "userDefined": true
+      },
+      {
+        "text": " ",
+        "userDefined": false
+      },
+      {
+        "text": "a las 9 de la mañana",
+        "meta": "@sys.time",
+        "alias": "hora",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "ec97b54a-4360-44e6-afb7-6d8dacc0cc67",
+    "data": [
+      {
+        "text": "Quiero agendar una cita de ",
+        "userDefined": false
+      },
+      {
+        "text": "oftalmología",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": true
+      },
+      {
+        "text": " para el ",
+        "userDefined": false
+      },
+      {
+        "text": "martes",
+        "meta": "@sys.date",
+        "alias": "fecha",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "75a86c68-cd99-4e12-ac5a-c2c8e9cc7f53",
+    "data": [
+      {
+        "text": "Me gustaría ver a un ",
+        "userDefined": false
+      },
+      {
+        "text": "urólogo",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "21164f8a-7a82-42d2-b75f-eb18d12a566c",
+    "data": [
+      {
+        "text": "Necesito una consulta de ",
+        "userDefined": false
+      },
+      {
+        "text": "cardiología",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "0d9192dc-4667-4a05-b309-6c14c3c3cb35",
+    "data": [
+      {
+        "text": "Quiero una cita con el ",
+        "userDefined": false
+      },
+      {
+        "text": "dermatólogo",
+        "meta": "@especialidad",
+        "alias": "especialidad",
+        "userDefined": true
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "0c59fa5a-27dc-4dd2-949a-377a0cbc7bb4",
+    "data": [
+      {
+        "text": "Quisiera pedir una cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "c0384a29-5f67-4460-8e3a-eb5aa084e82d",
+    "data": [
+      {
+        "text": "Necesito una cita médica",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "df795b70-420f-405a-a40d-cdc656d82722",
+    "data": [
+      {
+        "text": "Quiero agendar una cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  }
+]
