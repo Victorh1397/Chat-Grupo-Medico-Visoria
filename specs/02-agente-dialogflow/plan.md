@@ -116,8 +116,12 @@ CSV para raw mode:
    > Disculpe, no le entendí. ¿Me lo puede decir de otra forma?
 
    > Perdone, no he comprendido. Puedo agendarle una cita o responder sus dudas sobre la clínica.
-3. **Fulfillment:** activa **Enable webhook call for this intent**.
-4. **SAVE**.
+3. **Training phrases (ejemplos negativos):** añade `no`, `no gracias`, `nada más`, `eso es todo`.
+   En el fallback, las frases de entrenamiento indican lo que **no** debe asignarse a ninguna otra intención. Sin ellas, un "no" suelto
+   (p. ej. tras "¿Le puedo ayudar en algo más?") activaba `cancelar_cita` por parecerse a "No puedo asistir…". Dentro del flujo de cita
+   el "no" sigue llegando a `agendar_cita - no`, porque los contextos tienen prioridad. La despedida ante estas frases la dará el webhook (spec 03).
+4. **Fulfillment:** activa **Enable webhook call for this intent**.
+5. **SAVE**.
 
 ---
 
@@ -410,6 +414,7 @@ Si alguna falla, dime cuál y qué muestra DIAGNOSTIC INFO.
 | Frases con cédula en otras intenciones sacan al usuario de `agendar_cita` | Ninguna frase de entrenamiento contiene una cédula (bloques 5.3 y 5.4) |
 | La cédula dictada por voz llega como "14 millones 523 mil 987" | Normalización en el webhook (spec 03) y prueba por voz (spec 06) |
 | "Sí" tras "¿Desea que le comunique con recepción?" no tiene intención | Spec 07 |
+| Un "no" suelto activaba `cancelar_cita` (confianza 0,33) | Ejemplos negativos en el fallback (bloque 2.2) |
 
 ## Verificación
 
