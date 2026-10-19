@@ -1,0 +1,146 @@
+{
+  "generado": "2026-10-19T17:10:11",
+  "motor": "Tesseract 5.5.3 (lang=spa, --psm 6)",
+  "preprocesado": [
+    "grises",
+    "ampliar",
+    "enderezar",
+    "binarizar",
+    "quitar_lineas"
+  ],
+  "segundos": 4.3,
+  "documentos": [
+    {
+      "id": "D1",
+      "titulo": "Preguntas frecuentes",
+      "archivo": "ocr/documentos/D1_preguntas_frecuentes.jpg",
+      "texto": "Grupo Médico Visoria\nAv. Principal de Los Palos Grandes, Torre Visoria, piso 3, Caracas : Tel. (0212) 555-0142\nPreguntas frecuentes\n¿Dónde está la clínica?\nEstamos en la Av. Principal de Los Palos Grandes, Torre Visoria, piso 3, Caracas. La estación de metro\nmás cercana es Altamira, a diez minutos a pie. Las rutas de autobús que pasan por la Av. Francisco de\nMiranda tienen parada a dos cuadras.\n¿Tienen estacionamiento?\nSí. La torre tiene estacionamiento propio en el sótano. Es gratuito las dos primeras horas para pacientes\ncon cita; después cuesta 2 USD por hora. Presente el ticket en recepción para validarlo.\n¿Cuál es el horario de atención?\nLunes a viernes de 7:00 a 19:00 y sábados de 7:00 a 13:00. Domingos y feriados cerrado. Cada médico\ntiene su propio horario de consulta.\n¿Cómo puedo comunicarme con la clínica?\nTeléfono de recepción (0212) 555-0142 y WhatsApp (0414) 555-0187, en el horario de atención.\n¿Qué formas de pago aceptan?\n\n- Efectivo en dólares.\n\n- Tarjetas de débito y crédito.\n\n- Pago móvil y transferencia bancaria.\n\n- Seguros con convenio (ver documento de seguros y reglamento).\n¿Qué debo llevar a la consulta?\n\n- Cédula de identidad.\n\n- Informes y resultados de exámenes anteriores.\n\n- Lista de medicamentos que toma actualmente.\n\n- Carnet del seguro, si aplica.\n\nDocumento ficticio elaborado con fines académicos.",
+      "caracteres": 1348,
+      "similitud": 0.9993,
+      "campos": {
+        "importes_usd": [
+          "2"
+        ],
+        "horarios": [
+          "7:00 - 19:00",
+          "7:00 - 13:00"
+        ],
+        "telefonos": [
+          "02125550142",
+          "02125550142",
+          "04145550187"
+        ],
+        "fechas": []
+      },
+      "validacion": null
+    },
+    {
+      "id": "D2",
+      "titulo": "Tarifario de consultas",
+      "archivo": "ocr/documentos/D2_tarifario_de_consultas.jpg",
+      "texto": "Grupo Médico Visoria\n\nAv. Principal de Los Palos Grandes, Torre Visoria, piso 3, Caracas : Tel. (0212) 555-0142\n\nTarifario de consultas\n\nVigente desde el 01/09/2026. Precios en dólares estadounidenses (USD). Cada médico tiene un precio\n\núnico por consulta, igual para la primera consulta y para los controles.\nEspecialidad Médico Precio\nDermatología Dra. Laura Rojas 40 USD\nDermatología Dr. Andrés Salazar 35 USD\nEndocrinología Dra. Carmen Villalobos 50 USD\nEndocrinología Dr. Rafael Ortega 45 USD\nCirugía plástica Dr. Alejandro Briceño 80 USD\nCirugía plástica Dra. Valentina Pacheco 90 USD\nUrología Dr. Gustavo Hernández 45 USD\nUrología Dr. Luis Carrillo 50 USD\nCardiología Dra. Patricia Medina 55 USD\nCardiología Dr. Eduardo Rangel 50 USD\nOftalmología Dra. Gabriela Quintero 40 USD\nOftalmología Dr. José Luis Arismendi 45 USD\n\nLos exámenes y procedimientos se cotizan aparte. Los precios pueden cambiar sin previo aviso.\n\nDocumento ficticio elaborado con fines académicos.",
+      "caracteres": 974,
+      "similitud": 0.999,
+      "campos": {
+        "importes_usd": [
+          "40",
+          "35",
+          "50",
+          "45",
+          "80",
+          "90",
+          "45",
+          "50",
+          "55",
+          "50",
+          "40",
+          "45"
+        ],
+        "horarios": [],
+        "telefonos": [
+          "02125550142"
+        ],
+        "fechas": [
+          "01/09/2026"
+        ]
+      },
+      "validacion": {
+        "esperados": 12,
+        "coinciden": 12,
+        "discrepancias": [],
+        "ok": true
+      }
+    },
+    {
+      "id": "D3",
+      "titulo": "Horarios de los médicos",
+      "archivo": "ocr/documentos/D3_horarios_de_los_medicos.jpg",
+      "texto": "Grupo Médico Visoria\n\nAv. Principal de Los Palos Grandes, Torre Visoria, piso 3, Caracas - Tel. (0212) 555-0142\n\nHorarios de consulta de los médicos\n\nLas citas son en bloques de 30 minutos. El último bloque empieza media hora antes del cierre.\nEspecialidad Médico Dias Horario\nDermatología Dra. Laura Rojas Martes y jueves 8:00 - 12:00\nDermatología Dr. Andrés Salazar Lunes y miércoles 14:00 - 18:00\nEndocrinología Dra. Carmen Villalobos Lunes, miércoles y viernes 8:00 - 12:00\nEndocrinología Dr. Rafael Ortega Martes y jueves 14:00 - 18:00\nCirugía plástica Dr. Alejandro Briceño Lunes y jueves 9:00 - 13:00\nCirugía plástica Dra. Valentina Pacheco Miércoles y vienes 14:00 - 18:00\nUrología Dr. Gustavo Hemández Martes y viemes 8:00 - 12:00\nUrología Dr. Luis Carrillo Sábados 8:00 - 12:00\nCardiología Dra. Patricia Medina Lunes a miércoles 8:00 - 12:00\nCardiología Dr. Eduardo Rangel Jueves y viemes 14:00 - 18:00\nOftalmología Dra. Gabriela Quintero Lunes y miércoles 8:00 - 12:00\nOftalmología Dr. José Luis Arismendi Martes y jueves 14:00 - 18:00\nOftalmología Dr. José Luis Arismendi Sábados 8:00 - 12:00\n\nCitas: (0212) 555-0142 o con Vicky, nuestra asistente virtual.\n\nDocumento ficticio elaborado con fines académicos.",
+      "caracteres": 1220,
+      "similitud": 0.9942,
+      "campos": {
+        "importes_usd": [],
+        "horarios": [
+          "8:00 - 12:00",
+          "14:00 - 18:00",
+          "8:00 - 12:00",
+          "14:00 - 18:00",
+          "9:00 - 13:00",
+          "14:00 - 18:00",
+          "8:00 - 12:00",
+          "8:00 - 12:00",
+          "8:00 - 12:00",
+          "14:00 - 18:00",
+          "8:00 - 12:00",
+          "14:00 - 18:00",
+          "8:00 - 12:00"
+        ],
+        "telefonos": [
+          "02125550142",
+          "02125550142"
+        ],
+        "fechas": []
+      },
+      "validacion": {
+        "esperados": 12,
+        "coinciden": 12,
+        "discrepancias": [],
+        "ok": true
+      }
+    },
+    {
+      "id": "D4",
+      "titulo": "Preparación para exámenes",
+      "archivo": "ocr/documentos/D4_preparacion_para_examenes.jpg",
+      "texto": "Grupo Médico Visoria\nAv. Principal de Los Palos Grandes, Torre Visoria, piso 3, Caracas : Tel. (0212) 555-0142\nPreparación para exámenes\nSiga estas indicaciones antes de su examen. Si tiene dudas, consulte con su médico.\nEndocrinología: curva de glucosa\n- Ayuno de 8 a 12 horas; puede tomar agua.\n- No fumar ni hacer ejercicio la mañana del examen.\n- El examen dura unas 2 horas, traiga algo para leer.\nUrología: antígeno prostático (PSA)\n- Evitar relaciones sexuales y ejercicio intenso (ciclismo) 48 horas antes.\n- No requiere ayuno.\nDermatología: biopsia de piel\n- Suspender aspirina y anticoagulantes 7 días antes, solo si su médico lo autoriza.\n- No aplicar cremas en la zona el día del procedimiento.\nCirugía plástica: valoración preoperatoria\n- Traer hematología completa, pruebas de coagulación y electrocardiograma recientes.\n- No fumar durante las 3 semanas previas a la cirugía.\nCardiología: prueba de esfuerzo\n- Ropa y zapatos deportivos.\n- Comida ligera 2 horas antes; sin café el día del examen.\nOftalmología: fondo de ojo con dilatación\n- La visión queda borrosa de 4 a 6 horas: venga acompañado y no conduzca.\n- Traiga lentes de sol.\nDocumento ficticio elaborado con fines académicos.",
+      "caracteres": 1200,
+      "similitud": 0.9983,
+      "campos": {
+        "importes_usd": [],
+        "horarios": [],
+        "telefonos": [
+          "02125550142"
+        ],
+        "fechas": []
+      },
+      "validacion": null
+    },
+    {
+      "id": "D5",
+      "titulo": "Seguros y reglamento",
+      "archivo": "ocr/documentos/D5_seguros_y_reglamento.jpg",
+      "texto": "Grupo Médico Visoria\nAv. Principal de Los Palos Grandes, Torre Visoria, piso 3, Caracas - Tel. (0212) 555-0142\nSeguros y reglamento del paciente\nSeguros con convenio\n\n- Seguros Araguaney.\n\n- Cumbre Azul Seguros.\n\n- Salud Llanera.\n\n- Previsión Caribe.\nPresente su carnet y su cédula en recepción. Según su póliza, puede aplicar un copago del 20 % de la\nconsulta. Si su seguro no aparece en la lista, puede pagar la consulta y solicitar el reembolso.\nReglamento\n\n- Llegue 15 minutos antes de su cita.\n\n- Para cancelar o cambiar una cita, avise con al menos 24 horas de anticipación.\n\n- Si llega con más de 15 minutos de retraso, la cita podrá reprogramarse.\n\n- Se permite un acompañante por paciente.\n\n- Los menores de edad deben venir con su representante.\n\n- Mantenga el teléfono en silencio en las salas de espera.\n\nDocumento ficticio elaborado con fines académicos.",
+      "caracteres": 867,
+      "similitud": 0.9988,
+      "campos": {
+        "importes_usd": [],
+        "horarios": [],
+        "telefonos": [
+          "02125550142"
+        ],
+        "fechas": []
+      },
+      "validacion": null
+    }
+  ]
+}
