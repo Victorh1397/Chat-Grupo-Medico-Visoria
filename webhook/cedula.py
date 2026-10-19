@@ -67,3 +67,18 @@ def inferir_nacionalidad(texto: str) -> str | None:
     if EXTRANJERO.search(texto):
         return "E"
     return None
+
+
+def normalizar_nacionalidad(valor: str) -> str:
+    """
+    Valor del parámetro nacionalidad -> 'V', 'E' o ''.
+
+    Con 'Allow automated expansion', Dialogflow puede devolver la palabra del usuario en lugar de V/E
+    ('Noruega'). Cualquier respuesta que no sea venezolana cuenta como extranjera (spec 01).
+    """
+    valor = (valor or "").strip()
+    if valor.upper() in ("V", "E"):
+        return valor.upper()
+    if not valor or any(c.isdigit() for c in valor):
+        return ""
+    return inferir_nacionalidad(valor) or "E"

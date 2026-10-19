@@ -60,20 +60,41 @@ def test_ca2_cedula_valida_deja_seguir_a_dialogflow(cliente):
 
 # CA-3: nacionalidad no reconocida
 
+SIN_NACIONALIDAD = {"nombre": "Ana", "apellido": "Rodríguez", "nacionalidad": "", "cedula": "",
+                    "especialidad": "", "fecha": "", "hora": ""}
+
+
+def test_ca3_al_dar_el_nombre_no_se_interpreta_como_nacionalidad(cliente):
+    # Tras "Ana Rodríguez", Dialogflow va a preguntar la nacionalidad: el webhook no debe intervenir
+    res = respuesta(cliente, peticion("agendar_cita", SIN_NACIONALIDAD, "Ana Rodríguez", todos=False,
+                                      esperando="nacionalidad"))
+    assert res == {}
+
+
 def test_ca3_otra_nacionalidad_es_e_y_pide_la_cedula(cliente):
-    params = {"nombre": "Ana", "apellido": "Rodríguez", "nacionalidad": "", "cedula": "",
-              "especialidad": "", "fecha": "", "hora": ""}
-    res = respuesta(cliente, peticion("agendar_cita", params, "soy de Noruega", todos=False, esperando="nacionalidad"))
+    respuesta(cliente, peticion("agendar_cita", SIN_NACIONALIDAD, "Ana Rodríguez", todos=False,
+                                esperando="nacionalidad"))
+    res = respuesta(cliente, peticion("agendar_cita", SIN_NACIONALIDAD, "soy de Noruega", todos=False,
+                                      esperando="nacionalidad"))
     assert parametros_devueltos(res)["nacionalidad"] == "E"
     assert esperando(res) == "cedula"
     assert "cédula" in res["fulfillmentText"]
 
 
 def test_ca3_no_se_repite_la_pregunta(cliente):
-    params = {"nombre": "Ana", "apellido": "Rodríguez", "nacionalidad": ""}
-    res = respuesta(cliente, peticion("agendar_cita", params, "no sé", todos=False, esperando="nacionalidad"))
+    respuesta(cliente, peticion("agendar_cita", SIN_NACIONALIDAD, "Ana Rodríguez", todos=False,
+                                esperando="nacionalidad"))
+    res = respuesta(cliente, peticion("agendar_cita", SIN_NACIONALIDAD, "no sé", todos=False,
+                                      esperando="nacionalidad"))
     assert esperando(res) == "nacionalidad"
     assert "venezolano o extranjero" in res["fulfillmentText"]
+
+
+def test_ca3_valor_expandido_por_dialogflow_cuenta_como_e(cliente):
+    # Con "automated expansion", Dialogflow devolvió nacionalidad="Noruega" en la prueba real
+    params = {**SIN_NACIONALIDAD, "nacionalidad": "Noruega", "cedula": "123456789"}
+    assert respuesta(cliente, peticion("agendar_cita", params, "123456789", todos=False,
+                                       esperando="especialidad")) == {}
 
 
 # CA-4: fecha y hora
@@ -223,3 +244,58 @@ def test_ca13_rapido_y_de_usted(cliente):
         texto = respuesta(cliente, cuerpo).get("fulfillmentText", "")
         assert time.perf_counter() - inicio < 1
         assert not TUTEO.search(texto), texto
+
+
+# Regresiones de las pruebas end-to-end con Dialogflow real
+
+def test_hora_invalida_en_la_primera_frase_sigue_preguntando_en_orden(cliente):
+    # "Soy Carlos Pérez y necesito cita con cardiología el viernes a las 9 de la mañana"
+    params = {"nombre": "Carlos", "apellido": "Pérez", "nacionalidad": "", "cedula": "", "especialidad": "Cardiología",
+              "fecha": "2026-10-23T12:00:00-04:00", "hora": "2026-10-20T09:00:00-04:00"}
+    res = respuesta(cliente, peticion("agendar_cita", params, "Soy Carlos Pérez…", todos=False,
+                                      esperando="nacionalidad"))
+    assert res["fulfillmentText"] == ("Ese día atiende el doctor Eduardo Rangel de 14:00 a 18:00. "
+                                      "¿Usted es venezolano o extranjero?")
+    assert esperando(res) == "nacionalidad"
+    assert parametros_devueltos(res)["hora"] == ""
+
+
+def test_numero_tomado_como_nacionalidad_se_vuelve_a_preguntar(cliente):
+    params = {**SIN_NACIONALIDAD, "nacionalidad": "81234567"}
+    res = respuesta(cliente, peticion("agendar_cita", params, "81234567", todos=False, esperando="cedula"))
+    assert esperando(res) == "nacionalidad"
+    assert parametros_devueltos(res)["nacionalidad"] == ""
+
+
+def test_nombre_poco_comun_se_toma_del_texto(cliente):
+    vacio = {**SIN_NACIONALIDAD, "nombre": "", "apellido": ""}
+    respuesta(cliente, peticion("agendar_cita", vacio, "quiero una cita", todos=False, esperando="nombre"))
+    res = respuesta(cliente, peticion("agendar_cita", vacio, "me llamo Yusmary Del Valle", todos=False,
+                                      esperando="nombre"))
+    devueltos = parametros_devueltos(res)
+    assert (devueltos["nombre"], devueltos["apellido"]) == ("Yusmary", "Del Valle")
+    assert esperando(res) == "nacionalidad"
+
+
+def test_apellido_no_reconocido_se_toma_del_texto(cliente):
+    params = {**SIN_NACIONALIDAD, "nombre": "José", "apellido": ""}
+    respuesta(cliente, peticion("agendar_cita", {**params, "nombre": ""}, "quiero una cita", todos=False,
+                                esperando="nombre"))
+    res = respuesta(cliente, peticion("agendar_cita", params, "José Rodríguez", todos=False, esperando="apellido"))
+    assert parametros_devueltos(res)["apellido"] == "Rodríguez"
+    assert esperando(res) == "nacionalidad"
+
+
+def test_frase_que_no_es_un_nombre_no_se_toma_como_nombre(cliente):
+    vacio = {**SIN_NACIONALIDAD, "nombre": "", "apellido": ""}
+    respuesta(cliente, peticion("agendar_cita", vacio, "quiero una cita", todos=False, esperando="nombre"))
+    assert respuesta(cliente, peticion("agendar_cita", vacio, "quiero cancelar", todos=False,
+                                       esperando="nombre")) == {}
+
+
+def test_a_las_9_entendido_como_21_se_corrige(cliente):
+    # Dialogflow devolvió 21:00 para "a las 9" (sábado, oftalmología: Arismendi 8:00-12:00)
+    params = datos_cita(nombre="Pedro", apellido="Martínez", cedula="6123456", especialidad="Oftalmología",
+                        fecha="2026-10-24T12:00:00-04:00", hora="2026-10-19T21:00:00-04:00")
+    res = respuesta(cliente, peticion("agendar_cita", params, "a las 9"))
+    assert "Le propongo cita con él el sábado 24 de octubre a las 9:00" in res["fulfillmentText"]

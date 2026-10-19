@@ -140,11 +140,12 @@ class Agenda:
         candidatos = [m for m in candidatos if dia.weekday() in m.horario]
 
         h = redondear(hora)
-        # "a las 3" suele significar las 15:00 en una consulta médica
-        if 1 <= h.hour <= 7:
-            tarde = time(h.hour + 12, h.minute)
-            if any(atiende(m, datetime.combine(dia, tarde, CARACAS)) for m in candidatos):
-                h = tarde
+        # "a las 3" suele ser las 15:00 y, según la hora del día, Dialogflow entiende "a las 9" como las 21:00:
+        # si la hora no encaja en ningún horario pero la de 12 horas antes o después sí, se usa esa.
+        alternativa = time((h.hour + 12) % 24, h.minute)
+        if (not any(atiende(m, datetime.combine(dia, h, CARACAS)) for m in candidatos)
+                and any(atiende(m, datetime.combine(dia, alternativa, CARACAS)) for m in candidatos)):
+            h = alternativa
         inicio = datetime.combine(dia, h, CARACAS)
 
         if inicio <= ahora():

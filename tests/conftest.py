@@ -20,9 +20,10 @@ INTENT_ID = "e12a9d5b-1eb2-41a0-877f-05cfa9b6a5a2"
 def entorno(monkeypatch):
     monkeypatch.setattr(modulo_agenda, "ahora", lambda: AHORA)
     monkeypatch.setenv("WEBHOOK_TOKEN", TOKEN)
-    from webhook.intenciones import agenda
+    from webhook.intenciones import agenda, pregunta_anterior
 
     agenda.reiniciar()
+    pregunta_anterior.clear()
     yield agenda
 
 

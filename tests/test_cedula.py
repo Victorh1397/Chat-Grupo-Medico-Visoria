@@ -2,7 +2,7 @@
 
 import pytest
 
-from webhook.cedula import inferir_nacionalidad, solo_digitos, validar
+from webhook.cedula import inferir_nacionalidad, normalizar_nacionalidad, solo_digitos, validar
 
 
 @pytest.mark.parametrize("valor, nacionalidad, esperado", [
@@ -53,3 +53,10 @@ def test_solo_digitos():
 ])
 def test_inferir_nacionalidad(texto, esperado):
     assert inferir_nacionalidad(texto) == esperado
+
+
+@pytest.mark.parametrize("valor, esperado", [
+    ("V", "V"), ("E", "E"), ("", ""), ("Noruega", "E"), ("venezolana", "V"), ("Japón", "E"),
+])
+def test_normalizar_nacionalidad(valor, esperado):
+    assert normalizar_nacionalidad(valor) == esperado

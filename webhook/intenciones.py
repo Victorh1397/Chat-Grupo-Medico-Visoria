@@ -5,11 +5,16 @@ from collections.abc import Callable
 
 from webhook import textos
 from webhook.agenda import Agenda, Propuesta, codigo_caso
-from webhook.cedula import inferir_nacionalidad, solo_digitos, validar
+from webhook.cedula import inferir_nacionalidad, normalizar_nacionalidad, solo_digitos, validar
 from webhook.datos import medico_por_nombre, medicos_de
 from webhook.dialogflow import PeticionDF, evento, leer_fecha, leer_hora, repreguntar, texto
 
 agenda = Agenda()
+
+# Dato que Dialogflow iba a preguntar tras el turno anterior, por sesión. Los contextos de la petición
+# indican lo que se preguntará DESPUÉS de este turno; para saber a qué pregunta respondió el usuario
+# hace falta recordar el turno anterior.
+pregunta_anterior: dict[str, str] = {}
 
 # Orden de recogida de agendar_cita (spec 02) y la pregunta de cada dato
 PREGUNTAS = {
@@ -22,29 +27,91 @@ PREGUNTAS = {
     "hora": "¿A qué hora le conviene?",
 }
 
+PREFIJO_NOMBRE = re.compile(r"^(?:me llamo|mi nombre es|soy|es)\s+", re.IGNORECASE)
+PALABRA_NOMBRE = re.compile(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+")
+NO_SON_NOMBRES = {"quiero", "necesito", "cita", "cancelar", "no", "si", "sí", "hola", "gracias",
+                  "venezolano", "venezolana", "extranjero", "extranjera"}
+
 CIERRE = re.compile(r"^(no|no,? gracias|nada m[aá]s|eso es todo|es todo)[.!]*$", re.IGNORECASE)
 
 
 # agendar_cita
 
 def agendar_cita(pet: PeticionDF) -> dict:
-    nacionalidad = pet.parametro("nacionalidad")
+    respondio_a = pregunta_anterior.pop(pet.sesion, "")
+    respuesta = _agendar_cita(pet, respondio_a)
+    siguiente = _esperando_en(respuesta) or ("" if respuesta else pet.esperando())
+    if siguiente:
+        pregunta_anterior[pet.sesion] = siguiente
+    return respuesta
 
-    # 1. Nacionalidad que la entidad @nacionalidad no reconoció ("soy de Noruega")
-    if not nacionalidad and pet.esperando() == "nacionalidad" and pet.texto:
-        inferida = inferir_nacionalidad(pet.texto)
+
+def _esperando_en(respuesta: dict) -> str:
+    for c in respuesta.get("outputContexts", []):
+        nombre = c["name"].rsplit("/", 1)[-1]
+        if "_dialog_params_" in nombre and c.get("lifespanCount", 0) > 0:
+            return nombre.split("_dialog_params_", 1)[1]
+    return ""
+
+
+def _palabras_de_nombre(texto: str) -> list[str]:
+    """'me llamo Yusmary del Valle' -> ['Yusmary', 'Del', 'Valle']; [] si no parece un nombre."""
+    palabras = PREFIJO_NOMBRE.sub("", texto.strip().rstrip(".")).split()
+    if not 1 <= len(palabras) <= 4 or not all(PALABRA_NOMBRE.fullmatch(p) for p in palabras):
+        return []
+    if any(p.lower() in NO_SON_NOMBRES for p in palabras):
+        return []
+    return [p.capitalize() for p in palabras]
+
+
+def _corregir(pet: PeticionDF, cambios: dict, motivo: str = "", pregunta: str = "") -> dict:
+    """
+    Aplica `cambios` (fijar o vaciar datos) y pregunta el primer dato que falte en el orden de la recogida.
+    Si el dato rechazado va después de otros que aún faltan (p. ej. una hora dicha en la primera frase,
+    antes de dar la cédula), se explica el motivo pero se sigue preguntando en orden.
+    """
+    valores = {p: pet.parametro(p) for p in PREGUNTAS}
+    valores["nacionalidad"] = normalizar_nacionalidad(valores["nacionalidad"])
+    valores.update(cambios)
+    faltante = next((p for p in PREGUNTAS if not valores[p]), None)
+    if not faltante:
+        return {}
+    texto_pregunta = pregunta if pregunta and faltante in cambios else PREGUNTAS[faltante]
+    return repreguntar(pet, faltante, f"{motivo} {texto_pregunta}".strip(), cambios)
+
+
+def _agendar_cita(pet: PeticionDF, respondio_a: str) -> dict:
+    texto_usuario = pet.texto.strip()
+
+    # 0. Nombre o apellido que @sys.given-name / @sys.last-name no reconocieron (nombres poco comunes)
+    if respondio_a == "nombre" and not pet.parametro("apellido"):
+        palabras = _palabras_de_nombre(texto_usuario)
+        if len(palabras) >= 2 or (palabras and not pet.parametro("nombre")):
+            cambios = {} if pet.parametro("nombre") else {"nombre": palabras[0]}
+            if len(palabras) >= 2:
+                cambios["apellido"] = " ".join(palabras[1:])
+            return _corregir(pet, cambios)
+    if respondio_a == "apellido" and not pet.parametro("apellido"):
+        palabras = _palabras_de_nombre(texto_usuario)
+        if palabras:
+            return _corregir(pet, {"apellido": " ".join(palabras)})
+
+    # 1. Nacionalidad: valor que no es V/E (p. ej. un número) o respuesta que la entidad no reconoció
+    nacionalidad = normalizar_nacionalidad(pet.parametro("nacionalidad"))
+    if pet.parametro("nacionalidad") and not nacionalidad:
+        return _corregir(pet, {"nacionalidad": ""}, "Disculpe, no le entendí.")
+    if not nacionalidad and respondio_a == "nacionalidad" and texto_usuario:
+        inferida = inferir_nacionalidad(texto_usuario)
         if not inferida:
-            return repreguntar(pet, "nacionalidad", "Disculpe, no le entendí. " + PREGUNTAS["nacionalidad"])
-        nacionalidad = inferida
-        faltante = next((p for p in PREGUNTAS if p != "nacionalidad" and not pet.parametro(p)), "cedula")
-        return repreguntar(pet, faltante, PREGUNTAS[faltante], {"nacionalidad": inferida})
+            return _corregir(pet, {"nacionalidad": ""}, "Disculpe, no le entendí.")
+        return _corregir(pet, {"nacionalidad": inferida})
 
     # 2. Cédula: validación con regex según V/E
     cedula = ""
     if pet.parametro("cedula"):
         cedula, motivo = validar(pet.parametro("cedula"), nacionalidad)
         if not cedula:
-            return repreguntar(pet, "cedula", f"{motivo} {PREGUNTAS['cedula']}")
+            return _corregir(pet, {"cedula": ""}, motivo)
 
     especialidad = pet.parametro("especialidad")
     paciente = agenda.paciente(cedula) if nacionalidad and cedula else None
@@ -53,21 +120,21 @@ def agendar_cita(pet: PeticionDF) -> dict:
     # 3. Fecha
     dia = leer_fecha(pet.parametro("fecha")) if pet.parametro("fecha") else None
     if pet.parametro("fecha") and not dia:
-        return repreguntar(pet, "fecha", "Necesito un día concreto. " + PREGUNTAS["fecha"], {"hora": ""})
+        return _corregir(pet, {"fecha": "", "hora": ""}, "Necesito un día concreto.")
     if dia and especialidad:
         motivo = agenda.validar_fecha(especialidad, dia)
         if motivo:
-            return repreguntar(pet, "fecha", f"{motivo} ¿Qué otro día le conviene?", {"hora": ""})
+            return _corregir(pet, {"fecha": "", "hora": ""}, motivo, "¿Qué otro día le conviene?")
 
     # 4. Hora
     medico = inicio = None
     hora = leer_hora(pet.parametro("hora")) if pet.parametro("hora") else None
     if pet.parametro("hora") and not hora:
-        return repreguntar(pet, "hora", "Necesito una hora concreta. " + PREGUNTAS["hora"])
+        return _corregir(pet, {"hora": ""}, "Necesito una hora concreta.")
     if hora and dia and especialidad:
         medico, inicio, motivo = agenda.validar_hora(especialidad, dia, hora, preferido)
         if motivo:
-            return repreguntar(pet, "hora", f"{motivo} {PREGUNTAS['hora']}")
+            return _corregir(pet, {"hora": ""}, motivo)
 
     if not pet.todos_los_datos or not medico:
         return {}
