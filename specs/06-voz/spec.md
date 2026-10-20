@@ -57,7 +57,8 @@ cédula 14523987?"*), para que un error al dictarla se detecte antes de confirma
 sin empezar de nuevo queda para la spec 09.
 
 ### R3. Voz de Vicky (TTS nativo) y SSML
-1. Voz **femenina** en español con **acento latinoamericano**, configurada en la petición (no depende de la consola).
+1. Voz **femenina** en español: la **voz por defecto del agente**. Inicialmente se eligió la voz HD latinoamericana
+   `es-US-Chirp3-HD-Aoede`, pero sumaba ~0,9 s por turno y las preguntas documentales quedaban al límite de 5 s (ver plan).
 2. Las respuestas del webhook usan **SSML solo cuando la conversación es por voz**:
    - Pausas breves entre frases.
    - Códigos (`CIT-48213`, `VIS-12345`) leídos carácter a carácter.
@@ -93,10 +94,10 @@ sin empezar de nuevo queda para la spec 09.
 | STT/TTS | Nativos de Dialogflow en modo audio (`detect_intent` con audio de entrada y salida) | Lo pide el enunciado como válido; una sola llamada por turno, menos latencia |
 | Fin de la grabación | Detección de silencio por energía del audio | Más natural que 5 s fijos y reduce la latencia percibida |
 | SSML por canal | El webhook solo añade SSML si la petición viene del cliente de voz | El SSML se vería como texto en el simulador y en Telegram |
-| Voz | Configurada en cada petición desde el cliente | Reproducible sin depender de ajustes manuales de la consola |
+| Voz | Voz por defecto del agente (femenina, ~205 Hz) | La voz HD Aoede, más natural, añadía ~0,9 s por turno (mediana del saludo 2,21 s frente a 1,31 s) y dejaba los turnos con Gemini al límite de 5 s |
 
 ## Decisiones del autor
 
-- Voz femenina con acento latinoamericano.
+- Voz femenina: la voz por defecto del agente (se probó Aoede y se descartó por latencia).
 - La grabación termina por silencio automático.
 - Vicky **no** saluda al arrancar: la conversación la empieza el usuario.

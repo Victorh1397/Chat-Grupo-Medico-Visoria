@@ -35,8 +35,9 @@ load_dotenv(RAIZ / ".env")
 
 PROJECT_ID = os.environ["DIALOGFLOW_PROJECT_ID"]
 IDIOMA = "es"
-VOZ = "es-US-Chirp3-HD-Aoede"  # elegida por el autor entre las voces femeninas latinoamericanas (spec 06, T2)
-VELOCIDAD = 0.95
+# Voz por defecto del agente (femenina). Se descartó la voz HD es-US-Chirp3-HD-Aoede: sumaba ~0,9 s por turno
+# (mediana 2,21 s frente a 1,31 s) y las preguntas documentales quedaban al límite de 5 s (spec 06, T8).
+VOZ = "por defecto del agente"
 REGISTROS = RAIZ / "voz" / "registros"
 
 # Pistas para el reconocimiento de voz: palabras que esperamos oír en esta conversación
@@ -57,10 +58,7 @@ class Conversacion:
         canal.update({"canal": "voz"})  # el webhook solo usa SSML si la petición viene de aquí
         self.parametros_consulta = dialogflow.QueryParameters(payload=canal)
         self.salida_audio = dialogflow.OutputAudioConfig(
-            audio_encoding=dialogflow.OutputAudioEncoding.OUTPUT_AUDIO_ENCODING_LINEAR_16,
-            synthesize_speech_config=dialogflow.SynthesizeSpeechConfig(
-                speaking_rate=VELOCIDAD, voice=dialogflow.VoiceSelectionParams(name=VOZ)),
-        )
+            audio_encoding=dialogflow.OutputAudioEncoding.OUTPUT_AUDIO_ENCODING_LINEAR_16)
         self.turnos: list[dict] = []
 
     def preguntar(self, audio: bytes | None = None, texto: str | None = None):

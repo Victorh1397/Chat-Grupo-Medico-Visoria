@@ -3,7 +3,7 @@
 Plan: [plan.md](plan.md)
 
 - [x] T1. Verificación técnica (Claude): ¿el TTS interpreta SSML del webhook?, ¿llega el payload `canal` al webhook?, ¿qué voces `es-US` femeninas funcionan? → decidir SSML o plan B
-- [x] T2. Muestras de audio de las voces candidatas con la misma frase (Claude) → **elección de la voz (tú)**: `es-US-Chirp3-HD-Aoede`
+- [x] T2. Muestras de audio de las voces candidatas con la misma frase (Claude) → **elección de la voz (tú)**: `es-US-Chirp3-HD-Aoede`; en T8 se cambió a la voz por defecto del agente por latencia
 - [x] T3. `webhook/ssml.py` + canal en `webhook/dialogflow.py` y `main.py` + tests (Claude)
 - [x] T4. `webhook/numeros.py` + uso en la recogida de la cédula + tests (Claude)
 - [x] T5. `voz/grabacion.py` (fin por silencio) + tests con señales sintéticas (Claude)

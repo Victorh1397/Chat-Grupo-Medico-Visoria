@@ -56,6 +56,15 @@ latinoamericanas `es-US` (Neural2 / WaveNet / Standard): se generan **muestras d
 - **Voces:** `es-US-Neural2-A`, `es-US-Wavenet-A` y `es-US-Standard-A` producen exactamente el mismo audio (probablemente no
   disponibles y sustituidas por una voz genérica). Las voces femeninas `es-US-Chirp3-HD-Kore`, `-Aoede` y `-Leda` sí son distintas.
 
+### Latencia por voz (T8)
+| Voz | Turno del saludo, sin Gemini (mediana de 4) |
+|---|---|
+| `es-US-Chirp3-HD-Aoede` | 2,21 s |
+| **Por defecto del agente (elegida)** | **1,31 s** |
+| Sin audio | 0,69 s |
+
+Respuestas de Gemini por voz limitadas a una frase de 25 palabras (antes 35–40): turnos documentales de 2,2–4,97 s con Aoede.
+
 ### Latencia
 Desde el final de la grabación hasta el inicio de la reproducción (incluye STT + webhook + Gemini si aplica + TTS).
 Se muestra por turno y, al salir, mediana y máximo. El registro de la sesión (`voz/registros/*.json`, no versionado salvo el de la
