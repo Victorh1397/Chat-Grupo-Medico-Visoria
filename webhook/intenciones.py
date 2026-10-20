@@ -3,6 +3,7 @@
 import re
 from collections.abc import Callable
 
+from webhook import agenda as modulo_agenda
 from webhook import textos, transferencia
 from webhook.agenda import Agenda, Propuesta, franjas_del_dia
 from webhook.cedula import (
@@ -15,6 +16,7 @@ from webhook.cedula import (
 from webhook.datos import medico_por_nombre, medicos_de
 from webhook.dialogflow import PeticionDF, evento, leer_fecha, leer_hora, repreguntar, texto
 from webhook.documentos import SIN_INFO_DOCUMENTAL, SIN_INFO_FALLBACK, responder_con_documentos
+from webhook.fechas import como_dialogflow, leer_fecha_texto
 from webhook.numeros import palabras_a_numero
 
 agenda = Agenda()
@@ -141,7 +143,12 @@ def _agendar_cita(pet: PeticionDF, respondio_a: str) -> dict:
     paciente = agenda.paciente(cedula) if nacionalidad and cedula else None
     preferido = agenda.medico_habitual(paciente, especialidad)
 
-    # 3. Fecha
+    # 3. Fecha que @sys.date no reconoció ("Para el 29 de octubre"): se lee del texto (spec 08, T7)
+    if respondio_a == "fecha" and not pet.parametro("fecha") and texto_usuario:
+        leida = leer_fecha_texto(texto_usuario, modulo_agenda.ahora().date())
+        if leida:
+            return _fijar_fecha(pet, leida, especialidad, preferido)
+
     dia = leer_fecha(pet.parametro("fecha")) if pet.parametro("fecha") else None
     if pet.parametro("fecha") and not dia:
         return _corregir(pet, {"fecha": "", "hora": ""}, "Necesito un día concreto.")
@@ -190,21 +197,43 @@ def _agendar_cita(pet: PeticionDF, respondio_a: str) -> dict:
                  f"{nombre} {apellido}, cédula {solo_digitos(cedula)}?")
 
 
+def _mensaje_hora(especialidad: str, dia, preferido) -> str | None:
+    """Quién atiende ese día, su horario y el primer horario libre (spec 06, R2b); None si no queda ninguno."""
+    medicos, primero = agenda.disponibilidad(especialidad, dia, preferido)
+    if not primero:
+        return None
+    medico, inicio = primero
+    verbo = "atiende" if len(medicos) == 1 else "atienden"
+    con_quien = "" if len(medicos) == 1 else f" con {textos.doctor(medico.titulo, medico.nombre)}"
+    return (f"Ese día {verbo} {franjas_del_dia(medicos, dia)}; el primer horario libre es a las "
+            f"{textos.hora(inicio.time())}{con_quien}. {PREGUNTAS['hora']}")
+
+
+def _sin_horarios(pet: PeticionDF, especialidad: str) -> dict:
+    return _corregir(pet, {"fecha": "", "hora": ""},
+                     f"Ese día ya no quedan horarios libres en {textos.especialidad(especialidad)}.",
+                     "¿Qué otro día le conviene?")
+
+
 def _preguntar_hora(pet: PeticionDF, especialidad: str, dia, preferido) -> dict:
     """
     En lugar de la pregunta genérica, dice quién atiende ese día, su horario y el primer horario libre (spec 06, R2b).
     También se usa si el usuario respondió sin una hora concreta ("a cualquier hora en la mañana").
     """
-    medicos, primero = agenda.disponibilidad(especialidad, dia, preferido)
-    if not primero:
-        return _corregir(pet, {"fecha": "", "hora": ""},
-                         f"Ese día ya no quedan horarios libres en {textos.especialidad(especialidad)}.",
-                         "¿Qué otro día le conviene?")
-    medico, inicio = primero
-    verbo = "atiende" if len(medicos) == 1 else "atienden"
-    con_quien = "" if len(medicos) == 1 else f" con {textos.doctor(medico.titulo, medico.nombre)}"
-    return texto(f"Ese día {verbo} {franjas_del_dia(medicos, dia)}; el primer horario libre es a las "
-                 f"{textos.hora(inicio.time())}{con_quien}. {PREGUNTAS['hora']}")
+    mensaje = _mensaje_hora(especialidad, dia, preferido)
+    return texto(mensaje) if mensaje else _sin_horarios(pet, especialidad)
+
+
+def _fijar_fecha(pet: PeticionDF, dia, especialidad: str, preferido) -> dict:
+    """Guarda la fecha leída del texto y sigue el flujo como si Dialogflow la hubiera reconocido."""
+    motivo = agenda.validar_fecha(especialidad, dia) if especialidad else ""
+    if motivo:
+        return _corregir(pet, {"fecha": "", "hora": ""}, motivo, "¿Qué otro día le conviene?")
+    cambios = {"fecha": como_dialogflow(dia)}
+    if especialidad and not pet.parametro("hora"):
+        mensaje = _mensaje_hora(especialidad, dia, preferido)
+        return repreguntar(pet, "hora", mensaje, cambios) if mensaje else _sin_horarios(pet, especialidad)
+    return _corregir(pet, cambios)
 
 
 def agendar_cita_si(pet: PeticionDF) -> dict:
@@ -227,6 +256,8 @@ def agendar_cita_empezar_de_nuevo(pet: PeticionDF) -> dict:
 # Otras intenciones
 
 def consultar_horarios(pet: PeticionDF) -> dict:
+    if not pet.todos_los_datos:
+        return {}  # aún falta la especialidad: Dialogflow (o Telegram, con botones) la pregunta
     especialidad = pet.parametro("especialidad")
     medicos = medicos_de(especialidad)
     if not medicos:
@@ -287,11 +318,32 @@ def transferir_humano(pet: PeticionDF) -> dict:
     return texto(transferencia.mensaje(caso))
 
 
+BIENVENIDA = ("Bienvenido a Grupo Médico Visoria, soy Vicky. Puedo agendarle una cita médica o responder sus dudas "
+              "sobre la clínica. ¿En qué le puedo ayudar?")
+PREGUNTAS_FRECUENTES = ("Con gusto. Puede preguntarme, por ejemplo, si tienen estacionamiento, cuánto cuesta la "
+                        "consulta de un especialista, qué seguros aceptan o cómo prepararse para un examen. "
+                        "¿Qué desea saber?")
+
+
+def bienvenida(pet: PeticionDF) -> dict:
+    # Con webhook para poder añadir el menú de botones en Telegram (spec 08); el texto es el de la consola
+    return texto(BIENVENIDA)
+
+
+def agendar_cita_no(pet: PeticionDF) -> dict:
+    # Con webhook para poder añadir los botones Sí/No en Telegram (spec 08); el texto es el de la consola
+    agenda.descartar(pet.sesion)
+    transferencia.olvidar_cita(pet.sesion)
+    return texto("Entendido, no he registrado la cita. ¿Desea empezar de nuevo?")
+
+
 def consulta_documental(pet: PeticionDF) -> dict:
     return texto(responder_con_documentos(pet.texto, SIN_INFO_DOCUMENTAL, breve=pet.canal == "voz"))
 
 
 def fallback(pet: PeticionDF) -> dict:
+    if pet.texto.strip().lower() == "preguntas frecuentes":  # botón del menú de Telegram (spec 08)
+        return texto(PREGUNTAS_FRECUENTES)
     if CIERRE.match(pet.texto.strip()):
         transferencia.sin_entender.pop(pet.sesion, None)
         return texto("Gracias por comunicarse con Grupo Médico Visoria. Que tenga un buen día.")
@@ -314,7 +366,9 @@ FALLBACK = "Default Fallback Intent"
 
 MANEJADORES: dict[str, Callable[[PeticionDF], dict]] = {
     "agendar_cita": agendar_cita,
+    "Default Welcome Intent": bienvenida,
     "agendar_cita - yes": agendar_cita_si,
+    "agendar_cita - no": agendar_cita_no,
     "agendar_cita - no - yes": agendar_cita_empezar_de_nuevo,
     "consultar_horarios": consultar_horarios,
     "consultar_historial": consultar_historial,

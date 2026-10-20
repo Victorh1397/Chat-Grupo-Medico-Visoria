@@ -16,10 +16,10 @@ import time
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, Request
 
-from webhook import transferencia
+from webhook import telegram, transferencia
 from webhook.dialogflow import PeticionDF, texto
 from webhook.documentos import DOCUMENTOS, MODELO
-from webhook.intenciones import FALLBACK, MANEJADORES, agenda
+from webhook.intenciones import FALLBACK, MANEJADORES, PREGUNTAS, agenda
 from webhook.ssml import a_ssml
 
 load_dotenv()
@@ -72,6 +72,15 @@ async def webhook(request: Request, x_visoria_token: str | None = Header(default
     # Si Vicky ofreció recepción, la oferta vale para el turno siguiente (antes de pasar a SSML)
     transferencia.ofrecer_si_procede(pet.sesion, respuesta.get("fulfillmentText", ""), pet.texto)
 
+    # Telegram (spec 08): Dialogflow formula sus propias preguntas de recogida de datos y a esas no se les pueden
+    # añadir botones; para especialidad y nacionalidad las formula el webhook. Después se añaden los botones.
+    if pet.canal == "telegram":
+        if not respuesta and pet.esperando() in ("especialidad", "nacionalidad"):
+            pregunta = (telegram.PREGUNTA_ESPECIALIDAD_HORARIOS if pet.intencion == "consultar_horarios"
+                        else PREGUNTAS[pet.esperando()])
+            respuesta = texto(pregunta)
+        respuesta = telegram.con_botones(respuesta)
+
     # SSML solo en el canal de voz: en el simulador o en Telegram las etiquetas se verían como texto
     if pet.canal == "voz" and respuesta.get("fulfillmentText"):
         respuesta["fulfillmentText"] = a_ssml(respuesta["fulfillmentText"])
@@ -83,6 +92,8 @@ async def webhook(request: Request, x_visoria_token: str | None = Header(default
              pet.esperando() or "-", ms)
     log.info("TEXTO: %s", pet.texto)
     log.info("PARÁMETROS: %s", parametros)
-    log.info("RESPUESTA: %s", respuesta.get("fulfillmentText")
+    botones = next((m["quickReplies"] for m in respuesta.get("fulfillmentMessages", []) if "quickReplies" in m), None)
+    con_botones = botones and f"{botones['title']} {botones['quickReplies']}"
+    log.info("RESPUESTA: %s", respuesta.get("fulfillmentText") or con_botones
              or respuesta.get("followupEventInput") or "(pregunta de Dialogflow)")
     return respuesta

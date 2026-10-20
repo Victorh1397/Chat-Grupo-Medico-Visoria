@@ -21,7 +21,7 @@ Plantillas en [`_plantillas/`](_plantillas/). Principios en [`00-constitucion.md
 | 05 | [Consulta documental con Gemini + control de alucinaciones](05-consulta-documental/spec.md) | OCR (3) | Hecha |
 | 06 | [Voz extremo a extremo (cliente de voz, SSML, latencia)](06-voz/spec.md) | Voz (2) | Hecha |
 | 07 | [Extra: transferencia a agente humano](07-transferencia-humano/spec.md) | +1,5 | Hecha |
-| 08 | Extra: Telegram (integración nativa, texto + botones) | +1,5 | Pendiente |
+| 08 | [Extra: Telegram (integración nativa, texto + botones)](08-telegram/spec.md) | +1,5 | Hecha |
 | 09 | Extra: corrección de datos a mitad de flujo con eventos | +1,5 | Pendiente |
 | 99 | Entregables: README, diagrama, ZIP del agente, vídeo ≤ 3 min | Docs (1) | Pendiente |
 
@@ -43,6 +43,7 @@ Estados: Pendiente → Spec redactada → Spec aprobada → En implementación �
 | ZIP del agente + script OCR + webhook | 02, 03, 04, 99 | `entrega/agente_dialogflow.zip` (generado sin secretos con `scripts/preparar_export.py`) · `webhook/` · `ocr/` |
 | README (caso de uso, diagrama, intenciones, decisiones, instrucciones) | 99 | |
 | Vídeo ≤ 3 min | 99 | |
+| *Mejora opcional:* integración con Telegram con respuestas enriquecidas (botones) | 08 | Integración nativa de Dialogflow · `webhook/telegram.py` (botones `quickReplies` solo en Telegram) · `tests/test_telegram.py` · prueba en la app |
 | *Mejora opcional:* intención de transferencia a agente humano | 07 | `transferir_humano` + `webhook/transferencia.py` (oferta aceptada con "sí", oferta automática, caso con resumen y horario) · `tests/test_transferencia.py` · prueba por Dialogflow |
 
 ## Mejoras futuras (fuera del alcance actual)
@@ -50,5 +51,6 @@ Estados: Pendiente → Spec redactada → Spec aprobada → En implementación �
 | Origen | Mejora | Motivo |
 |---|---|---|
 | Spec 06 | Al preguntar la hora: elegir automáticamente el primer horario libre ante "en la mañana", "por la tarde" o "la que tenga", y aceptar "sí" a la hora sugerida | Detectado en la prueba por voz; requiere que el webhook cierre él mismo la recogida de datos. Por ahora Vicky informa de la disponibilidad (R2b) |
+| Spec 08 | Restringir el bot de Telegram a una lista de usuarios (`TELEGRAM_USUARIOS_PERMITIDOS` en `.env`) | Proteger la cuota gratuita de Gemini; por ahora el bot queda abierto (decisión del autor) |
 | Spec 06 | Ampliar las frases de cierre ("gracias", "ok gracias", "adiós", "chao", "hasta luego") para despedirse sin consultar a Gemini | En la prueba por voz, "okay gracias" llegó a Gemini, que respondió una cortesía propia en lugar de `NO_DISPONIBLE` |
 | Spec 04 | Corregir en el texto para el LLM **solo los nombres de los médicos** que el OCR lee mal (p. ej. "Hemández" → "Hernández"), comparándolos con `webhook/datos.py` | Evitar que Vicky pronuncie un nombre con errores de OCR. Descartado por ahora: el LLM recibe el texto OCR sin modificar |
