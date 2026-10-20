@@ -23,7 +23,7 @@ siguiendo la guía paso a paso del `plan.md`. El resultado se exporta y se versi
 **Fuera de alcance**
 - La URL del webhook y su lógica (spec 03). Hasta entonces, las intenciones con webhook responden con su respuesta estática de reserva.
 - SSML y elección de voz (spec 06).
-- Integración con Telegram (spec 08) y corrección a mitad de flujo (spec 09).
+- Integración con Telegram (spec 08). Corrección de datos a mitad de flujo: mejora futura.
 
 ## Requisitos
 

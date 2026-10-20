@@ -23,7 +23,7 @@ al usuario. La transferencia es **simulada**: se registra un caso con el resumen
 **Fuera de alcance**
 - Conexión con una persona real (llamada, chat en vivo).
 - Notificar el caso al personal de recepción por otro medio (correo, mensajería…): el caso solo se registra en un fichero.
-- Corrección de datos a mitad de flujo (spec 09).
+- Corrección de datos a mitad de flujo (mejora futura).
 
 ## Requisitos
 

@@ -23,7 +23,7 @@ Esta spec construye el cliente de voz, mejora la naturalidad de Vicky con **SSML
 
 **Fuera de alcance**
 - STT/TTS de terceros (descartado en la planificación).
-- Interrupciones (hablar mientras Vicky habla) y corrección de datos a mitad de flujo (spec 09).
+- Interrupciones (hablar mientras Vicky habla) y corrección de datos a mitad de flujo (mejora futura).
 - Telegram (spec 08): aquí solo se garantiza que el SSML no aparezca en los canales de texto.
 
 ## Requisitos
@@ -54,7 +54,7 @@ Esta spec construye el cliente de voz, mejora la naturalidad de Vicky con **SSML
 ### R2c. Cédula en la confirmación (añadido tras la segunda prueba por voz)
 La pregunta de confirmación incluye el nombre y la cédula del paciente (*"…¿Confirmo la cita a nombre de María González,
 cédula 14523987?"*), para que un error al dictarla se detecte antes de confirmar y se pueda responder "no". Corregir un dato
-sin empezar de nuevo queda para la spec 09.
+sin empezar de nuevo queda como mejora futura.
 
 ### R3. Voz de Vicky (TTS nativo) y SSML
 1. Voz **femenina** en español: la **voz por defecto del agente**. Inicialmente se eligió la voz HD latinoamericana
