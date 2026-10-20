@@ -24,7 +24,6 @@ Vicky debe responder preguntas frecuentes a partir de documentos de la clínica 
 
 **Fuera de alcance**
 - Uso del texto por el LLM y control de alucinaciones (spec 05).
-- Base de datos vectorial (spec 10).
 - OCR en tiempo real: el OCR **nunca** se ejecuta dentro de una petición del webhook (límite de 5 s).
 
 ## Documentos
@@ -67,10 +66,10 @@ Todos llevan cabecera "Grupo Médico Visoria" y el pie *"Documento ficticio elab
    - **Fechas:** `01/09/2026`.
 2. De D2 se extraen los pares **médico → precio** y de D3 los pares **médico → horario**, y se **validan** contra `webhook/datos.py`. Cualquier discrepancia se informa.
 3. La normalización es **destructiva** ("Oftalmología" → "0ftalm0l0gía"), así que solo se aplica a la copia que pasa por las regex. Lo que se
-   guarda para el LLM es el **texto OCR original**, tanto si en la spec 05 se le da completo como si se trocea en una base vectorial (spec 10):
+   guarda para el LLM es el **texto OCR original**:
    ```
    imagen → OCR → texto original ─┬─► copia normalizada → regex → validación
-                                  └─► documentos.json → (completo o fragmentos de la base vectorial) → LLM
+                                  └─► documentos.json → LLM (spec 05)
    ```
 
 ### R4. Salida

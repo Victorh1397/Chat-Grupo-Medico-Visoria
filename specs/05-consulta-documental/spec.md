@@ -22,8 +22,6 @@ información cuando la respuesta no está en ellos, en lugar de inventarla.
 - Juego de preguntas de evaluación (respondibles y no respondibles) y script que mide aciertos, alucinaciones y latencia.
 
 **Fuera de alcance**
-- Base de datos vectorial (spec 10): con 5 documentos (~5.600 caracteres, ~1.500 tokens) cabe todo el texto en el prompt
-  ("context stuffing"), que es lo que el enunciado acepta como mínimo.
 - "Sí" a "¿Desea que le comunique con recepción?" (spec 07).
 - SSML (spec 06).
 
@@ -85,7 +83,7 @@ espaciadas para respetar la cuota gratuita, e informa de aciertos, alucinaciones
 
 | Tema | Decisión | Motivo |
 |---|---|---|
-| Recuperación | Todo el texto de los 5 documentos en el prompt | ~1.500 tokens: cabe sin problema y no se pierde información; la base vectorial queda como mejora (spec 10) |
+| Contexto | Todo el texto de los 5 documentos en el prompt ("context stuffing") | ~5.600 caracteres (~1.500 tokens): cabe sin problema y no se pierde información |
 | Señal de "no disponible" | El modelo devuelve `NO_DISPONIBLE` y el webhook pone el texto final | Comprobable en tests y en la evaluación; el mensaje al usuario es siempre el mismo |
 | Modelo | Gemini Flash-Lite, razonamiento mínimo, temperatura 0 | Latencia y respuestas deterministas |
 | Límite de tiempo | 3 s | Deja margen para Dialogflow y el túnel dentro de los 5 s |
