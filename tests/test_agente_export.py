@@ -32,7 +32,8 @@ FOLLOW_UPS = [
     "agendar_cita - no - yes",
     "agendar_cita - no - no",
 ]
-CON_WEBHOOK = SIGNIFICATIVAS + ["agendar_cita - yes", "agendar_cita - no - yes", "Default Fallback Intent"]
+CON_WEBHOOK = SIGNIFICATIVAS + ["agendar_cita - yes", "agendar_cita - no - yes", "Default Fallback Intent",
+                                "Default Welcome Intent", "agendar_cita - no"]  # las dos últimas: botones de Telegram
 
 
 # Utilidades
@@ -216,8 +217,10 @@ def test_ca8_webhook_activado_y_respuesta_de_reserva(nombre):
     assert respuestas(datos), f"{nombre} no tiene respuesta de reserva"
 
 
-def test_ca8_agendar_cita_webhook_en_slot_filling():
-    assert intencion("agendar_cita")["webhookForSlotFilling"] is True
+@pytest.mark.parametrize("nombre", ["agendar_cita", "consultar_horarios"])
+def test_ca8_webhook_en_slot_filling(nombre):
+    # consultar_horarios: para formular con botones la pregunta de la especialidad en Telegram (spec 08)
+    assert intencion(nombre)["webhookForSlotFilling"] is True
 
 
 # CA-9: zona horaria

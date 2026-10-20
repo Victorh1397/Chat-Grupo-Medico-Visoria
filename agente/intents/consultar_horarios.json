@@ -10,7 +10,7 @@
       "affectedContexts": [],
       "parameters": [
         {
-          "id": "933388a1-8cd7-4ba7-b758-2ea4e3018409",
+          "id": "65a6e80e-34f9-4225-be6d-2b9c0d8caab2",
           "name": "especialidad",
           "required": true,
           "dataType": "@especialidad",
@@ -46,7 +46,7 @@
   ],
   "priority": 500000,
   "webhookUsed": true,
-  "webhookForSlotFilling": false,
+  "webhookForSlotFilling": true,
   "fallbackIntent": false,
   "events": [],
   "conditionalResponses": [],
