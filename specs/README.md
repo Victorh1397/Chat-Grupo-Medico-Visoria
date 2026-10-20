@@ -20,7 +20,7 @@ Plantillas en [`_plantillas/`](_plantillas/). Principios en [`00-constitucion.md
 | 04 | [Documentos sintéticos y pipeline OCR offline + regex](04-ocr-documentos/spec.md) | OCR (3) | Hecha |
 | 05 | [Consulta documental con Gemini + control de alucinaciones](05-consulta-documental/spec.md) | OCR (3) | Hecha |
 | 06 | [Voz extremo a extremo (cliente de voz, SSML, latencia)](06-voz/spec.md) | Voz (2) | Hecha |
-| 07 | Extra: transferencia a agente humano | +1,5 | Pendiente |
+| 07 | [Extra: transferencia a agente humano](07-transferencia-humano/spec.md) | +1,5 | Spec aprobada |
 | 08 | Extra: Telegram (integración nativa, texto + botones) | +1,5 | Pendiente |
 | 09 | Extra: corrección de datos a mitad de flujo con eventos | +1,5 | Pendiente |
 | 10 | Extra: ChromaDB | +1,5 | Pendiente |
