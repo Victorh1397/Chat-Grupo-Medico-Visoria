@@ -3,8 +3,8 @@
 import re
 from collections.abc import Callable
 
-from webhook import textos
-from webhook.agenda import Agenda, Propuesta, codigo_caso, franjas_del_dia
+from webhook import textos, transferencia
+from webhook.agenda import Agenda, Propuesta, franjas_del_dia
 from webhook.cedula import (
     es_respuesta_de_nacionalidad,
     inferir_nacionalidad,
@@ -47,6 +47,9 @@ CIERRE = re.compile(r"^(no|no,? gracias|nada m[aá]s|eso es todo|es todo)[.!]*$"
 # agendar_cita
 
 def agendar_cita(pet: PeticionDF) -> dict:
+    # Datos ya dados, por si el usuario pide pasar con recepción a mitad de la cita (spec 07)
+    transferencia.recordar_cita(pet.sesion, {p: pet.parametro(p) for p in
+                                             ("nombre", "apellido", "especialidad", "fecha", "cedula")})
     respondio_a = pregunta_anterior.pop(pet.sesion, "")
     respuesta = _agendar_cita(pet, respondio_a)
     # Si el webhook no cambió los contextos, Dialogflow seguirá preguntando lo que indica la petición
@@ -205,6 +208,7 @@ def _preguntar_hora(pet: PeticionDF, especialidad: str, dia, preferido) -> dict:
 
 
 def agendar_cita_si(pet: PeticionDF) -> dict:
+    transferencia.olvidar_cita(pet.sesion)
     cita = agenda.confirmar(pet.sesion)
     if not cita:
         return texto("No tengo ninguna cita pendiente de confirmar. ¿Desea agendar una nueva cita?")
@@ -216,6 +220,7 @@ def agendar_cita_si(pet: PeticionDF) -> dict:
 
 def agendar_cita_empezar_de_nuevo(pet: PeticionDF) -> dict:
     agenda.descartar(pet.sesion)
+    transferencia.olvidar_cita(pet.sesion)
     return evento("INICIAR_CITA")
 
 
@@ -278,7 +283,8 @@ def cancelar_cita(pet: PeticionDF) -> dict:
 
 
 def transferir_humano(pet: PeticionDF) -> dict:
-    return texto(f"Le comunico con recepción. Su número de caso es {codigo_caso()}. Por favor, espere un momento.")
+    caso = transferencia.crear_caso(pet.sesion, pet.canal, "peticion_directa", pet.texto)
+    return texto(transferencia.mensaje(caso))
 
 
 def consulta_documental(pet: PeticionDF) -> dict:
@@ -287,11 +293,24 @@ def consulta_documental(pet: PeticionDF) -> dict:
 
 def fallback(pet: PeticionDF) -> dict:
     if CIERRE.match(pet.texto.strip()):
+        transferencia.sin_entender.pop(pet.sesion, None)
         return texto("Gracias por comunicarse con Grupo Médico Visoria. Que tenga un buen día.")
     # Dialogflow clasifica comparando con frases de entrenamiento y nunca lee los documentos: una pregunta
     # cuya respuesta está en ellos puede caer aquí. Se intenta responder con los documentos (spec 05, opción B).
-    return texto(responder_con_documentos(pet.texto, SIN_INFO_FALLBACK, breve=pet.canal == "voz"))
+    respuesta = responder_con_documentos(pet.texto, SIN_INFO_FALLBACK, breve=pet.canal == "voz")
+    if respuesta != SIN_INFO_FALLBACK:
+        transferencia.sin_entender.pop(pet.sesion, None)
+        return texto(respuesta)
+    # Spec 07: al segundo turno seguido sin entender, Vicky ofrece recepción
+    turnos = transferencia.sin_entender.get(pet.sesion, 0) + 1
+    if turnos >= transferencia.TURNOS_SIN_ENTENDER:
+        transferencia.sin_entender.pop(pet.sesion, None)
+        return texto(transferencia.OFERTA_NO_ENTENDIDO)
+    transferencia.sin_entender[pet.sesion] = turnos
+    return texto(respuesta)
 
+
+FALLBACK = "Default Fallback Intent"
 
 MANEJADORES: dict[str, Callable[[PeticionDF], dict]] = {
     "agendar_cita": agendar_cita,
