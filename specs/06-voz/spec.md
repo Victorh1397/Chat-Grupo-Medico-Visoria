@@ -42,6 +42,15 @@ Esta spec construye el cliente de voz, mejora la naturalidad de Vicky con **SSML
 3. La cédula dictada se reconoce aunque el STT la escriba con separadores o agrupada; si llegara en palabras ("catorce millones…"),
    el webhook la convierte a cifras antes de validarla.
 
+### R2b. Pregunta de la hora con disponibilidad (añadido tras la primera prueba por voz)
+1. Cuando Vicky va a preguntar la hora (ya hay especialidad y fecha válidas), en lugar de la pregunta genérica indica quién
+   atiende ese día, su horario y el primer horario libre. Ejemplo: *"Ese día atiende la doctora Patricia Medina de 8:00 a 12:00;
+   el primer horario libre es a las 8:00. ¿A qué hora le conviene?"*
+2. Si el usuario responde sin una hora concreta ("a cualquier hora en la mañana"), Vicky repite esa misma información.
+3. Si ese día ya no quedan horarios libres, lo dice y vuelve a pedir la fecha.
+4. Fuera de alcance por ahora: elegir la hora automáticamente a partir de "en la mañana" o "la que tenga" y aceptar un "sí" a la
+   hora sugerida (anotado como mejora futura).
+
 ### R3. Voz de Vicky (TTS nativo) y SSML
 1. Voz **femenina** en español con **acento latinoamericano**, configurada en la petición (no depende de la consola).
 2. Las respuestas del webhook usan **SSML solo cuando la conversación es por voz**:
@@ -66,6 +75,8 @@ Esta spec construye el cliente de voz, mejora la naturalidad de Vicky con **SSML
 - **CA-4.** En el simulador de Dialogflow (texto) las respuestas aparecen sin etiquetas SSML.
 - **CA-5.** Latencia por turno < 5 s en todos los turnos de la conversación modelo; el cliente muestra mediana y máximo.
 - **CA-6.** La grabación termina sola tras el silencio.
+- **CA-8.** Al llegar a la pregunta de la hora, Vicky dice quién atiende ese día, su horario y el primer horario libre; si se
+  responde sin hora concreta, lo repite en vez de la pregunta genérica.
 - **CA-7.** Tests automáticos (sin micrófono ni red) de la generación de SSML, la detección del canal y la conversión de cédulas habladas.
 
 ## Decisiones técnicas

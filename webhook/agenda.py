@@ -165,9 +165,23 @@ class Agenda:
                                     f"es a las {textos.hora(libre.time())} con {quien}.")
             return None, None, "Ese día ya no quedan horarios libres en esa especialidad."
 
-        franjas = [f"{textos.doctor(m.titulo, m.nombre)} de {textos.hora(m.horario[dia.weekday()][0])} "
-                   f"a {textos.hora(m.horario[dia.weekday()][1])}" for m in candidatos]
-        return None, None, f"Ese día atiende {textos.unir(franjas)}."
+        return None, None, f"Ese día atiende {franjas_del_dia(candidatos, dia)}."
+
+    def disponibilidad(self, especialidad: str, dia: date,
+                       preferido: Medico | None = None) -> tuple[list[Medico], tuple[Medico, datetime] | None]:
+        """
+        Médicos de la especialidad que atienden ese día (el habitual primero) y el primer bloque libre,
+        empezando por el médico habitual. Sirve para preguntar la hora diciendo qué hay (spec 06, R2b).
+        """
+        candidatos = [m for m in sorted(medicos_de(especialidad), key=lambda m: m != preferido)
+                      if dia.weekday() in m.horario]
+        for medico in candidatos:
+            inicio = datetime.combine(dia, medico.horario[dia.weekday()][0], CARACAS)
+            while atiende(medico, inicio):
+                if inicio > ahora() and not self.ocupado(medico, inicio):
+                    return candidatos, (medico, inicio)
+                inicio += BLOQUE
+        return candidatos, None
 
     def siguiente_libre(self, medicos: list[Medico], desde: datetime) -> tuple[Medico, datetime] | None:
         inicio = desde + BLOQUE
@@ -207,6 +221,12 @@ class Agenda:
             return None
         self.citas.remove(pendientes[0])
         return pendientes[0]
+
+
+def franjas_del_dia(medicos: list[Medico], dia: date) -> str:
+    """'la doctora Patricia Medina de 8:00 a 12:00 y el doctor …'."""
+    return textos.unir([f"{textos.doctor(m.titulo, m.nombre)} de {textos.hora(m.horario[dia.weekday()][0])} "
+                        f"a {textos.hora(m.horario[dia.weekday()][1])}" for m in medicos])
 
 
 def codigo_caso() -> str:

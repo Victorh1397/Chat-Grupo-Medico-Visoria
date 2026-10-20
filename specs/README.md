@@ -49,4 +49,5 @@ Estados: Pendiente → Spec redactada → Spec aprobada → En implementación �
 
 | Origen | Mejora | Motivo |
 |---|---|---|
+| Spec 06 | Al preguntar la hora: elegir automáticamente el primer horario libre ante "en la mañana", "por la tarde" o "la que tenga", y aceptar "sí" a la hora sugerida | Detectado en la prueba por voz; requiere que el webhook cierre él mismo la recogida de datos. Por ahora Vicky informa de la disponibilidad (R2b) |
 | Spec 04 | Corregir en el texto para el LLM **solo los nombres de los médicos** que el OCR lee mal (p. ej. "Hemández" → "Hernández"), comparándolos con `webhook/datos.py` | Evitar que Vicky pronuncie un nombre con errores de OCR. Descartado por ahora: el LLM recibe el texto OCR sin modificar |

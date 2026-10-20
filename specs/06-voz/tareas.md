@@ -8,7 +8,9 @@ Plan: [plan.md](plan.md)
 - [x] T4. `webhook/numeros.py` + uso en la recogida de la cédula + tests (Claude)
 - [x] T5. `voz/grabacion.py` (fin por silencio) + tests con señales sintéticas (Claude)
 - [x] T6. `voz/cliente_voz.py`: bucle, pistas de frases, voz elegida, `--texto`, latencias y registro de sesión (Claude)
-- [ ] T7. Permiso de micrófono para VS Code y primera prueba hablada corta (tú)
+- [x] T7. Permiso de micrófono para VS Code y primera prueba hablada corta (tú)
+- [x] T7b. R2b: al preguntar la hora, indicar quién atiende ese día, su horario y el primer horario libre; repetirlo si la
+  respuesta no trae una hora; si no quedan horarios, volver a pedir la fecha. Con tests y prueba por Dialogflow (Claude)
 - [ ] T8. Conversación modelo completa por voz (tú hablas; Claude analiza el registro) y ajustes
 - [ ] T9. Comprobar en el simulador de Dialogflow que no aparecen etiquetas SSML (tú o Claude)
 - [ ] T10. Actualizar `specs/README.md` y commit `feat(06): …` (Claude)

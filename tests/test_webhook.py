@@ -2,10 +2,13 @@
 
 import re
 import time
+from datetime import datetime, timedelta
 
 import pytest
 
 from tests.conftest import datos_cita, peticion
+from webhook.agenda import CARACAS, Propuesta
+from webhook.datos import medico_por_nombre
 
 
 def respuesta(cliente, cuerpo) -> dict:
@@ -307,3 +310,58 @@ def test_nacionalidad_inequivoca_aunque_se_perdiera_el_turno_anterior(cliente):
                                       esperando="nacionalidad"))
     assert parametros_devueltos(res)["nacionalidad"] == "E"
     assert esperando(res) == "cedula"
+
+
+# Spec 06, R2b: preguntar la hora diciendo la disponibilidad
+
+HASTA_LA_HORA = {"nombre": "Víctor", "apellido": "Méndez", "nacionalidad": "V", "cedula": "30111222",
+                 "especialidad": "Cardiología", "fecha": "2026-10-19T12:00:00-04:00", "hora": ""}  # lunes
+
+
+def test_r2b_pregunta_la_hora_con_la_disponibilidad(cliente):
+    res = respuesta(cliente, peticion("agendar_cita", HASTA_LA_HORA, "el lunes", todos=False, esperando="hora"))
+    assert res == {"fulfillmentText": "Ese día atiende la doctora Patricia Medina de 8:00 a 12:00; el primer "
+                                      "horario libre es a las 8:00. ¿A qué hora le conviene?"}
+
+
+def test_r2b_sin_hora_concreta_repite_la_disponibilidad(cliente):
+    respuesta(cliente, peticion("agendar_cita", HASTA_LA_HORA, "el lunes", todos=False, esperando="hora"))
+    res = respuesta(cliente, peticion("agendar_cita", HASTA_LA_HORA, "a cualquier hora en la mañana",
+                                      todos=False, esperando="hora"))
+    assert res["fulfillmentText"].startswith("Ese día atiende la doctora Patricia Medina")
+
+
+def test_r2b_primer_horario_libre_salta_los_ocupados(cliente, entorno):
+    # Martes de endocrinología: Ortega 14:00-18:00; la cita sembrada de Miguel Torres ocupa las 15:00
+    ortega = medico_por_nombre("Rafael Ortega")
+    entorno.proponer("otra", Propuesta("V-111111", "A", "B", ortega, datetime(2026, 10, 20, 14, 0, tzinfo=CARACAS)))
+    entorno.confirmar("otra")
+    params = {**HASTA_LA_HORA, "especialidad": "Endocrinología", "fecha": "2026-10-20T12:00:00-04:00"}
+    res = respuesta(cliente, peticion("agendar_cita", params, "el martes", todos=False, esperando="hora"))
+    assert "el primer horario libre es a las 14:30" in res["fulfillmentText"]
+
+
+def test_r2b_sin_horarios_libres_pide_otra_fecha(cliente, entorno):
+    rojas = medico_por_nombre("Laura Rojas")
+    for i in range(8):  # martes 20/10 de 8:00 a 12:00, ocho bloques
+        entorno.proponer(f"s{i}", Propuesta(f"V-1000000{i}", "A", "B", rojas,
+                                            datetime(2026, 10, 20, 8, 0, tzinfo=CARACAS) + timedelta(minutes=30 * i)))
+        entorno.confirmar(f"s{i}")
+    params = {**HASTA_LA_HORA, "especialidad": "Dermatología", "fecha": "2026-10-20T12:00:00-04:00"}
+    res = respuesta(cliente, peticion("agendar_cita", params, "el martes", todos=False, esperando="hora"))
+    assert res["fulfillmentText"] == ("Ese día ya no quedan horarios libres en dermatología. "
+                                      "¿Qué otro día le conviene?")
+    assert esperando(res) == "fecha"
+
+
+def test_r2b_no_interviene_si_aun_faltan_datos_anteriores(cliente):
+    params = {**HASTA_LA_HORA, "cedula": ""}
+    assert respuesta(cliente, peticion("agendar_cita", params, "venezolano", todos=False, esperando="cedula")) == {}
+
+
+def test_medico_habitual_que_no_atiende_ese_dia(cliente):
+    # Carlos Pérez se atendió con Rangel (jueves y viernes); pide cardiología un martes
+    params = datos_cita(nombre="Carlos", apellido="Pérez", nacionalidad="E", cedula="81234567",
+                        especialidad="Cardiología", fecha="2026-10-20T12:00:00-04:00", hora="2026-10-18T09:00:00-04:00")
+    texto = respuesta(cliente, peticion("agendar_cita", params, "a las 9"))["fulfillmentText"]
+    assert "el doctor Eduardo Rangel, que le atendió en cardiología, no atiende ese día" in texto
