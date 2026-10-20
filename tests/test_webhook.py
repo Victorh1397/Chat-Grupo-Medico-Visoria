@@ -123,7 +123,8 @@ def test_ca5_conversacion_modelo(cliente):
     res = respuesta(cliente, peticion("agendar_cita", datos_cita(), "a las 10 de la mañana"))
     assert res["fulfillmentText"] == (
         "María, veo que ya se atendió en dermatología con la doctora Laura Rojas. Le propongo cita con ella "
-        "el martes 20 de octubre a las 10:00. La consulta cuesta 40 dólares. ¿Confirmo la cita?")
+        "el martes 20 de octubre a las 10:00. La consulta cuesta 40 dólares. ¿Confirmo la cita a nombre de "
+        "María González, cédula 14523987?")
 
 
 def test_ca6_confirmar_y_segundo_paciente_recibe_otra_hora(cliente):

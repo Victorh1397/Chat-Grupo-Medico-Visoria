@@ -182,7 +182,9 @@ def _agendar_cita(pet: PeticionDF, respondio_a: str) -> dict:
                         f"Le propongo cita con {quien} {cuando}.")
     else:
         inicio_frase = f"{nombre}, le propongo cita de {esp} con {quien} {cuando}."
-    return texto(f"{inicio_frase} La consulta cuesta {medico.precio_usd} dólares. ¿Confirmo la cita?")
+    # Nombre y cédula en la confirmación: un error al dictarla se detecta antes de confirmar (spec 06, R2c)
+    return texto(f"{inicio_frase} La consulta cuesta {medico.precio_usd} dólares. ¿Confirmo la cita a nombre de "
+                 f"{nombre} {apellido}, cédula {solo_digitos(cedula)}?")
 
 
 def _preguntar_hora(pet: PeticionDF, especialidad: str, dia, preferido) -> dict:
@@ -280,7 +282,7 @@ def transferir_humano(pet: PeticionDF) -> dict:
 
 
 def consulta_documental(pet: PeticionDF) -> dict:
-    return texto(responder_con_documentos(pet.texto, SIN_INFO_DOCUMENTAL))
+    return texto(responder_con_documentos(pet.texto, SIN_INFO_DOCUMENTAL, breve=pet.canal == "voz"))
 
 
 def fallback(pet: PeticionDF) -> dict:
@@ -288,7 +290,7 @@ def fallback(pet: PeticionDF) -> dict:
         return texto("Gracias por comunicarse con Grupo Médico Visoria. Que tenga un buen día.")
     # Dialogflow clasifica comparando con frases de entrenamiento y nunca lee los documentos: una pregunta
     # cuya respuesta está en ellos puede caer aquí. Se intenta responder con los documentos (spec 05, opción B).
-    return texto(responder_con_documentos(pet.texto, SIN_INFO_FALLBACK))
+    return texto(responder_con_documentos(pet.texto, SIN_INFO_FALLBACK, breve=pet.canal == "voz"))
 
 
 MANEJADORES: dict[str, Callable[[PeticionDF], dict]] = {

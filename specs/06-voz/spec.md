@@ -51,6 +51,11 @@ Esta spec construye el cliente de voz, mejora la naturalidad de Vicky con **SSML
 4. Fuera de alcance por ahora: elegir la hora automáticamente a partir de "en la mañana" o "la que tenga" y aceptar un "sí" a la
    hora sugerida (anotado como mejora futura).
 
+### R2c. Cédula en la confirmación (añadido tras la segunda prueba por voz)
+La pregunta de confirmación incluye el nombre y la cédula del paciente (*"…¿Confirmo la cita a nombre de María González,
+cédula 14523987?"*), para que un error al dictarla se detecte antes de confirmar y se pueda responder "no". Corregir un dato
+sin empezar de nuevo queda para la spec 09.
+
 ### R3. Voz de Vicky (TTS nativo) y SSML
 1. Voz **femenina** en español con **acento latinoamericano**, configurada en la petición (no depende de la consola).
 2. Las respuestas del webhook usan **SSML solo cuando la conversación es por voz**:
@@ -63,6 +68,8 @@ Esta spec construye el cliente de voz, mejora la naturalidad de Vicky con **SSML
 ### R4. Latencia
 1. El cliente mide cada turno desde que termina la grabación hasta que empieza a sonar la respuesta.
 2. Al cerrar la conversación muestra mediana y máximo.
+3. Por voz, Gemini responde en **una sola frase de como máximo 25 palabras** (en texto, hasta tres frases): la síntesis de una respuesta larga llevó un
+   turno a 5,43 s en la segunda prueba.
 3. Objetivo: **< 5 s por turno**, incluidos los turnos con Gemini.
 
 ## Criterios de aceptación

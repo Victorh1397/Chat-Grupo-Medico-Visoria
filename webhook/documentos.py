@@ -65,6 +65,12 @@ def contexto(documentos: list[dict]) -> str:
                        for d in documentos)
 
 
+# Por voz, una respuesta larga tarda más en sintetizarse (un turno llegó a 5,43 s). La indicación va en las
+# instrucciones de sistema: añadida al final del mensaje, el modelo la ignoraba (seguía dando 35-40 palabras).
+INSTRUCCIONES_VOZ = INSTRUCCIONES + """
+8. Esta conversación es por voz: responde con una sola frase de como máximo 25 palabras, solo con lo esencial."""
+
+
 def construir_prompt(pregunta: str, documentos: list[dict]) -> str:
     # Se quitan las etiquetas que pudiera traer la pregunta para que no cierre el delimitador
     pregunta = re.sub(r"</?\s*(pregunta|documentos?)[^>]*>", " ", pregunta, flags=re.IGNORECASE).strip()
@@ -104,17 +110,17 @@ def cliente() -> genai.Client:
 _hilos = ThreadPoolExecutor(max_workers=4, thread_name_prefix="gemini")
 
 
-def preguntar_con_limite(prompt: str) -> str:
+def preguntar_con_limite(prompt: str, instrucciones: str = INSTRUCCIONES) -> str:
     """Espera como máximo TIEMPO_MAXIMO_S; si no hay respuesta, lanza TimeoutError (la llamada sigue en 2.º plano)."""
-    return _hilos.submit(preguntar_al_modelo, prompt).result(timeout=TIEMPO_MAXIMO_S)
+    return _hilos.submit(preguntar_al_modelo, prompt, instrucciones).result(timeout=TIEMPO_MAXIMO_S)
 
 
-def preguntar_al_modelo(prompt: str) -> str:
+def preguntar_al_modelo(prompt: str, instrucciones: str = INSTRUCCIONES) -> str:
     respuesta = cliente().models.generate_content(
         model=MODELO,
         contents=prompt,
         config=types.GenerateContentConfig(
-            system_instruction=INSTRUCCIONES,
+            system_instruction=instrucciones,
             temperature=0,
             max_output_tokens=400,  # incluye el razonamiento interno; con menos, algunas respuestas salían cortadas
             # Razonamiento mínimo: medido 0,6-1,0 s frente a 1,2-1,5 s con "low", y respuestas igual de correctas
@@ -126,7 +132,8 @@ def preguntar_al_modelo(prompt: str) -> str:
     return respuesta.text or ""
 
 
-def responder_con_documentos(pregunta: str, sin_informacion: str, documentos: list[dict] | None = None) -> str:
+def responder_con_documentos(pregunta: str, sin_informacion: str, documentos: list[dict] | None = None,
+                             breve: bool = False) -> str:
     """
     Respuesta de Vicky a una pregunta sobre la clínica, usando solo los documentos.
     `sin_informacion` es el texto si la respuesta no está en ellos (control de alucinaciones).
@@ -137,7 +144,8 @@ def responder_con_documentos(pregunta: str, sin_informacion: str, documentos: li
 
     inicio = time.perf_counter()
     try:
-        bruta = preguntar_con_limite(construir_prompt(pregunta, documentos))
+        bruta = preguntar_con_limite(construir_prompt(pregunta, documentos),
+                                     INSTRUCCIONES_VOZ if breve else INSTRUCCIONES)
     except Exception as e:  # tiempo agotado, cuota (429), red...: nunca dejar al usuario en silencio
         log.warning("Gemini no respondió (%s: %s) en %.0f ms", type(e).__name__, str(e)[:120],
                     (time.perf_counter() - inicio) * 1000)

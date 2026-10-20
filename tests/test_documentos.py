@@ -115,7 +115,7 @@ def test_r4_error_del_modelo(cliente, modelo, error):
 
 
 def test_r4_limite_de_tiempo(monkeypatch):
-    def lento(prompt):
+    def lento(prompt, instrucciones=""):
         time.sleep(1.5)
         return "Respuesta que llega tarde."
 
@@ -145,3 +145,18 @@ def test_r5_al_modelo_no_llegan_datos_de_pacientes():
     for p in PACIENTES:
         assert p.cedula.split("-")[1] not in prompt
         assert f"{p.nombre} {p.apellido}" not in prompt
+
+
+# Spec 06, R4.3: por voz, respuestas más breves
+
+def test_por_voz_se_pide_brevedad(cliente, modelo):
+    cuerpo = {**peticion("consulta_documental", {}, "¿Tienen estacionamiento?"),
+              "originalDetectIntentRequest": {"payload": {"canal": "voz"}}}
+    cliente.post("/webhook", json=cuerpo)
+    assert modelo.instrucciones[-1] == documentos.INSTRUCCIONES_VOZ
+    assert "como máximo 25 palabras" in modelo.instrucciones[-1]
+
+
+def test_por_texto_no_se_pide_brevedad(cliente, modelo):
+    cliente.post("/webhook", json=peticion("consulta_documental", {}, "¿Tienen estacionamiento?"))
+    assert modelo.instrucciones[-1] == documentos.INSTRUCCIONES
