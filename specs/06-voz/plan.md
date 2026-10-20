@@ -49,6 +49,13 @@ latinoamericanas `es-US` (Neural2 / WaveNet / Standard): se generan **muestras d
    **Plan B:** detectar el canal por la presencia de `outputAudioConfig`… o un parámetro de contexto enviado por el cliente.
 3. **Voces disponibles** en el TTS de Dialogflow para `es-US`: se prueban las candidatas y se descartan las que fallen.
 
+### Resultado de la verificación (T1, 19/10/2026)
+- **SSML interpretado** si va envuelto en `<speak>`: una pausa `<break time="3s"/>` produjo un silencio de 2,91 s en el audio.
+  Sin `<speak>`, las etiquetas no se interpretan (no hay pausa y el audio se alarga). → Se usa SSML; no hace falta el plan B.
+- **El payload llega al webhook** (`originalDetectIntentRequest.payload`).
+- **Voces:** `es-US-Neural2-A`, `es-US-Wavenet-A` y `es-US-Standard-A` producen exactamente el mismo audio (probablemente no
+  disponibles y sustituidas por una voz genérica). Las voces femeninas `es-US-Chirp3-HD-Kore`, `-Aoede` y `-Leda` sí son distintas.
+
 ### Latencia
 Desde el final de la grabación hasta el inicio de la reproducción (incluye STT + webhook + Gemini si aplica + TTS).
 Se muestra por turno y, al salir, mediana y máximo. El registro de la sesión (`voz/registros/*.json`, no versionado salvo el de la

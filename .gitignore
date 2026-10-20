@@ -24,3 +24,6 @@ logs/
 .DS_Store
 .vscode/
 .idea/
+
+# Registros de las sesiones de voz (se versiona solo el de la demo, copiado a docs/)
+voz/registros/

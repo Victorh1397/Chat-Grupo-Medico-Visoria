@@ -19,6 +19,7 @@ from fastapi import FastAPI, Header, HTTPException, Request
 from webhook.dialogflow import PeticionDF, texto
 from webhook.documentos import DOCUMENTOS, MODELO
 from webhook.intenciones import MANEJADORES, agenda
+from webhook.ssml import a_ssml
 
 load_dotenv()
 
@@ -57,10 +58,15 @@ async def webhook(request: Request, x_visoria_token: str | None = Header(default
         log.exception("Error en la intención %s", pet.intencion)
         respuesta = texto("Disculpe, tuve un problema técnico. ¿Desea que le comunique con recepción?")
 
+    # SSML solo en el canal de voz: en el simulador o en Telegram las etiquetas se verían como texto
+    if pet.canal == "voz" and respuesta.get("fulfillmentText"):
+        respuesta["fulfillmentText"] = a_ssml(respuesta["fulfillmentText"])
+
     ms = (time.perf_counter() - inicio) * 1000
     parametros = {k: v for k, v in pet.parametros.items() if v and not k.endswith(".original")}
     log.info("-" * 60)
-    log.info("INTENCIÓN: %s | esperando: %s | %.0f ms", pet.intencion, pet.esperando() or "-", ms)
+    log.info("INTENCIÓN: %s | canal: %s | esperando: %s | %.0f ms", pet.intencion, pet.canal or "texto",
+             pet.esperando() or "-", ms)
     log.info("TEXTO: %s", pet.texto)
     log.info("PARÁMETROS: %s", parametros)
     log.info("RESPUESTA: %s", respuesta.get("fulfillmentText")

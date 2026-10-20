@@ -15,6 +15,7 @@ from webhook.cedula import (
 from webhook.datos import medico_por_nombre, medicos_de
 from webhook.dialogflow import PeticionDF, evento, leer_fecha, leer_hora, repreguntar, texto
 from webhook.documentos import SIN_INFO_DOCUMENTAL, SIN_INFO_FALLBACK, responder_con_documentos
+from webhook.numeros import palabras_a_numero
 
 agenda = Agenda()
 
@@ -118,7 +119,14 @@ def _agendar_cita(pet: PeticionDF, respondio_a: str) -> dict:
             return _corregir(pet, {"nacionalidad": ""}, "Disculpe, no le entendí.")
         return _corregir(pet, {"nacionalidad": inferida})
 
-    # 2. Cédula: validación con regex según V/E
+    # 2. Cédula dicha en palabras ("catorce millones…"): la regex de @cedula no la extrae; se pasa a cifras
+    if respondio_a == "cedula" and not pet.parametro("cedula"):
+        numero = palabras_a_numero(texto_usuario)
+        if numero is not None:
+            cedula, motivo = validar(str(numero), nacionalidad)
+            return _corregir(pet, {"cedula": str(numero)}) if cedula else _corregir(pet, {"cedula": ""}, motivo)
+
+    # Cédula: validación con regex según V/E
     cedula = ""
     if pet.parametro("cedula"):
         cedula, motivo = validar(pet.parametro("cedula"), nacionalidad)
