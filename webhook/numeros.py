@@ -31,10 +31,11 @@ def _plano(texto: str) -> str:
 
 def palabras_a_numero(texto: str) -> int | None:
     """Número contenido en el texto, o None si no hay ninguno. Ignora palabras de relleno ("mi cédula es…")."""
-    piezas = []
+    piezas, grupos_en_cifras = [], []
     for palabra in _plano(texto).split():
         if palabra.isdigit():
             piezas.append(int(palabra))
+            grupos_en_cifras.append(palabra)
         elif palabra in VALORES:
             piezas.append(VALORES[palabra])
         elif palabra in MULTIPLICADORES:
@@ -42,6 +43,10 @@ def palabras_a_numero(texto: str) -> int | None:
     if not piezas:
         return None
     numeros = [p for p in piezas if isinstance(p, int)]
+
+    # Grupos escritos en cifras por el reconocimiento de voz ("1614 8811"): se juntan, no se suman
+    if len(grupos_en_cifras) == len(piezas):
+        return int("".join(grupos_en_cifras))
 
     # Dictado cifra a cifra: "uno cuatro cinco dos tres nueve ocho siete"
     if len(numeros) >= 6 and len(numeros) == len(piezas) and all(n < 10 for n in numeros):

@@ -18,6 +18,8 @@ SIN_CEDULA = {"nombre": "María", "apellido": "González", "nacionalidad": "V", 
     ("veintiún millones", 21000000),
     ("ochenta y un millones doscientos treinta y cuatro mil quinientos sesenta y siete", 81234567),
     ("mil", 1000),
+    ("1614 8811", 16148811),  # agrupación real del reconocimiento de voz
+    ("14 523 987", 14523987),
 ])
 def test_palabras_a_numero(texto, numero):
     assert palabras_a_numero(texto) == numero
