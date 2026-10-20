@@ -51,9 +51,14 @@ class PeticionDF:
 
     @property
     def canal(self) -> str:
-        """'voz' si la petición viene del cliente de voz (lo indica en queryParams.payload); '' en otro caso."""
-        payload = self.cuerpo.get("originalDetectIntentRequest", {}).get("payload", {}) or {}
-        return str(payload.get("canal", ""))
+        """
+        'telegram' si llega por la integración de Telegram; 'voz' si viene del cliente de voz (lo indica en
+        queryParams.payload); '' en otro caso (simulador).
+        """
+        origen = self.cuerpo.get("originalDetectIntentRequest", {}) or {}
+        if origen.get("source") == "telegram":
+            return "telegram"
+        return str((origen.get("payload", {}) or {}).get("canal", ""))
 
     @property
     def todos_los_datos(self) -> bool:

@@ -227,6 +227,8 @@ def agendar_cita_empezar_de_nuevo(pet: PeticionDF) -> dict:
 # Otras intenciones
 
 def consultar_horarios(pet: PeticionDF) -> dict:
+    if not pet.todos_los_datos:
+        return {}  # aún falta la especialidad: Dialogflow (o Telegram, con botones) la pregunta
     especialidad = pet.parametro("especialidad")
     medicos = medicos_de(especialidad)
     if not medicos:
@@ -287,11 +289,32 @@ def transferir_humano(pet: PeticionDF) -> dict:
     return texto(transferencia.mensaje(caso))
 
 
+BIENVENIDA = ("Bienvenido a Grupo Médico Visoria, soy Vicky. Puedo agendarle una cita médica o responder sus dudas "
+              "sobre la clínica. ¿En qué le puedo ayudar?")
+PREGUNTAS_FRECUENTES = ("Con gusto. Puede preguntarme, por ejemplo, si tienen estacionamiento, cuánto cuesta la "
+                        "consulta de un especialista, qué seguros aceptan o cómo prepararse para un examen. "
+                        "¿Qué desea saber?")
+
+
+def bienvenida(pet: PeticionDF) -> dict:
+    # Con webhook para poder añadir el menú de botones en Telegram (spec 08); el texto es el de la consola
+    return texto(BIENVENIDA)
+
+
+def agendar_cita_no(pet: PeticionDF) -> dict:
+    # Con webhook para poder añadir los botones Sí/No en Telegram (spec 08); el texto es el de la consola
+    agenda.descartar(pet.sesion)
+    transferencia.olvidar_cita(pet.sesion)
+    return texto("Entendido, no he registrado la cita. ¿Desea empezar de nuevo?")
+
+
 def consulta_documental(pet: PeticionDF) -> dict:
     return texto(responder_con_documentos(pet.texto, SIN_INFO_DOCUMENTAL, breve=pet.canal == "voz"))
 
 
 def fallback(pet: PeticionDF) -> dict:
+    if pet.texto.strip().lower() == "preguntas frecuentes":  # botón del menú de Telegram (spec 08)
+        return texto(PREGUNTAS_FRECUENTES)
     if CIERRE.match(pet.texto.strip()):
         transferencia.sin_entender.pop(pet.sesion, None)
         return texto("Gracias por comunicarse con Grupo Médico Visoria. Que tenga un buen día.")
@@ -314,7 +337,9 @@ FALLBACK = "Default Fallback Intent"
 
 MANEJADORES: dict[str, Callable[[PeticionDF], dict]] = {
     "agendar_cita": agendar_cita,
+    "Default Welcome Intent": bienvenida,
     "agendar_cita - yes": agendar_cita_si,
+    "agendar_cita - no": agendar_cita_no,
     "agendar_cita - no - yes": agendar_cita_empezar_de_nuevo,
     "consultar_horarios": consultar_horarios,
     "consultar_historial": consultar_historial,
