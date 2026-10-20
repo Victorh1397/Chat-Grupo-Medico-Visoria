@@ -71,6 +71,13 @@ Respuestas de Gemini por voz limitadas a una frase de 25 palabras (antes 35–40
 - Petición de respaldo a los 1,5 s y primera respuesta válida: en un webhook de prueba, 12/12 respondidas (máximo 2,6 s, respaldo
   activado 4 veces); por el webhook real y canal voz, 5/5 respondidas, turno completo con mediana 2,99 s y máximo 3,60 s.
 
+### Conversación modelo por voz (T8, 19/10/2026)
+Hablada por el autor con la voz por defecto; registro en `docs/evidencias/voz_conversacion_modelo.json`.
+- 10 turnos, todos reconocidos a la primera (nombre, nacionalidad, cédula "14 523 987", "el próximo martes", "a las 10 de la mañana").
+- María reconocida como paciente con su dermatóloga habitual; confirmación con nombre y cédula; código `CIT-56489`; pregunta documental.
+- Latencia: mediana 2,1 s, máximo 4,1 s, ninguno > 5 s.
+- Simulador por texto (T9): respuestas sin etiquetas SSML.
+
 ### Latencia
 Desde el final de la grabación hasta el inicio de la reproducción (incluye STT + webhook + Gemini si aplica + TTS).
 Se muestra por turno y, al salir, mediana y máximo. El registro de la sesión (`voz/registros/*.json`, no versionado salvo el de la

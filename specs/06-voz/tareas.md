@@ -15,6 +15,6 @@ Plan: [plan.md](plan.md)
 - [x] T8b. R4.3: respuestas de Gemini de una o dos frases en el canal de voz + tests + medición (Claude)
 - [x] T8c. Voz por defecto del agente en lugar de Aoede y límite de Gemini a 4 s (decisiones del autor por latencia)
 - [x] T8d. Petición de respaldo a Gemini a los 1,5 s, primera respuesta válida; tests y medición (Claude)
-- [ ] T8. Conversación modelo completa por voz (tú hablas; Claude analiza el registro) y ajustes
-- [ ] T9. Comprobar en el simulador de Dialogflow que no aparecen etiquetas SSML (tú o Claude)
+- [x] T8. Conversación modelo completa por voz (tú hablas; Claude analiza el registro) y ajustes
+- [x] T9. Comprobar en el simulador de Dialogflow que no aparecen etiquetas SSML (tú o Claude)
 - [ ] T10. Actualizar `specs/README.md` y commit `feat(06): …` (Claude)

@@ -1,0 +1,127 @@
+{
+  "voz": "por defecto del agente",
+  "turnos": [
+    {
+      "entendido": "hola",
+      "intencion": "Default Welcome Intent",
+      "confianza": 1.0,
+      "parametros": {},
+      "respuesta": "Bienvenido a Grupo Médico Visoria, soy Vicky. Puedo agendarle una cita médica o responder sus dudas sobre la clínica. ¿En qué le puedo ayudar?",
+      "latencia_s": 2.12,
+      "webhook": "ok"
+    },
+    {
+      "entendido": "quiero una cita con el dermatólogo",
+      "intencion": "agendar_cita",
+      "confianza": 1.0,
+      "parametros": {
+        "especialidad": "Dermatología"
+      },
+      "respuesta": "¿Me indica su nombre y apellido, por favor?",
+      "latencia_s": 2.1,
+      "webhook": "ok"
+    },
+    {
+      "entendido": "María González",
+      "intencion": "agendar_cita",
+      "confianza": 1.0,
+      "parametros": {
+        "apellido": "González",
+        "nombre": "María",
+        "especialidad": "Dermatología"
+      },
+      "respuesta": "¿Usted es venezolano o extranjero?",
+      "latencia_s": 1.77,
+      "webhook": "ok"
+    },
+    {
+      "entendido": "venezolana",
+      "intencion": "agendar_cita",
+      "confianza": 1.0,
+      "parametros": {
+        "nacionalidad": "V",
+        "nombre": "María",
+        "apellido": "González",
+        "especialidad": "Dermatología"
+      },
+      "respuesta": "¿Me indica su número de cédula? Por ejemplo: 14523987",
+      "latencia_s": 2.24,
+      "webhook": "ok"
+    },
+    {
+      "entendido": "14 523 987",
+      "intencion": "agendar_cita",
+      "confianza": 1.0,
+      "parametros": {
+        "nacionalidad": "V",
+        "cedula": "14 523 987",
+        "apellido": "González",
+        "nombre": "María",
+        "especialidad": "Dermatología"
+      },
+      "respuesta": "¿Para qué fecha desea la cita?",
+      "latencia_s": 2.13,
+      "webhook": "ok"
+    },
+    {
+      "entendido": "el próximo martes",
+      "intencion": "agendar_cita",
+      "confianza": 1.0,
+      "parametros": {
+        "fecha": "2026-10-27T12:00:00-04:00",
+        "nacionalidad": "V",
+        "cedula": "14 523 987",
+        "apellido": "González",
+        "nombre": "María",
+        "especialidad": "Dermatología"
+      },
+      "respuesta": "Ese día atiende la doctora Laura Rojas de 8:00 a 12:00; el primer horario libre es a las 8:00. ¿A qué hora le conviene?",
+      "latencia_s": 1.94,
+      "webhook": "ok"
+    },
+    {
+      "entendido": "me conviene a las 10 de la mañana",
+      "intencion": "agendar_cita",
+      "confianza": 1.0,
+      "parametros": {
+        "nacionalidad": "V",
+        "fecha": "2026-10-27T12:00:00-04:00",
+        "cedula": "14 523 987",
+        "apellido": "González",
+        "nombre": "María",
+        "hora": "2026-10-20T10:00:00-04:00",
+        "especialidad": "Dermatología"
+      },
+      "respuesta": "María, veo que ya se atendió en dermatología con la doctora Laura Rojas. Le propongo cita con ella el martes 27 de octubre a las 10:00. La consulta cuesta 40 dólares. ¿Confirmo la cita a nombre de María González, cédula 14 523 987?",
+      "latencia_s": 3.02,
+      "webhook": "ok"
+    },
+    {
+      "entendido": "si confirma la cita",
+      "intencion": "agendar_cita - yes",
+      "confianza": 0.67,
+      "parametros": {},
+      "respuesta": "Listo, María. Su cita CIT-56489 con la doctora Laura Rojas está confirmada para el martes 27 de octubre a las 10:00. Le recomendamos llegar 15 minutos antes. ¿Le puedo ayudar en algo más?",
+      "latencia_s": 2.07,
+      "webhook": "ok"
+    },
+    {
+      "entendido": "sí quiero saber si tienen estacionamiento",
+      "intencion": "consulta_documental",
+      "confianza": 0.65,
+      "parametros": {},
+      "respuesta": "Sí, la torre tiene estacionamiento propio en el sótano, gratuito las dos primeras horas para pacientes con cita.",
+      "latencia_s": 3.59,
+      "webhook": "ok"
+    },
+    {
+      "entendido": "okay gracias",
+      "intencion": "Default Fallback Intent",
+      "confianza": 1.0,
+      "parametros": {},
+      "respuesta": "De nada, que tenga un excelente día.",
+      "latencia_s": 4.12,
+      "webhook": "ok"
+    }
+  ]
+}
