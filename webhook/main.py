@@ -16,9 +16,10 @@ import time
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, Request
 
+from webhook import transferencia
 from webhook.dialogflow import PeticionDF, texto
 from webhook.documentos import DOCUMENTOS, MODELO
-from webhook.intenciones import MANEJADORES, agenda
+from webhook.intenciones import FALLBACK, MANEJADORES, agenda
 from webhook.ssml import a_ssml
 
 load_dotenv()
@@ -49,14 +50,27 @@ async def webhook(request: Request, x_visoria_token: str | None = Header(default
     inicio = time.perf_counter()
     pet = PeticionDF(await request.json())
 
+    # Spec 07: un "sí"/"no" a la oferta de recepción del turno anterior llega como fallback
+    oferta = transferencia.tomar_oferta(pet.sesion)
+    if pet.intencion != FALLBACK:
+        transferencia.sin_entender.pop(pet.sesion, None)
+    respuesta_oferta = (transferencia.responder_a_oferta(pet.texto, oferta, pet.sesion, pet.canal)
+                        if oferta and pet.intencion == FALLBACK else None)
+
     manejador = MANEJADORES.get(pet.intencion)
     try:
-        respuesta = manejador(pet) if manejador else texto(
-            "Disculpe, todavía no sé gestionar esa petición. ¿Le puedo ayudar en otra cosa?")
+        if respuesta_oferta:
+            respuesta = texto(respuesta_oferta)
+        else:
+            respuesta = manejador(pet) if manejador else texto(
+                "Disculpe, todavía no sé gestionar esa petición. ¿Le puedo ayudar en otra cosa?")
     except Exception:
         # Nunca dejar al usuario en silencio: Dialogflow leería una respuesta vacía
         log.exception("Error en la intención %s", pet.intencion)
         respuesta = texto("Disculpe, tuve un problema técnico. ¿Desea que le comunique con recepción?")
+
+    # Si Vicky ofreció recepción, la oferta vale para el turno siguiente (antes de pasar a SSML)
+    transferencia.ofrecer_si_procede(pet.sesion, respuesta.get("fulfillmentText", ""), pet.texto)
 
     # SSML solo en el canal de voz: en el simulador o en Telegram las etiquetas se verían como texto
     if pet.canal == "voz" and respuesta.get("fulfillmentText"):

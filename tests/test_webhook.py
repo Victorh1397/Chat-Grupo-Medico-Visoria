@@ -197,7 +197,7 @@ def test_ca10_cancelar_dos_veces(cliente):
 
 def test_ca11_transferir(cliente):
     res = respuesta(cliente, peticion("transferir_humano", {}, "quiero hablar con una persona"))
-    assert re.search(r"número de caso es VIS-\d{5}", res["fulfillmentText"])
+    assert re.search(r"caso VIS-\d{5}", res["fulfillmentText"])
 
 
 @pytest.mark.parametrize("frase", ["no", "No gracias", "nada más", "eso es todo"])

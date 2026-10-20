@@ -54,7 +54,7 @@ def test_canal_texto_sin_ssml(cliente):
     for cuerpo in [peticion("transferir_humano", {}, "quiero hablar con una persona"),
                    con_canal(peticion("transferir_humano"), "telegram")]:
         texto = cliente.post("/webhook", json=cuerpo).json()["fulfillmentText"]
-        assert "<" not in texto and texto.startswith("Le comunico con recepción")
+        assert "<" not in texto and "caso VIS-" in texto
 
 
 def test_repreguntar_por_voz_tambien_en_ssml(cliente):

@@ -42,8 +42,12 @@ def modelo(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
-def entorno(monkeypatch):
+def entorno(monkeypatch, tmp_path):
+    from webhook import transferencia
+
     monkeypatch.setattr(modulo_agenda, "ahora", lambda: AHORA)
+    monkeypatch.setattr(transferencia, "REGISTRO", tmp_path / "transferencias.jsonl")
+    transferencia.reiniciar()
     monkeypatch.setenv("WEBHOOK_TOKEN", TOKEN)
     from webhook.intenciones import agenda, pregunta_anterior
 
