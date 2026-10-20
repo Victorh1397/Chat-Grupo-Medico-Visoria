@@ -1,6 +1,6 @@
 # Spec 07 — Transferencia a agente humano (mejora opcional)
 
-- **Estado:** Spec aprobada
+- **Estado:** Hecha
 - **Rúbrica:** Mejoras opcionales (hasta +1,5): *"Intención adicional de transferencia a agente humano"*.
 - **Depende de:** [Spec 03](../03-webhook-fastapi/spec.md), [Spec 05](../05-consulta-documental/spec.md)
 

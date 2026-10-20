@@ -54,6 +54,14 @@ hora (como en la spec 03) para probar ambos mensajes.
 | Ofertas de las respuestas de reserva estáticas de Dialogflow (webhook caído) | No se pueden detectar sin webhook; caso aceptado |
 | El estado en memoria se pierde al reiniciar | Igual que las citas (demo) |
 
+## Resultado (19/10/2026, por Dialogflow en texto, fuera del horario de recepción)
+- "¿Hacen resonancias magnéticas?" → oferta → "sí, por favor" → caso `informacion_no_disponible` con la pregunta original.
+- La misma oferta → "no gracias" → "De acuerdo. ¿Le puedo ayudar en algo más?".
+- Dos frases sin sentido → oferta automática → "sí" → caso `no_entendido`.
+- A mitad de la cita, "quiero hablar con una persona" sale del flujo; el caso incluye nombre, especialidad y cédula `***987`.
+- Tras una pregunta intermedia, un "sí" ya no transfiere (oferta caducada).
+- Mensaje de recepción cerrada con el horario. 249 tests.
+
 ## Verificación
 - `uv run pytest` (tests nuevos con modelo simulado y hora fija).
 - Por Dialogflow en texto (Claude): "¿hacen resonancias?" → "sí"; "¿hacen resonancias?" → "no"; dos frases sin sentido → oferta → "sí";
