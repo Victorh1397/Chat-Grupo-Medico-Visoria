@@ -17,4 +17,4 @@ Plan: [plan.md](plan.md)
 - [x] T8d. Petición de respaldo a Gemini a los 1,5 s, primera respuesta válida; tests y medición (Claude)
 - [x] T8. Conversación modelo completa por voz (tú hablas; Claude analiza el registro) y ajustes
 - [x] T9. Comprobar en el simulador de Dialogflow que no aparecen etiquetas SSML (tú o Claude)
-- [ ] T10. Actualizar `specs/README.md` y commit `feat(06): …` (Claude)
+- [x] T10. Actualizar `specs/README.md` y commit `feat(06): …` (Claude)

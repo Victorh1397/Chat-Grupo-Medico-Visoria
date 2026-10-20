@@ -1,6 +1,6 @@
 # Spec 06 — Voz de extremo a extremo
 
-- **Estado:** Spec aprobada
+- **Estado:** Hecha
 - **Rúbrica:** Voz (2 pts): conversación completa por STT y TTS, naturalidad con SSML y latencia por debajo de 5 s por turno.
 - **Depende de:** [Spec 02](../02-agente-dialogflow/spec.md), [Spec 03](../03-webhook-fastapi/spec.md), [Spec 05](../05-consulta-documental/spec.md)
 
