@@ -69,6 +69,11 @@ sin empezar de nuevo queda para la spec 09.
 ### R4. Latencia
 1. El cliente mide cada turno desde que termina la grabación hasta que empieza a sonar la respuesta.
 2. Al cerrar la conversación muestra mediana y máximo.
+4. Límite de Gemini subido de 3 a 4 s (decisión del autor): en las pruebas de la tarde, 4 de cada 10 preguntas superaban los
+   3 s. El límite de 5 s de Dialogflow se aplica solo al webhook (no a la síntesis de voz), así que queda ~1 s de margen.
+5. **Petición de respaldo** (decisión del autor): si Gemini no responde en 1,5 s, se envía una segunda petición idéntica y se usa
+   la primera respuesta que llegue. Motivo: Gemini responde casi siempre en < 1 s, pero una parte de las respuestas tarda > 4 s
+   de forma aleatoria (medido en un webhook de prueba: 7 de 8 en 0,7–1,1 s y 1 por encima de 4 s).
 3. Por voz, Gemini responde en **una sola frase de como máximo 25 palabras** (en texto, hasta tres frases): la síntesis de una respuesta larga llevó un
    turno a 5,43 s en la segunda prueba.
 3. Objetivo: **< 5 s por turno**, incluidos los turnos con Gemini.

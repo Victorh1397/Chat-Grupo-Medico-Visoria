@@ -65,6 +65,12 @@ latinoamericanas `es-US` (Neural2 / WaveNet / Standard): se generan **muestras d
 
 Respuestas de Gemini por voz limitadas a una frase de 25 palabras (antes 35–40): turnos documentales de 2,2–4,97 s con Aoede.
 
+### Picos de latencia de Gemini y petición de respaldo (T8c, T8d)
+- Con límite de 3 s, en la tarde 4 de cada 10 preguntas documentales recibían la respuesta de reserva; con 4 s, seguían fallando:
+  las respuestas eran rápidas (0,7–1,1 s) o superaban los 4 s, sin término medio (picos aleatorios de Gemini).
+- Petición de respaldo a los 1,5 s y primera respuesta válida: en un webhook de prueba, 12/12 respondidas (máximo 2,6 s, respaldo
+  activado 4 veces); por el webhook real y canal voz, 5/5 respondidas, turno completo con mediana 2,99 s y máximo 3,60 s.
+
 ### Latencia
 Desde el final de la grabación hasta el inicio de la reproducción (incluye STT + webhook + Gemini si aplica + TTS).
 Se muestra por turno y, al salir, mediana y máximo. El registro de la sesión (`voz/registros/*.json`, no versionado salvo el de la

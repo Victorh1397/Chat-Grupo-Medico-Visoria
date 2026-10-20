@@ -40,6 +40,8 @@ información cuando la respuesta no está en ellos, en lugar de inventarla.
 2. Modelo de la familia Gemini *Flash-Lite* con razonamiento interno mínimo y temperatura 0, elegido por latencia (en la medición
    de la puesta en marcha: ~0,7 s frente a ~2,5 s del *Flash*). El modelo exacto se fija en el plan tras medirlo.
 3. **Límite de tiempo de 3 s** para Gemini: con el procesamiento de Dialogflow y el túnel, el turno completo queda por debajo de 5 s.
+   *Actualizado a 4 s en la spec 06:* a ciertas horas Gemini superaba los 3 s con frecuencia; el límite de 5 s de Dialogflow
+   solo afecta al webhook, no a la síntesis de voz.
 4. La respuesta se limpia antes de devolverla: sin asteriscos, almohadillas ni viñetas.
 
 ### R3. Control de alucinaciones
