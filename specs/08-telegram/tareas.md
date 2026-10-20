@@ -9,5 +9,6 @@ Plan: [plan.md](plan.md)
 - [x] T4. Manejadores de bienvenida, `agendar_cita - no` y "Preguntas frecuentes" + tests (Claude)
 - [x] T5. Cambios en la consola: webhook en bienvenida y `agendar_cita - no`, slot filling en `consultar_horarios` (tú)
 - [x] T6. Nuevo export del agente + `tests/test_agente_export.py` actualizado (tú exportas, Claude incorpora)
-- [ ] T7. Pruebas en la app de Telegram (tú) y por Dialogflow (Claude): CA-1 a CA-6
-- [ ] T8. Actualizar `specs/README.md` y commit `feat(08): …` (Claude)
+- [x] T7. Pruebas en la app de Telegram (tú) y por Dialogflow (Claude): CA-1 a CA-6
+- [x] T7b. R5: lectura de fechas de respaldo (`webhook/fechas.py`) tras "Para el 29 de octubre" no reconocido + tests (Claude)
+- [x] T8. Actualizar `specs/README.md` y commit `feat(08): …` (Claude)

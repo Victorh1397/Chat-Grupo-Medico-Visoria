@@ -60,6 +60,15 @@ Dos opciones que admite Dialogflow ES para Telegram; se elige la que **envíe el
 | Cualquiera puede usar el bot y gastar cuota | Decisión del autor; lista de usuarios como mejora futura |
 | El webhook debe estar en marcha (ngrok) para que el bot responda | Igual que el resto de canales |
 
+## Resultado (19/10/2026)
+- T1: integración nativa disponible; los dos formatos de botón se comportan igual (sobre el teclado, envían su texto, se ocultan).
+  Se usa `quickReplies`.
+- Por Dialogflow con la marca de canal Telegram: menú (4 botones que llevan a su intención), nacionalidad, especialidad (al agendar y al
+  consultar horarios), confirmación y oferta de recepción con botones; "Preguntas frecuentes" responde con ejemplos.
+- En la app de Telegram (autor): cita con botones, texto libre en lugar de botones, pregunta documental y transferencia. Única
+  incidencia: "Para el 29 de octubre" no lo reconoció `@sys.date` → lectura de fechas de respaldo en el webhook (R5), verificada por Dialogflow.
+- 290 tests.
+
 ## Verificación
 - `uv run pytest` (peticiones de Telegram simuladas).
 - Por Dialogflow con la marca de canal Telegram (Claude): las respuestas llevan los mensajes de botones.

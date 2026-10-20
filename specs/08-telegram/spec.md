@@ -1,6 +1,6 @@
 # Spec 08 — Vicky en Telegram (mejora opcional)
 
-- **Estado:** Spec aprobada
+- **Estado:** Hecha
 - **Rúbrica:** Mejoras opcionales (hasta +1,5): *"Integración con Telegram o Slack, especialmente si usáis respuestas
   enriquecidas (tarjetas, botones, imágenes)"*.
 - **Depende de:** [Spec 02](../02-agente-dialogflow/spec.md), [Spec 03](../03-webhook-fastapi/spec.md), [Spec 07](../07-transferencia-humano/spec.md)
@@ -59,6 +59,11 @@ Los botones son **solo una ayuda, nunca obligatorios**:
 - Pulsar un botón equivale a escribir su texto; Dialogflow y el webhook no distinguen entre una cosa y otra.
 - El usuario puede ignorarlos y escribir lo que quiera (otra forma de decirlo, otra nacionalidad, otra pregunta): se atiende igual que sin botones.
 - Desaparecen tras usarlos.
+
+### R5. Fecha de respaldo (añadido tras la prueba en Telegram)
+Si el usuario respondió a "¿Para qué fecha…?" y `@sys.date` no la reconoció ("Para el 29 de octubre"), el webhook la lee del texto
+("29 de octubre", "29/10", "mañana", "pasado mañana", "el próximo jueves") y sigue el flujo. Si no reconoce ninguna, Dialogflow
+vuelve a preguntar como antes. Vale para todos los canales.
 
 ## Criterios de aceptación
 

@@ -21,7 +21,7 @@ Plantillas en [`_plantillas/`](_plantillas/). Principios en [`00-constitucion.md
 | 05 | [Consulta documental con Gemini + control de alucinaciones](05-consulta-documental/spec.md) | OCR (3) | Hecha |
 | 06 | [Voz extremo a extremo (cliente de voz, SSML, latencia)](06-voz/spec.md) | Voz (2) | Hecha |
 | 07 | [Extra: transferencia a agente humano](07-transferencia-humano/spec.md) | +1,5 | Hecha |
-| 08 | [Extra: Telegram (integración nativa, texto + botones)](08-telegram/spec.md) | +1,5 | Spec aprobada |
+| 08 | [Extra: Telegram (integración nativa, texto + botones)](08-telegram/spec.md) | +1,5 | Hecha |
 | 09 | Extra: corrección de datos a mitad de flujo con eventos | +1,5 | Pendiente |
 | 99 | Entregables: README, diagrama, ZIP del agente, vídeo ≤ 3 min | Docs (1) | Pendiente |
 
@@ -43,6 +43,7 @@ Estados: Pendiente → Spec redactada → Spec aprobada → En implementación �
 | ZIP del agente + script OCR + webhook | 02, 03, 04, 99 | `entrega/agente_dialogflow.zip` (generado sin secretos con `scripts/preparar_export.py`) · `webhook/` · `ocr/` |
 | README (caso de uso, diagrama, intenciones, decisiones, instrucciones) | 99 | |
 | Vídeo ≤ 3 min | 99 | |
+| *Mejora opcional:* integración con Telegram con respuestas enriquecidas (botones) | 08 | Integración nativa de Dialogflow · `webhook/telegram.py` (botones `quickReplies` solo en Telegram) · `tests/test_telegram.py` · prueba en la app |
 | *Mejora opcional:* intención de transferencia a agente humano | 07 | `transferir_humano` + `webhook/transferencia.py` (oferta aceptada con "sí", oferta automática, caso con resumen y horario) · `tests/test_transferencia.py` · prueba por Dialogflow |
 
 ## Mejoras futuras (fuera del alcance actual)
