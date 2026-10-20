@@ -22,7 +22,7 @@ al usuario. La transferencia es **simulada**: se registra un caso con el resumen
 
 **Fuera de alcance**
 - Conexión con una persona real (llamada, chat en vivo).
-- Aviso al grupo de recepción en Telegram (spec 08, que reutilizará el caso creado aquí).
+- Notificar el caso al personal de recepción por otro medio (correo, mensajería…): el caso solo se registra en un fichero.
 - Corrección de datos a mitad de flujo (spec 09).
 
 ## Requisitos
@@ -69,7 +69,7 @@ Si Vicky no entiende al usuario **dos turnos seguidos** (fallback sin informaci�
 | Tema | Decisión | Motivo |
 |---|---|---|
 | Detectar el "sí" a la oferta | El webhook recuerda, por sesión, que acaba de ofrecer recepción; el "sí"/"no" sin contexto llega al fallback (verificado en la spec 02) y el webhook lo interpreta | No requiere cambios en la consola de Dialogflow; misma técnica de estado por sesión que la spec 03 |
-| Registro de casos | Fichero JSON Lines | Simula una cola de recepción legible; spec 08 podrá enviar el mismo caso a Telegram |
+| Registro de casos | Fichero JSON Lines | Simula una cola de recepción legible |
 | Privacidad | Cédula enmascarada en el resumen | El caso lo lee personal de recepción |
 
 ## Decisiones del autor
