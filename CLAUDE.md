@@ -27,7 +27,7 @@ Asistente conversacional por voz (Dialogflow ES + webhook FastAPI + OCR + Gemini
 
 - Voz solo con STT/TTS nativos de Dialogflow (sin servicios externos de voz).
 - Latencia < 5 s por turno: nada de OCR en la petición; el LLM siempre con `try/except` y respuesta de reserva.
-- El LLM responde solo con información de los documentos procesados por OCR (sin conocimiento propio); si el dato no está, lo dice explícitamente. Cómo se recupera ese texto es independiente: en el mínimo obligatorio se incluye entero en el prompt; con el extra de ChromaDB (spec 10) se recuperan solo los fragmentos relevantes del mismo texto OCR.
+- El LLM responde solo con información de los documentos procesados por OCR (sin conocimiento propio); si el dato no está, lo dice explícitamente. El texto completo de los documentos se incluye en el prompt.
 - Secretos solo en `.env` o fuera del repo. Datos de pacientes siempre ficticios.
 - El usuario configura el agente Dialogflow **a mano** en la consola; Claude no lo crea ni lo modifica por API. Claude redacta la guía paso a paso (en el `plan.md` de la spec) y guía al usuario durante la configuración.
 - Tras cada cambio, el usuario exporta el ZIP (⚙️ → Export and Import → Export as ZIP); se incorpora con `uv run python scripts/preparar_export.py ~/Downloads/Grupo-Medico-Visoria.zip` (sustituye el token del webhook por `<WEBHOOK_TOKEN>`; **nunca copiar el ZIP a mano**), se verifica con `uv run pytest tests/test_agente_export.py` y pruebas `detect_intent`, y se hace commit. El ZIP de entrega es el último export.

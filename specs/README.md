@@ -23,7 +23,6 @@ Plantillas en [`_plantillas/`](_plantillas/). Principios en [`00-constitucion.md
 | 07 | [Extra: transferencia a agente humano](07-transferencia-humano/spec.md) | +1,5 | Hecha |
 | 08 | Extra: Telegram (integración nativa, texto + botones) | +1,5 | Pendiente |
 | 09 | Extra: corrección de datos a mitad de flujo con eventos | +1,5 | Pendiente |
-| 10 | Extra: ChromaDB | +1,5 | Pendiente |
 | 99 | Entregables: README, diagrama, ZIP del agente, vídeo ≤ 3 min | Docs (1) | Pendiente |
 
 Estados: Pendiente → Spec redactada → Spec aprobada → En implementación → Hecha.
