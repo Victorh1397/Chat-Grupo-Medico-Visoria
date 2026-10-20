@@ -22,9 +22,11 @@ class ModeloSimulado:
     def __init__(self):
         self.respuesta = "NO_DISPONIBLE"
         self.prompts: list[str] = []
+        self.instrucciones: list[str] = []
 
-    def __call__(self, prompt: str) -> str:
+    def __call__(self, prompt: str, instrucciones: str = "") -> str:
         self.prompts.append(prompt)
+        self.instrucciones.append(instrucciones)
         if isinstance(self.respuesta, Exception):
             raise self.respuesta
         return self.respuesta

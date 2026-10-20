@@ -11,7 +11,7 @@ import logging
 import os
 import re
 import time
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
 from pathlib import Path
 
 from google import genai
@@ -22,7 +22,12 @@ log = logging.getLogger("visoria")
 RUTA_DOCUMENTOS = Path(__file__).resolve().parents[1] / "ocr" / "salida" / "documentos.json"
 # Versión fija (no "-latest") para que el comportamiento no cambie sin aviso. Medido: ~0,9-1,3 s con este prompt
 MODELO = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
-TIEMPO_MAXIMO_S = 3.0  # con Dialogflow y el túnel, el turno completo queda por debajo de 5 s
+# Dialogflow espera al webhook 5 s; 4 s para Gemini deja ~1 s de margen. Era 3 s, pero a ciertas horas Gemini
+# tardaba más (0,6-2,7 s y picos > 3 s) y 4 de cada 10 preguntas recibían la respuesta de reserva (spec 06, T8).
+TIEMPO_MAXIMO_S = 4.0
+# Gemini responde casi siempre en < 1 s, pero algunas respuestas tardan > 4 s al azar: si a los 1,5 s no hay respuesta,
+# se envía una segunda petición idéntica y se usa la primera que llegue ("hedged request", spec 06)
+RESPALDO_S = 1.5
 PLAZO_SERVIDOR_MS = 10_000  # la API no acepta plazos menores; el límite real de 3 s se aplica en nuestro lado
 NO_DISPONIBLE = "NO_DISPONIBLE"
 
@@ -65,6 +70,12 @@ def contexto(documentos: list[dict]) -> str:
                        for d in documentos)
 
 
+# Por voz, una respuesta larga tarda más en sintetizarse (un turno llegó a 5,43 s). La indicación va en las
+# instrucciones de sistema: añadida al final del mensaje, el modelo la ignoraba (seguía dando 35-40 palabras).
+INSTRUCCIONES_VOZ = INSTRUCCIONES + """
+8. Esta conversación es por voz: responde con una sola frase de como máximo 25 palabras, solo con lo esencial."""
+
+
 def construir_prompt(pregunta: str, documentos: list[dict]) -> str:
     # Se quitan las etiquetas que pudiera traer la pregunta para que no cierre el delimitador
     pregunta = re.sub(r"</?\s*(pregunta|documentos?)[^>]*>", " ", pregunta, flags=re.IGNORECASE).strip()
@@ -101,20 +112,45 @@ def cliente() -> genai.Client:
     return _cliente
 
 
-_hilos = ThreadPoolExecutor(max_workers=4, thread_name_prefix="gemini")
+# Hilos de sobra: cada pregunta puede usar dos y las llamadas abandonadas siguen hasta 10 s en segundo plano
+_hilos = ThreadPoolExecutor(max_workers=8, thread_name_prefix="gemini")
 
 
-def preguntar_con_limite(prompt: str) -> str:
-    """Espera como máximo TIEMPO_MAXIMO_S; si no hay respuesta, lanza TimeoutError (la llamada sigue en 2.º plano)."""
-    return _hilos.submit(preguntar_al_modelo, prompt).result(timeout=TIEMPO_MAXIMO_S)
+def preguntar_con_limite(prompt: str, instrucciones: str = INSTRUCCIONES) -> str:
+    """
+    Respuesta de Gemini en como máximo TIEMPO_MAXIMO_S, con una petición de respaldo a los RESPALDO_S.
+    Lanza TimeoutError si ninguna llega a tiempo, o el error de la petición si todas fallan.
+    Las llamadas que no se usan siguen en segundo plano y se descartan.
+    """
+    inicio = time.perf_counter()
+    pendientes = {_hilos.submit(preguntar_al_modelo, prompt, instrucciones)}
+    respaldo_enviado = False
+    error = None
+    while pendientes:
+        transcurrido = time.perf_counter() - inicio
+        limite = TIEMPO_MAXIMO_S if respaldo_enviado else min(RESPALDO_S, TIEMPO_MAXIMO_S)
+        terminadas, pendientes = wait(pendientes, timeout=max(limite - transcurrido, 0), return_when=FIRST_COMPLETED)
+        for llamada in terminadas:
+            if llamada.exception() is None:
+                return llamada.result()
+            error = llamada.exception()
+        if terminadas:
+            continue  # falló una: se espera a la otra, si la hay
+        if not respaldo_enviado and RESPALDO_S < TIEMPO_MAXIMO_S:
+            log.info("Gemini tarda más de %.1f s: se envía una petición de respaldo", RESPALDO_S)
+            pendientes.add(_hilos.submit(preguntar_al_modelo, prompt, instrucciones))
+            respaldo_enviado = True
+            continue
+        raise TimeoutError(f"Gemini no respondió en {TIEMPO_MAXIMO_S} s")
+    raise error
 
 
-def preguntar_al_modelo(prompt: str) -> str:
+def preguntar_al_modelo(prompt: str, instrucciones: str = INSTRUCCIONES) -> str:
     respuesta = cliente().models.generate_content(
         model=MODELO,
         contents=prompt,
         config=types.GenerateContentConfig(
-            system_instruction=INSTRUCCIONES,
+            system_instruction=instrucciones,
             temperature=0,
             max_output_tokens=400,  # incluye el razonamiento interno; con menos, algunas respuestas salían cortadas
             # Razonamiento mínimo: medido 0,6-1,0 s frente a 1,2-1,5 s con "low", y respuestas igual de correctas
@@ -126,7 +162,8 @@ def preguntar_al_modelo(prompt: str) -> str:
     return respuesta.text or ""
 
 
-def responder_con_documentos(pregunta: str, sin_informacion: str, documentos: list[dict] | None = None) -> str:
+def responder_con_documentos(pregunta: str, sin_informacion: str, documentos: list[dict] | None = None,
+                             breve: bool = False) -> str:
     """
     Respuesta de Vicky a una pregunta sobre la clínica, usando solo los documentos.
     `sin_informacion` es el texto si la respuesta no está en ellos (control de alucinaciones).
@@ -137,7 +174,8 @@ def responder_con_documentos(pregunta: str, sin_informacion: str, documentos: li
 
     inicio = time.perf_counter()
     try:
-        bruta = preguntar_con_limite(construir_prompt(pregunta, documentos))
+        bruta = preguntar_con_limite(construir_prompt(pregunta, documentos),
+                                     INSTRUCCIONES_VOZ if breve else INSTRUCCIONES)
     except Exception as e:  # tiempo agotado, cuota (429), red...: nunca dejar al usuario en silencio
         log.warning("Gemini no respondió (%s: %s) en %.0f ms", type(e).__name__, str(e)[:120],
                     (time.perf_counter() - inicio) * 1000)

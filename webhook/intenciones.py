@@ -4,7 +4,7 @@ import re
 from collections.abc import Callable
 
 from webhook import textos
-from webhook.agenda import Agenda, Propuesta, codigo_caso
+from webhook.agenda import Agenda, Propuesta, codigo_caso, franjas_del_dia
 from webhook.cedula import (
     es_respuesta_de_nacionalidad,
     inferir_nacionalidad,
@@ -15,6 +15,7 @@ from webhook.cedula import (
 from webhook.datos import medico_por_nombre, medicos_de
 from webhook.dialogflow import PeticionDF, evento, leer_fecha, leer_hora, repreguntar, texto
 from webhook.documentos import SIN_INFO_DOCUMENTAL, SIN_INFO_FALLBACK, responder_con_documentos
+from webhook.numeros import palabras_a_numero
 
 agenda = Agenda()
 
@@ -48,7 +49,8 @@ CIERRE = re.compile(r"^(no|no,? gracias|nada m[aá]s|eso es todo|es todo)[.!]*$"
 def agendar_cita(pet: PeticionDF) -> dict:
     respondio_a = pregunta_anterior.pop(pet.sesion, "")
     respuesta = _agendar_cita(pet, respondio_a)
-    siguiente = _esperando_en(respuesta) or ("" if respuesta else pet.esperando())
+    # Si el webhook no cambió los contextos, Dialogflow seguirá preguntando lo que indica la petición
+    siguiente = _esperando_en(respuesta) or ("" if pet.todos_los_datos else pet.esperando())
     if siguiente:
         pregunta_anterior[pet.sesion] = siguiente
     return respuesta
@@ -118,7 +120,14 @@ def _agendar_cita(pet: PeticionDF, respondio_a: str) -> dict:
             return _corregir(pet, {"nacionalidad": ""}, "Disculpe, no le entendí.")
         return _corregir(pet, {"nacionalidad": inferida})
 
-    # 2. Cédula: validación con regex según V/E
+    # 2. Cédula dicha en palabras ("catorce millones…"): la regex de @cedula no la extrae; se pasa a cifras
+    if respondio_a == "cedula" and not pet.parametro("cedula"):
+        numero = palabras_a_numero(texto_usuario)
+        if numero is not None:
+            cedula, motivo = validar(str(numero), nacionalidad)
+            return _corregir(pet, {"cedula": str(numero)}) if cedula else _corregir(pet, {"cedula": ""}, motivo)
+
+    # Cédula: validación con regex según V/E
     cedula = ""
     if pet.parametro("cedula"):
         cedula, motivo = validar(pet.parametro("cedula"), nacionalidad)
@@ -149,6 +158,8 @@ def _agendar_cita(pet: PeticionDF, respondio_a: str) -> dict:
             return _corregir(pet, {"hora": ""}, motivo)
 
     if not pet.todos_los_datos or not medico:
+        if dia and especialidad and not hora and pet.esperando() == "hora":
+            return _preguntar_hora(pet, especialidad, dia, preferido)
         return {}
 
     # 5. Propuesta con los 7 datos válidos
@@ -165,11 +176,32 @@ def _agendar_cita(pet: PeticionDF, respondio_a: str) -> dict:
                         f"Le propongo cita con {pronombre} {cuando}.")
     elif preferido:
         habitual = textos.doctor(preferido.titulo, preferido.nombre)
-        inicio_frase = (f"{nombre}, {habitual}, que le atendió en {esp}, no tiene disponibilidad a esa hora. "
+        motivo = ("no tiene disponibilidad a esa hora" if inicio.weekday() in preferido.horario
+                  else "no atiende ese día")
+        inicio_frase = (f"{nombre}, {habitual}, que le atendió en {esp}, {motivo}. "
                         f"Le propongo cita con {quien} {cuando}.")
     else:
         inicio_frase = f"{nombre}, le propongo cita de {esp} con {quien} {cuando}."
-    return texto(f"{inicio_frase} La consulta cuesta {medico.precio_usd} dólares. ¿Confirmo la cita?")
+    # Nombre y cédula en la confirmación: un error al dictarla se detecta antes de confirmar (spec 06, R2c)
+    return texto(f"{inicio_frase} La consulta cuesta {medico.precio_usd} dólares. ¿Confirmo la cita a nombre de "
+                 f"{nombre} {apellido}, cédula {solo_digitos(cedula)}?")
+
+
+def _preguntar_hora(pet: PeticionDF, especialidad: str, dia, preferido) -> dict:
+    """
+    En lugar de la pregunta genérica, dice quién atiende ese día, su horario y el primer horario libre (spec 06, R2b).
+    También se usa si el usuario respondió sin una hora concreta ("a cualquier hora en la mañana").
+    """
+    medicos, primero = agenda.disponibilidad(especialidad, dia, preferido)
+    if not primero:
+        return _corregir(pet, {"fecha": "", "hora": ""},
+                         f"Ese día ya no quedan horarios libres en {textos.especialidad(especialidad)}.",
+                         "¿Qué otro día le conviene?")
+    medico, inicio = primero
+    verbo = "atiende" if len(medicos) == 1 else "atienden"
+    con_quien = "" if len(medicos) == 1 else f" con {textos.doctor(medico.titulo, medico.nombre)}"
+    return texto(f"Ese día {verbo} {franjas_del_dia(medicos, dia)}; el primer horario libre es a las "
+                 f"{textos.hora(inicio.time())}{con_quien}. {PREGUNTAS['hora']}")
 
 
 def agendar_cita_si(pet: PeticionDF) -> dict:
@@ -250,7 +282,7 @@ def transferir_humano(pet: PeticionDF) -> dict:
 
 
 def consulta_documental(pet: PeticionDF) -> dict:
-    return texto(responder_con_documentos(pet.texto, SIN_INFO_DOCUMENTAL))
+    return texto(responder_con_documentos(pet.texto, SIN_INFO_DOCUMENTAL, breve=pet.canal == "voz"))
 
 
 def fallback(pet: PeticionDF) -> dict:
@@ -258,7 +290,7 @@ def fallback(pet: PeticionDF) -> dict:
         return texto("Gracias por comunicarse con Grupo Médico Visoria. Que tenga un buen día.")
     # Dialogflow clasifica comparando con frases de entrenamiento y nunca lee los documentos: una pregunta
     # cuya respuesta está en ellos puede caer aquí. Se intenta responder con los documentos (spec 05, opción B).
-    return texto(responder_con_documentos(pet.texto, SIN_INFO_FALLBACK))
+    return texto(responder_con_documentos(pet.texto, SIN_INFO_FALLBACK, breve=pet.canal == "voz"))
 
 
 MANEJADORES: dict[str, Callable[[PeticionDF], dict]] = {

@@ -115,7 +115,7 @@ def test_r4_error_del_modelo(cliente, modelo, error):
 
 
 def test_r4_limite_de_tiempo(monkeypatch):
-    def lento(prompt):
+    def lento(prompt, instrucciones=""):
         time.sleep(1.5)
         return "Respuesta que llega tarde."
 
@@ -145,3 +145,85 @@ def test_r5_al_modelo_no_llegan_datos_de_pacientes():
     for p in PACIENTES:
         assert p.cedula.split("-")[1] not in prompt
         assert f"{p.nombre} {p.apellido}" not in prompt
+
+
+# Spec 06, R4.3: por voz, respuestas más breves
+
+def test_por_voz_se_pide_brevedad(cliente, modelo):
+    cuerpo = {**peticion("consulta_documental", {}, "¿Tienen estacionamiento?"),
+              "originalDetectIntentRequest": {"payload": {"canal": "voz"}}}
+    cliente.post("/webhook", json=cuerpo)
+    assert modelo.instrucciones[-1] == documentos.INSTRUCCIONES_VOZ
+    assert "como máximo 25 palabras" in modelo.instrucciones[-1]
+
+
+def test_por_texto_no_se_pide_brevedad(cliente, modelo):
+    cliente.post("/webhook", json=peticion("consulta_documental", {}, "¿Tienen estacionamiento?"))
+    assert modelo.instrucciones[-1] == documentos.INSTRUCCIONES
+
+
+# Spec 06: petición de respaldo a Gemini
+
+class ModeloConRetrasos:
+    """Cada llamada tarda lo que indique la lista `retrasos` (en orden) y devuelve su número de llamada."""
+
+    def __init__(self, retrasos, errores=()):
+        self.retrasos, self.errores, self.llamadas = list(retrasos), set(errores), 0
+
+    def __call__(self, prompt, instrucciones=""):
+        numero = self.llamadas
+        self.llamadas += 1
+        time.sleep(self.retrasos[numero])
+        if numero in self.errores:
+            raise RuntimeError(f"fallo en la llamada {numero}")
+        return f"respuesta {numero}"
+
+
+@pytest.fixture
+def tiempos_cortos(monkeypatch):
+    monkeypatch.setattr(documentos, "RESPALDO_S", 0.1)
+    monkeypatch.setattr(documentos, "TIEMPO_MAXIMO_S", 0.6)
+
+
+def test_respaldo_no_se_envia_si_responde_rapido(monkeypatch, tiempos_cortos):
+    modelo = ModeloConRetrasos([0.02])
+    monkeypatch.setattr(documentos, "preguntar_al_modelo", modelo)
+    assert documentos.preguntar_con_limite("p") == "respuesta 0"
+    assert modelo.llamadas == 1
+
+
+def test_respaldo_gana_si_la_primera_se_atasca(monkeypatch, tiempos_cortos):
+    modelo = ModeloConRetrasos([1.0, 0.05])
+    monkeypatch.setattr(documentos, "preguntar_al_modelo", modelo)
+    inicio = time.perf_counter()
+    assert documentos.preguntar_con_limite("p") == "respuesta 1"
+    assert time.perf_counter() - inicio < 0.4
+    assert modelo.llamadas == 2
+
+
+def test_la_primera_puede_llegar_antes_que_el_respaldo(monkeypatch, tiempos_cortos):
+    modelo = ModeloConRetrasos([0.2, 1.0])
+    monkeypatch.setattr(documentos, "preguntar_al_modelo", modelo)
+    assert documentos.preguntar_con_limite("p") == "respuesta 0"
+
+
+def test_si_una_falla_se_usa_la_otra(monkeypatch, tiempos_cortos):
+    modelo = ModeloConRetrasos([0.15, 0.05], errores={1})
+    monkeypatch.setattr(documentos, "preguntar_al_modelo", modelo)
+    assert documentos.preguntar_con_limite("p") == "respuesta 0"
+
+
+def test_si_ninguna_llega_a_tiempo_mensaje_de_reserva(monkeypatch, tiempos_cortos):
+    monkeypatch.setattr(documentos, "preguntar_al_modelo", ModeloConRetrasos([1.0, 1.0]))
+    inicio = time.perf_counter()
+    assert responder_con_documentos("¿Tienen estacionamiento?", SIN_INFO_DOCUMENTAL) == NO_DISPONIBLE_AHORA
+    assert time.perf_counter() - inicio < 0.9
+
+
+def test_si_la_primera_falla_rapido_no_hay_respaldo(monkeypatch, tiempos_cortos):
+    # Un error inmediato (p. ej. cuota 429) no se reintenta: se responde con el mensaje de reserva
+    modelo = ModeloConRetrasos([0.01], errores={0})
+    monkeypatch.setattr(documentos, "preguntar_al_modelo", modelo)
+    with pytest.raises(RuntimeError):
+        documentos.preguntar_con_limite("p")
+    assert modelo.llamadas == 1

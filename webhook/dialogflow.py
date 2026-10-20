@@ -50,6 +50,12 @@ class PeticionDF:
         return valor if isinstance(valor, str) else ""
 
     @property
+    def canal(self) -> str:
+        """'voz' si la petición viene del cliente de voz (lo indica en queryParams.payload); '' en otro caso."""
+        payload = self.cuerpo.get("originalDetectIntentRequest", {}).get("payload", {}) or {}
+        return str(payload.get("canal", ""))
+
+    @property
     def todos_los_datos(self) -> bool:
         return bool(self._resultado.get("allRequiredParamsPresent", False))
 

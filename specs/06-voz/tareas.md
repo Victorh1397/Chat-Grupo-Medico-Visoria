@@ -1,0 +1,20 @@
+# Tareas 06 — Voz de extremo a extremo
+
+Plan: [plan.md](plan.md)
+
+- [x] T1. Verificación técnica (Claude): ¿el TTS interpreta SSML del webhook?, ¿llega el payload `canal` al webhook?, ¿qué voces `es-US` femeninas funcionan? → decidir SSML o plan B
+- [x] T2. Muestras de audio de las voces candidatas con la misma frase (Claude) → **elección de la voz (tú)**: `es-US-Chirp3-HD-Aoede`; en T8 se cambió a la voz por defecto del agente por latencia
+- [x] T3. `webhook/ssml.py` + canal en `webhook/dialogflow.py` y `main.py` + tests (Claude)
+- [x] T4. `webhook/numeros.py` + uso en la recogida de la cédula + tests (Claude)
+- [x] T5. `voz/grabacion.py` (fin por silencio) + tests con señales sintéticas (Claude)
+- [x] T6. `voz/cliente_voz.py`: bucle, pistas de frases, voz elegida, `--texto`, latencias y registro de sesión (Claude)
+- [x] T7. Permiso de micrófono para VS Code y primera prueba hablada corta (tú)
+- [x] T7b. R2b: al preguntar la hora, indicar quién atiende ese día, su horario y el primer horario libre; repetirlo si la
+  respuesta no trae una hora; si no quedan horarios, volver a pedir la fecha. Con tests y prueba por Dialogflow (Claude)
+- [x] T8a. R2c: nombre y cédula en la pregunta de confirmación + tests (Claude)
+- [x] T8b. R4.3: respuestas de Gemini de una o dos frases en el canal de voz + tests + medición (Claude)
+- [x] T8c. Voz por defecto del agente en lugar de Aoede y límite de Gemini a 4 s (decisiones del autor por latencia)
+- [x] T8d. Petición de respaldo a Gemini a los 1,5 s, primera respuesta válida; tests y medición (Claude)
+- [x] T8. Conversación modelo completa por voz (tú hablas; Claude analiza el registro) y ajustes
+- [x] T9. Comprobar en el simulador de Dialogflow que no aparecen etiquetas SSML (tú o Claude)
+- [x] T10. Actualizar `specs/README.md` y commit `feat(06): …` (Claude)

@@ -19,7 +19,7 @@ Plantillas en [`_plantillas/`](_plantillas/). Principios en [`00-constitucion.md
 | 03 | [Webhook FastAPI: validación regex, lógica de negocio](03-webhook-fastapi/spec.md) | Agente / Webhook | Hecha |
 | 04 | [Documentos sintéticos y pipeline OCR offline + regex](04-ocr-documentos/spec.md) | OCR (3) | Hecha |
 | 05 | [Consulta documental con Gemini + control de alucinaciones](05-consulta-documental/spec.md) | OCR (3) | Hecha |
-| 06 | Voz extremo a extremo (cliente de voz, SSML, latencia) | Voz (2) | Pendiente |
+| 06 | [Voz extremo a extremo (cliente de voz, SSML, latencia)](06-voz/spec.md) | Voz (2) | Hecha |
 | 07 | Extra: transferencia a agente humano | +1,5 | Pendiente |
 | 08 | Extra: Telegram (integración nativa, texto + botones) | +1,5 | Pendiente |
 | 09 | Extra: corrección de datos a mitad de flujo con eventos | +1,5 | Pendiente |
@@ -35,7 +35,7 @@ Estados: Pendiente → Spec redactada → Spec aprobada → En implementación �
 | 5–6 intenciones + bienvenida + fallback | 01, 02 | `agente/intents/` · `tests/test_agente_export.py` (CA-1) |
 | Entidad regex + entidad de sistema/personalizada | 02 | `agente/entities/cedula*.json` (regex), `especialidad`, `nacionalidad`, `@sys.date/time/given-name/last-name` · tests CA-2 |
 | Flujo multi-turno con contexto + confirmación sí/no | 02, 03 | `agendar_cita` + `ctx_cita_en_curso` + follow-ups · tests CA-3/CA-5 (spec 02) · respuestas dinámicas, confirmación `CIT-…` y reinicio con `INICIAR_CITA` (spec 03) · pruebas `detect_intent` |
-| Voz extremo a extremo (STT/TTS nativos), SSML, < 5 s | 06 | |
+| Voz extremo a extremo (STT/TTS nativos), SSML, < 5 s | 06 | `voz/cliente_voz.py` (STT/TTS nativos, una llamada por turno) · `webhook/ssml.py` (solo canal voz) · conversación modelo hablada: 10 turnos, mediana 2,1 s, máx. 4,1 s (`docs/evidencias/voz_conversacion_modelo.json`) |
 | Webhook FastAPI expuesto, valida parámetro con regex, respuesta dinámica | 03 | `webhook/` (regex en `webhook/cedula.py`) · `tests/test_cedula.py`, `test_agenda.py`, `test_webhook.py` · ngrok + 50 turnos `detect_intent` sin tiempos agotados |
 | OCR de 3–5 documentos (offline) | 04 | 5 imágenes en `ocr/documentos/` · `ocr/ocr.py` (Tesseract + preprocesado) · similitud media 99,8 % (`specs/04-ocr-documentos/plan.md`) |
 | Regex sobre el texto extraído | 04 | `ocr/extraccion.py` (importes, horarios, teléfonos, fechas) · validación 12/12 precios y horarios contra el webhook · `tests/test_ocr.py` |
@@ -49,4 +49,6 @@ Estados: Pendiente → Spec redactada → Spec aprobada → En implementación �
 
 | Origen | Mejora | Motivo |
 |---|---|---|
+| Spec 06 | Al preguntar la hora: elegir automáticamente el primer horario libre ante "en la mañana", "por la tarde" o "la que tenga", y aceptar "sí" a la hora sugerida | Detectado en la prueba por voz; requiere que el webhook cierre él mismo la recogida de datos. Por ahora Vicky informa de la disponibilidad (R2b) |
+| Spec 06 | Ampliar las frases de cierre ("gracias", "ok gracias", "adiós", "chao", "hasta luego") para despedirse sin consultar a Gemini | En la prueba por voz, "okay gracias" llegó a Gemini, que respondió una cortesía propia en lugar de `NO_DISPONIBLE` |
 | Spec 04 | Corregir en el texto para el LLM **solo los nombres de los médicos** que el OCR lee mal (p. ej. "Hemández" → "Hernández"), comparándolos con `webhook/datos.py` | Evitar que Vicky pronuncie un nombre con errores de OCR. Descartado por ahora: el LLM recibe el texto OCR sin modificar |
