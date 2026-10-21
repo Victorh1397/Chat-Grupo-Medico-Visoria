@@ -3,7 +3,7 @@
 Vicky agenda citas médicas y responde las dudas de los pacientes **hablando**: Dialogflow ES reconoce lo que se dice, un webhook
 en FastAPI aplica las reglas de la clínica y Gemini responde las preguntas con documentos procesados previamente con OCR.
 
-> **Vídeo de demostración (≤ 3 min):** [https://www.loom.com/share/c8feadcc5a224d9badd42c9ce93e4c14](https://www.loom.com/share/c8feadcc5a224d9badd42c9ce93e4c14)
+> **Vídeo de demostración:** [https://www.loom.com/share/c8feadcc5a224d9badd42c9ce93e4c14](https://www.loom.com/share/c8feadcc5a224d9badd42c9ce93e4c14)
 >
 > La cita del vídeo se pide **a propósito con una paciente ya registrada**: María González (cédula 14523987) existe en los datos ficticios de la clínica ([`webhook/datos.py`](webhook/datos.py)), con una consulta anterior de dermatología con la Dra. Laura Rojas. Por eso Vicky la reconoce por su cédula, la llama por su nombre y le propone a su misma dermatóloga. Con un paciente nuevo, Vicky
 > asigna un médico disponible de la especialidad y lo registra al confirmar la cita.

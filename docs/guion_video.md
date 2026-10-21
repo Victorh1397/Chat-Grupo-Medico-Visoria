@@ -1,4 +1,4 @@
-# Guion del vídeo de demostración (≤ 3 minutos)
+# Guion del vídeo de demostración
 
 Spec: [99 — Entregables](../specs/99-entregables/spec.md) (R4). El vídeo debe mostrar la conversación **por voz de principio a
 fin**, el **flujo con contexto** (cita con confirmación) y una **pregunta resuelta con los documentos**; además se enseña el
@@ -6,7 +6,7 @@ extra de **Telegram**.
 
 ## Escenas
 
-| Tiempo | Escena | En pantalla |
+| Tiempo previsto | Escena | En pantalla |
 |---|---|---|
 | 0:00–0:12 | Presentación | Diagrama `docs/arquitectura.png` |
 | 0:12–1:50 | **Voz**: cita completa de María González | Terminal del cliente de voz (y, si cabe, el log del webhook) |
@@ -105,5 +105,5 @@ las peticiones. Decir o poner como texto:
 
 - Se pueden recortar los silencios **antes de pulsar Enter**, pero no las esperas de Vicky: la latencia real forma parte de lo
   que se evalúa.
-- Duración final ≤ 3:00. Si se pasa, acortar la escena de Telegram (quitar los turnos 12–13).
+- Si hace falta acortar, quitar los turnos 12–13 de la escena de Telegram.
 - Subir el vídeo (por ejemplo, a YouTube como "no listado" o a Google Drive con enlace) y pegar el enlace al principio del README.
