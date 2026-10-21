@@ -22,7 +22,7 @@ Plantillas en [`_plantillas/`](_plantillas/). Principios en [`00-constitucion.md
 | 06 | [Voz extremo a extremo (cliente de voz, SSML, latencia)](06-voz/spec.md) | Voz (2) | Hecha |
 | 07 | [Extra: transferencia a agente humano](07-transferencia-humano/spec.md) | +1,5 | Hecha |
 | 08 | [Extra: Telegram (integración nativa, texto + botones)](08-telegram/spec.md) | +1,5 | Hecha |
-| 99 | [Entregables: README, diagrama, ZIP del agente, vídeo ≤ 3 min](99-entregables/spec.md) | Docs (1) | Spec aprobada |
+| 99 | [Entregables: README, diagrama, ZIP del agente, vídeo ≤ 3 min](99-entregables/spec.md) | Docs (1) | Hecha (falta grabar el vídeo, T7) |
 
 Estados: Pendiente → Spec redactada → Spec aprobada → En implementación → Hecha.
 
@@ -39,9 +39,9 @@ Estados: Pendiente → Spec redactada → Spec aprobada → En implementación �
 | Regex sobre el texto extraído | 04 | `ocr/extraccion.py` (importes, horarios, teléfonos, fechas) · validación 12/12 precios y horarios contra el webhook · `tests/test_ocr.py` |
 | Texto en fichero + LLM con contexto | 04, 05 | `ocr/salida/documentos.json` (spec 04) · `webhook/documentos.py` con Gemini 3.5 Flash-Lite · evaluación 17/18 aciertos, mediana 0,8 s (`evaluacion/resultados_documental.json`) |
 | Control de alucinaciones | 05 | Instrucciones + señal `NO_DISPONIBLE` + red de seguridad · 9/9 preguntas sin respuesta (incluidas manipulación y consejo médico) sin inventar · `tests/test_documentos.py` |
-| ZIP del agente + script OCR + webhook | 02, 03, 04, 99 | `entrega/agente_dialogflow.zip` (generado sin secretos con `scripts/preparar_export.py`) · `webhook/` · `ocr/` |
-| README (caso de uso, diagrama, intenciones, decisiones, instrucciones) | 99 | |
-| Vídeo ≤ 3 min | 99 | |
+| ZIP del agente + script OCR + webhook | 02, 03, 04, 99 | `entrega/agente_dialogflow.zip` (generado sin secretos con `scripts/preparar_export.py`; idéntico a `agente/`, 41 tests de `tests/test_agente_export.py`, sin token del webhook ni de Telegram) · `webhook/` · `ocr/` |
+| README (caso de uso, diagrama, intenciones, decisiones, instrucciones) | 99 | [`README.md`](../README.md) (secciones 1, 2, 3, 8 y 11) · diagrama generado por código: `docs/generar_diagrama.py` → `docs/arquitectura.png` · instrucciones probadas en un clon limpio (`uv sync`, 290 tests, webhook arrancado, 401 sin token) |
+| Vídeo ≤ 3 min | 99 | Guion con escenas, tiempos y frases exactas: [`docs/guion_video.md`](../docs/guion_video.md) · vídeo: pendiente de grabar (T7) |
 | *Mejora opcional:* integración con Telegram con respuestas enriquecidas (botones) | 08 | Integración nativa de Dialogflow · `webhook/telegram.py` (botones `quickReplies` solo en Telegram) · `tests/test_telegram.py` · prueba en la app |
 | *Mejora opcional:* intención de transferencia a agente humano | 07 | `transferir_humano` + `webhook/transferencia.py` (oferta aceptada con "sí", oferta automática, caso con resumen y horario) · `tests/test_transferencia.py` · prueba por Dialogflow |
 

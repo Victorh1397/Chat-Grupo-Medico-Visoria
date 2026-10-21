@@ -1,6 +1,6 @@
 # Spec 99 — Entregables: README, diagrama, ZIP del agente y vídeo
 
-- **Estado:** Spec aprobada
+- **Estado:** Hecha (falta grabar el vídeo, T7)
 - **Rúbrica:** Documentación, diagrama y vídeo (1 pt). Además, el README es donde se defiende el resto de la nota: el material de clase
   insiste en que *"no es un trámite: es donde se evalúa que entendéis el sistema"*.
 - **Depende de:** specs 01–08

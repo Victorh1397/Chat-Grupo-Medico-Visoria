@@ -74,3 +74,13 @@ micrófono, hora de menos carga de Gemini, Telegram abierto).
 - Revisión del README, el diagrama y el guion contigo.
 - ZIP del agente: `uv run pytest tests/test_agente_export.py` y búsqueda de secretos.
 - Clon limpio del repositorio en una carpeta temporal: `uv sync`, `uv run pytest`, arrancar el webhook y `GET /`.
+
+## Resultado (20/10/2026)
+- Diagrama, README y guion revisados y aprobados por el autor.
+- ZIP del agente: idéntico a `agente/` (32 ficheros), 41 tests de `tests/test_agente_export.py` en verde, cabecera con el marcador
+  `<WEBHOOK_TOKEN>`; ni el token de `.env` ni patrones de token de Telegram o claves de Google en el ZIP.
+- Clon limpio: `uv sync`, 290 tests y `ruff` en verde sin `.env`; webhook arrancado con `.env` de prueba: `GET /` con 5 documentos,
+  401 sin token y respuesta correcta con token. Regenerar documentos, OCR y diagrama da los mismos ficheros (solo cambia la fecha
+  de `documentos.json`).
+- Hallazgo para el vídeo: la grabación de pantalla de macOS no captura el audio del sistema; se graba con altavoces y micrófono.
+
