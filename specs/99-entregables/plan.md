@@ -82,5 +82,6 @@ micrófono, hora de menos carga de Gemini, Telegram abierto).
 - Clon limpio: `uv sync`, 290 tests y `ruff` en verde sin `.env`; webhook arrancado con `.env` de prueba: `GET /` con 5 documentos,
   401 sin token y respuesta correcta con token. Regenerar documentos, OCR y diagrama da los mismos ficheros (solo cambia la fecha
   de `documentos.json`).
+- Vídeo grabado por el autor con el guion y publicado en Loom: https://www.loom.com/share/c8feadcc5a224d9badd42c9ce93e4c14
 - Hallazgo para el vídeo: la grabación de pantalla de macOS no captura el audio del sistema; se graba con altavoces y micrófono.
 

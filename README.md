@@ -3,7 +3,7 @@
 Vicky agenda citas médicas y responde las dudas de los pacientes **hablando**: Dialogflow ES reconoce lo que se dice, un webhook
 en FastAPI aplica las reglas de la clínica y Gemini responde las preguntas con documentos procesados previamente con OCR.
 
-> **Vídeo de demostración (≤ 3 min):** _enlace pendiente: se añade al grabarlo._
+> **Vídeo de demostración (≤ 3 min):** [https://www.loom.com/share/c8feadcc5a224d9badd42c9ce93e4c14](https://www.loom.com/share/c8feadcc5a224d9badd42c9ce93e4c14)
 
 Evaluación final de *Herramientas de IA Clásica* (Máster en IA, Cloud Computing y DevOps). Todos los datos (clínica,
 médicos, pacientes, documentos) son **ficticios**.
