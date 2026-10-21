@@ -28,6 +28,10 @@ Con el diagrama en pantalla, decir (o poner como texto):
 
 ## Escena 2 — Cita por voz (0:12–1:50)
 
+**La prueba se hace explícitamente con una paciente que ya existe:** María González (cédula 14523987) está en los datos
+ficticios de la clínica ([`webhook/datos.py`](../webhook/datos.py)), con una consulta anterior de dermatología con la
+Dra. Laura Rojas. Así el vídeo muestra que Vicky la reconoce por su cédula y le propone a su mismo médico.
+
 `uv run python -m voz.cliente_voz` ya arrancado. En cada turno: **Enter**, decir la frase y **callar** (la grabación termina
 sola). No pulsar Enter hasta que Vicky termine de hablar.
 

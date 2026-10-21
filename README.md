@@ -4,6 +4,9 @@ Vicky agenda citas médicas y responde las dudas de los pacientes **hablando**: 
 en FastAPI aplica las reglas de la clínica y Gemini responde las preguntas con documentos procesados previamente con OCR.
 
 > **Vídeo de demostración (≤ 3 min):** [https://www.loom.com/share/c8feadcc5a224d9badd42c9ce93e4c14](https://www.loom.com/share/c8feadcc5a224d9badd42c9ce93e4c14)
+>
+> La cita del vídeo se pide **a propósito con una paciente ya registrada**: María González (cédula 14523987) existe en los datos ficticios de la clínica ([`webhook/datos.py`](webhook/datos.py)), con una consulta anterior de dermatología con la Dra. Laura Rojas. Por eso Vicky la reconoce por su cédula, la llama por su nombre y le propone a su misma dermatóloga. Con un paciente nuevo, Vicky
+> asigna un médico disponible de la especialidad y lo registra al confirmar la cita.
 
 Evaluación final de *Herramientas de IA Clásica* (Máster en IA, Cloud Computing y DevOps). Todos los datos (clínica,
 médicos, pacientes, documentos) son **ficticios**.
@@ -117,6 +120,8 @@ agendar_cita ── pide uno a uno los datos que falten; el webhook valida cada 
                          └── "no" ──► agendar_cita - no - no ───► "¿Le puedo ayudar en algo más?"
 ```
 
+- La respuesta de ejemplo corresponde a un **paciente ya registrado** (María González, con historial en dermatología). Con una cédula
+  que no está en los datos (p. ej. 18765432), Vicky propone un médico disponible de la especialidad sin mencionar consultas anteriores.
 - El usuario puede dar varios datos en una frase ("Soy María González, quiero dermatología el martes"): Vicky solo pide los que faltan.
 - Ninguna frase de entrenamiento de `consultar_historial` ni `cancelar_cita` contiene una cédula, para que dictarla durante la cita
   no cambie de intención.
@@ -312,7 +317,7 @@ oferta caduca.
 | Evaluación documental con Gemini real (18 respondibles + 9 no respondibles) | **17/18** respuestas con los datos esperados, **9/9 sin alucinar**; mediana 0,80 s, p95 1,08 s. El único fallo fue un pico de latencia (mensaje de reserva, no una invención). [`evaluacion/resultados_documental.json`](evaluacion/resultados_documental.json) |
 | OCR | Similitud media 99,8 %; 12/12 precios y 12/12 horarios validados |
 | Webhook por ngrok (50 turnos de texto por Dialogflow) | 0 tiempos agotados; 0,4–1,3 s por turno |
-| Conversación modelo **hablada** (10 turnos) | Todos los datos reconocidos a la primera (incluida la cédula "14 523 987"); **mediana 2,1 s, máximo 4,1 s**, ninguno por encima de 5 s. [`docs/evidencias/voz_conversacion_modelo.json`](docs/evidencias/voz_conversacion_modelo.json) |
+| Conversación modelo **hablada** (10 turnos, con la paciente ya registrada María González) | María reconocida con su dermatóloga habitual; todos los datos reconocidos a la primera (incluida la cédula "14 523 987"); **mediana 2,1 s, máximo 4,1 s**, ninguno por encima de 5 s. [`docs/evidencias/voz_conversacion_modelo.json`](docs/evidencias/voz_conversacion_modelo.json) |
 | Telegram en la app | Cita con botones, texto libre en lugar de botones, pregunta documental y transferencia |
 
 ## 11. Cómo ejecutarlo
@@ -386,7 +391,8 @@ macOS pedirá permiso de micrófono para la terminal (Ajustes del Sistema → Pr
 Cada turno muestra lo que se entendió, la intención, la respuesta y la latencia; al salir, la mediana y el máximo.
 
 Para una prueba completa, ver la conversación de ejemplo de la [spec 01](specs/01-caso-de-uso/spec.md#conversación-modelo-base-del-vídeo)
-(paciente María González, cédula 14523987).
+(paciente **ya registrada** María González, cédula 14523987). Para probar un paciente nuevo, basta con dar otro nombre y una cédula
+que no esté en [`webhook/datos.py`](webhook/datos.py) (p. ej. 18765432).
 
 ### 7. Telegram (opcional)
 
