@@ -83,5 +83,6 @@ micrófono, hora de menos carga de Gemini, Telegram abierto).
   401 sin token y respuesta correcta con token. Regenerar documentos, OCR y diagrama da los mismos ficheros (solo cambia la fecha
   de `documentos.json`).
 - Vídeo grabado por el autor con el guion y publicado en Loom: https://www.loom.com/share/c8feadcc5a224d9badd42c9ce93e4c14
+  El vídeo final dura unos segundos más de los 3 minutos previstos en el guion.
 - Hallazgo para el vídeo: la grabación de pantalla de macOS no captura el audio del sistema; se graba con altavoces y micrófono.
 
