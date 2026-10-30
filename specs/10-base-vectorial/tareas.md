@@ -1,0 +1,16 @@
+# Tareas 10 — Base de datos vectorial para la consulta documental
+
+Plan: [plan.md](plan.md)
+
+- [ ] T1. Prueba corta antes de escribir código definitivo: instalar `faiss-cpu`, confirmar con la clave real que el modelo de
+      embeddings está disponible (dimensión, latencia, cuota) y que normalizar y buscar con FAISS funciona (Claude)
+- [ ] T2. `ocr/indexar.py`: `fragmentar()` sin red + test (Claude)
+- [ ] T3. Generar `ocr/salida/indice.json` con embeddings reales + test de sincronía con `documentos.json` (Claude)
+- [ ] T4. `webhook/recuperacion.py`: carga en FAISS al arrancar y `recuperar()` con límite de tiempo + test del cableado (Claude)
+- [ ] T5. Integración en `webhook/documentos.py`: modo `RECUPERACION`, presupuesto de 4 s, respaldo al texto completo y registro de
+      fragmentos + tests de respaldo y de que al modelo solo llegan los fragmentos recuperados (Claude)
+- [ ] T6. Evaluación comparativa de las 27 preguntas en los dos modos y ajuste de k y del tamaño de fragmento; resultados en `plan.md`
+      (Claude; consume peticiones de la cuota gratuita)
+- [ ] T7. Pruebas con el agente real: voz (latencia del turno completo) y Telegram, CA-7 (tú + Claude)
+- [ ] T8. Documentación: constitución, CLAUDE.md, README, notas en las specs 04 y 05, `.env.example`, diagrama y `specs/README.md` (Claude)
+- [ ] T9. `uv run pytest` y `uv run ruff check .`; commit `feat(10): …` (Claude)

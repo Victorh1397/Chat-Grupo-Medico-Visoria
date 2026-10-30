@@ -23,6 +23,7 @@ Plantillas en [`_plantillas/`](_plantillas/). Principios en [`00-constitucion.md
 | 07 | [Extra: transferencia a agente humano](07-transferencia-humano/spec.md) | +1,5 | Hecha |
 | 08 | [Extra: Telegram (integración nativa, texto + botones)](08-telegram/spec.md) | +1,5 | Hecha |
 | 09 | [Extra: corrección de datos e interrupciones en la cita](09-correccion-interrupciones/spec.md) | +1,5 | Hecha |
+| 10 | [Extra: base de datos vectorial para la consulta documental](10-base-vectorial/spec.md) | +1,5 | Spec aprobada |
 | 99 | [Entregables: README, diagrama, ZIP del agente, vídeo de demostración](99-entregables/spec.md) | Docs (1) | Hecha |
 
 Estados: Pendiente → Spec redactada → Spec aprobada → En implementación → Hecha.
