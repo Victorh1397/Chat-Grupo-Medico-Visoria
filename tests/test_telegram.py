@@ -2,7 +2,7 @@
 
 import pytest
 
-from tests.conftest import datos_cita, peticion
+from tests.conftest import DEJA_A_DIALOGFLOW, datos_cita, peticion
 from webhook import telegram
 from webhook.datos import ESPECIALIDADES
 from webhook.dialogflow import PeticionDF
@@ -43,7 +43,8 @@ def test_nacionalidad_con_botones_formulada_por_el_webhook(cliente):
                   "fecha": "", "hora": ""}
     respuesta = enviar(cliente, "agendar_cita", "María González", parametros, todos=False, esperando="nacionalidad")
     assert botones(respuesta) == ("¿Usted es venezolano o extranjero?", ["Venezolano", "Extranjero"])
-    assert "outputContexts" not in respuesta  # Dialogflow sigue esperando la nacionalidad
+    # Dialogflow sigue esperando la nacionalidad: el webhook solo añade el contexto de la cita (spec 09)
+    assert respuesta["outputContexts"] == DEJA_A_DIALOGFLOW["outputContexts"]
 
 
 def test_especialidad_con_botones_al_agendar(cliente):
@@ -66,7 +67,8 @@ def test_horarios_sin_especialidad_fuera_de_telegram_deja_preguntar_a_dialogflow
 
 def test_otros_datos_no_llevan_botones(cliente):
     parametros = datos_cita(cedula="", especialidad="", fecha="", hora="")
-    assert enviar(cliente, "agendar_cita", "venezolana", parametros, todos=False, esperando="cedula") == {}
+    assert enviar(cliente, "agendar_cita", "venezolana", parametros, todos=False,
+                  esperando="cedula") == DEJA_A_DIALOGFLOW
 
 
 @pytest.mark.parametrize("intencion, texto, parametros", [

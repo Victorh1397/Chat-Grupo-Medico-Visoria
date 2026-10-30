@@ -16,7 +16,7 @@ import time
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, Request
 
-from webhook import telegram, transferencia
+from webhook import intenciones, telegram, transferencia
 from webhook.dialogflow import PeticionDF, texto
 from webhook.documentos import DOCUMENTOS, MODELO
 from webhook.intenciones import FALLBACK, MANEJADORES, PREGUNTAS, agenda
@@ -80,6 +80,11 @@ async def webhook(request: Request, x_visoria_token: str | None = Header(default
                         else PREGUNTAS[pet.esperando()])
             respuesta = texto(pregunta)
         respuesta = telegram.con_botones(respuesta)
+
+    # Spec 09: mientras hay una cita en marcha, contexto propio para que `corregir_dato` solo coincida entonces.
+    # Va después del bloque de Telegram porque ese distingue una respuesta vacía (pregunta de Dialogflow).
+    if pet.intencion == "agendar_cita":
+        respuesta = intenciones.marcar_cita_en_curso(pet, respuesta)
 
     # SSML solo en el canal de voz: en el simulador o en Telegram las etiquetas se verían como texto
     if pet.canal == "voz" and respuesta.get("fulfillmentText"):

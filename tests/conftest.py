@@ -14,6 +14,8 @@ AHORA = datetime(2026, 10, 18, 10, 0, tzinfo=CARACAS)
 TOKEN = "token-de-prueba"
 SESION = "projects/visoria-chat-1397/agent/sessions/prueba"
 INTENT_ID = "e12a9d5b-1eb2-41a0-877f-05cfa9b6a5a2"
+# Respuesta del webhook cuando deja que Dialogflow haga su propia pregunta: solo el contexto de la cita (spec 09)
+DEJA_A_DIALOGFLOW = {"outputContexts": [{"name": f"{SESION}/contexts/ctx_recogida_cita", "lifespanCount": 5}]}
 
 
 class ModeloSimulado:
@@ -49,10 +51,11 @@ def entorno(monkeypatch, tmp_path):
     monkeypatch.setattr(transferencia, "REGISTRO", tmp_path / "transferencias.jsonl")
     transferencia.reiniciar()
     monkeypatch.setenv("WEBHOOK_TOKEN", TOKEN)
-    from webhook.intenciones import agenda, pregunta_anterior
+    from webhook.intenciones import agenda, borradores, pregunta_anterior
 
     agenda.reiniciar()
     pregunta_anterior.clear()
+    borradores.clear()
     yield agenda
 
 

@@ -4,7 +4,7 @@ from datetime import date
 
 import pytest
 
-from tests.conftest import peticion
+from tests.conftest import DEJA_A_DIALOGFLOW, peticion
 from webhook.fechas import como_dialogflow, leer_fecha_texto
 
 HOY = date(2026, 10, 18)
@@ -70,4 +70,4 @@ def test_fecha_leida_que_no_vale_se_rechaza(cliente):
 def test_sin_fecha_reconocible_dialogflow_vuelve_a_preguntar(cliente):
     cliente.post("/webhook", json=peticion("agendar_cita", SIN_FECHA, "Dermatología", todos=False, esperando="fecha"))
     assert cliente.post("/webhook", json=peticion("agendar_cita", SIN_FECHA, "cuando pueda",
-                                                  todos=False, esperando="fecha")).json() == {}
+                                                  todos=False, esperando="fecha")).json() == DEJA_A_DIALOGFLOW

@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 import pytest
 
-from tests.conftest import datos_cita, peticion
+from tests.conftest import DEJA_A_DIALOGFLOW, datos_cita, peticion
 from webhook.agenda import CARACAS, Propuesta
 from webhook.datos import medico_por_nombre
 
@@ -58,7 +58,8 @@ def test_ca2_cedula_invalida_se_vuelve_a_pedir(cliente):
 
 def test_ca2_cedula_valida_deja_seguir_a_dialogflow(cliente):
     params = datos_cita(especialidad="", fecha="", hora="")
-    assert respuesta(cliente, peticion("agendar_cita", params, "14.523.987", todos=False, esperando="cedula")) == {}
+    assert respuesta(cliente, peticion("agendar_cita", params, "14.523.987", todos=False,
+                                       esperando="cedula")) == DEJA_A_DIALOGFLOW
 
 
 # CA-3: nacionalidad no reconocida
@@ -71,7 +72,7 @@ def test_ca3_al_dar_el_nombre_no_se_interpreta_como_nacionalidad(cliente):
     # Tras "Ana Rodríguez", Dialogflow va a preguntar la nacionalidad: el webhook no debe intervenir
     res = respuesta(cliente, peticion("agendar_cita", SIN_NACIONALIDAD, "Ana Rodríguez", todos=False,
                                       esperando="nacionalidad"))
-    assert res == {}
+    assert res == DEJA_A_DIALOGFLOW
 
 
 def test_ca3_otra_nacionalidad_es_e_y_pide_la_cedula(cliente):
@@ -97,7 +98,7 @@ def test_ca3_valor_expandido_por_dialogflow_cuenta_como_e(cliente):
     # Con "automated expansion", Dialogflow devolvió nacionalidad="Noruega" en la prueba real
     params = {**SIN_NACIONALIDAD, "nacionalidad": "Noruega", "cedula": "123456789"}
     assert respuesta(cliente, peticion("agendar_cita", params, "123456789", todos=False,
-                                       esperando="especialidad")) == {}
+                                       esperando="especialidad")) == DEJA_A_DIALOGFLOW
 
 
 # CA-4: fecha y hora
@@ -294,7 +295,7 @@ def test_frase_que_no_es_un_nombre_no_se_toma_como_nombre(cliente):
     vacio = {**SIN_NACIONALIDAD, "nombre": "", "apellido": ""}
     respuesta(cliente, peticion("agendar_cita", vacio, "quiero una cita", todos=False, esperando="nombre"))
     assert respuesta(cliente, peticion("agendar_cita", vacio, "quiero cancelar", todos=False,
-                                       esperando="nombre")) == {}
+                                       esperando="nombre")) == DEJA_A_DIALOGFLOW
 
 
 def test_a_las_9_entendido_como_21_se_corrige(cliente):
@@ -321,8 +322,8 @@ HASTA_LA_HORA = {"nombre": "Víctor", "apellido": "Méndez", "nacionalidad": "V"
 
 def test_r2b_pregunta_la_hora_con_la_disponibilidad(cliente):
     res = respuesta(cliente, peticion("agendar_cita", HASTA_LA_HORA, "el lunes", todos=False, esperando="hora"))
-    assert res == {"fulfillmentText": "Ese día atiende la doctora Patricia Medina de 8:00 a 12:00; el primer "
-                                      "horario libre es a las 8:00. ¿A qué hora le conviene?"}
+    assert res["fulfillmentText"] == ("Ese día atiende la doctora Patricia Medina de 8:00 a 12:00; el primer "
+                                      "horario libre es a las 8:00. ¿A qué hora le conviene?")
 
 
 def test_r2b_sin_hora_concreta_repite_la_disponibilidad(cliente):
@@ -357,7 +358,8 @@ def test_r2b_sin_horarios_libres_pide_otra_fecha(cliente, entorno):
 
 def test_r2b_no_interviene_si_aun_faltan_datos_anteriores(cliente):
     params = {**HASTA_LA_HORA, "cedula": ""}
-    assert respuesta(cliente, peticion("agendar_cita", params, "venezolano", todos=False, esperando="cedula")) == {}
+    assert respuesta(cliente, peticion("agendar_cita", params, "venezolano", todos=False,
+                                       esperando="cedula")) == DEJA_A_DIALOGFLOW
 
 
 def test_medico_habitual_que_no_atiende_ese_dia(cliente):

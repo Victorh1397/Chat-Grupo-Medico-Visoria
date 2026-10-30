@@ -26,6 +26,11 @@ agenda = Agenda()
 # hace falta recordar el turno anterior.
 pregunta_anterior: dict[str, str] = {}
 
+# Borrador de la cita por sesión (spec 09): datos ya dados e intención de origen. La petición de otra intención
+# (p. ej. una pregunta a mitad de la cita) no trae los datos de la cita, y los contextos de recogida caducan
+# en 1-2 turnos.
+borradores: dict[str, dict] = {}
+
 # Orden de recogida de agendar_cita (spec 02) y la pregunta de cada dato (mismo texto que en Dialogflow)
 PREGUNTAS = {
     "nombre": "¿Me indica su nombre y apellido, por favor?",
@@ -58,6 +63,32 @@ def agendar_cita(pet: PeticionDF) -> dict:
     siguiente = _esperando_en(respuesta) or ("" if pet.todos_los_datos else pet.esperando())
     if siguiente:
         pregunta_anterior[pet.sesion] = siguiente
+    borradores[pet.sesion] = {"intencion": pet.intencion, "intencion_id": pet.intencion_id,
+                              "valores": _datos_de(respuesta, pet)}
+    return respuesta
+
+
+def _datos_de(respuesta: dict, pet: PeticionDF) -> dict:
+    """Datos de la cita tras este turno: los que el webhook dejó en los contextos o, si no, los de la petición."""
+    for c in respuesta.get("outputContexts", []):
+        if c.get("parameters"):
+            return {p: c["parameters"].get(p, "") for p in PREGUNTAS}
+    return {p: pet.parametros.get(p, "") for p in PREGUNTAS}
+
+
+def _retomar_cita(pet: PeticionDF, mensaje: str) -> dict:
+    """Responde `mensaje` y, si hay una cita a medias, repite la pregunta pendiente y reabre la recogida (spec 09)."""
+    pendiente = pregunta_anterior.get(pet.sesion)
+    borrador = borradores.get(pet.sesion)
+    if not pendiente or not borrador:
+        return texto(mensaje)
+    return repreguntar(pet, pendiente, f"{mensaje} {PREGUNTAS[pendiente]}", destino=borrador)
+
+
+def marcar_cita_en_curso(pet: PeticionDF, respuesta: dict) -> dict:
+    """Contexto propio que existe mientras hay una cita en marcha: solo entonces coincide `corregir_dato` (spec 09)."""
+    respuesta.setdefault("outputContexts", []).append(
+        {"name": f"{pet.sesion}/contexts/ctx_recogida_cita", "lifespanCount": 5})
     return respuesta
 
 
@@ -238,6 +269,7 @@ def _fijar_fecha(pet: PeticionDF, dia, especialidad: str, preferido) -> dict:
 
 def agendar_cita_si(pet: PeticionDF) -> dict:
     transferencia.olvidar_cita(pet.sesion)
+    borradores.pop(pet.sesion, None)
     cita = agenda.confirmar(pet.sesion)
     if not cita:
         return texto("No tengo ninguna cita pendiente de confirmar. ¿Desea agendar una nueva cita?")
@@ -250,6 +282,7 @@ def agendar_cita_si(pet: PeticionDF) -> dict:
 def agendar_cita_empezar_de_nuevo(pet: PeticionDF) -> dict:
     agenda.descartar(pet.sesion)
     transferencia.olvidar_cita(pet.sesion)
+    borradores.pop(pet.sesion, None)
     return evento("INICIAR_CITA")
 
 
@@ -334,11 +367,12 @@ def agendar_cita_no(pet: PeticionDF) -> dict:
     # Con webhook para poder añadir los botones Sí/No en Telegram (spec 08); el texto es el de la consola
     agenda.descartar(pet.sesion)
     transferencia.olvidar_cita(pet.sesion)
+    borradores.pop(pet.sesion, None)
     return texto("Entendido, no he registrado la cita. ¿Desea empezar de nuevo?")
 
 
 def consulta_documental(pet: PeticionDF) -> dict:
-    return texto(responder_con_documentos(pet.texto, SIN_INFO_DOCUMENTAL, breve=pet.canal == "voz"))
+    return _retomar_cita(pet, responder_con_documentos(pet.texto, SIN_INFO_DOCUMENTAL, breve=pet.canal == "voz"))
 
 
 def fallback(pet: PeticionDF) -> dict:
@@ -352,7 +386,7 @@ def fallback(pet: PeticionDF) -> dict:
     respuesta = responder_con_documentos(pet.texto, SIN_INFO_FALLBACK, breve=pet.canal == "voz")
     if respuesta != SIN_INFO_FALLBACK:
         transferencia.sin_entender.pop(pet.sesion, None)
-        return texto(respuesta)
+        return _retomar_cita(pet, respuesta)
     # Spec 07: al segundo turno seguido sin entender, Vicky ofrece recepción
     turnos = transferencia.sin_entender.get(pet.sesion, 0) + 1
     if turnos >= transferencia.TURNOS_SIN_ENTENDER:
