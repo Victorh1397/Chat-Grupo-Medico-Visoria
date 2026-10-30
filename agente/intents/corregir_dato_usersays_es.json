@@ -3,17 +3,7 @@
     "id": "24305a85-092f-4b2e-9372-9311998eab71",
     "data": [
       {
-        "text": "Quiero corregir ",
-        "userDefined": false
-      },
-      {
-        "text": "un",
-        "meta": "@sys.number",
-        "alias": "number",
-        "userDefined": false
-      },
-      {
-        "text": " dato",
+        "text": "Quiero corregir un dato",
         "userDefined": false
       }
     ],
@@ -87,17 +77,7 @@
         "userDefined": false
       },
       {
-        "text": " ",
-        "userDefined": false
-      },
-      {
-        "text": "es",
-        "meta": "@sys.location",
-        "alias": "location",
-        "userDefined": false
-      },
-      {
-        "text": " otra",
+        "text": " es otra",
         "userDefined": false
       }
     ],
@@ -181,17 +161,7 @@
         "userDefined": true
       },
       {
-        "text": " no ",
-        "userDefined": false
-      },
-      {
-        "text": "es",
-        "meta": "@sys.location",
-        "alias": "location",
-        "userDefined": false
-      },
-      {
-        "text": " esa",
+        "text": " no es esa",
         "userDefined": false
       }
     ],
