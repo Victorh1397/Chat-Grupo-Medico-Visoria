@@ -1,6 +1,6 @@
 """SSML solo en el canal de voz (spec 06, R3 y CA-4)."""
 
-from tests.conftest import datos_cita, peticion
+from tests.conftest import DEJA_A_DIALOGFLOW, datos_cita, peticion
 from webhook.ssml import a_ssml, sin_etiquetas
 
 
@@ -68,4 +68,4 @@ def test_repreguntar_por_voz_tambien_en_ssml(cliente):
 def test_respuesta_vacia_de_slot_filling_no_cambia(cliente):
     params = datos_cita(especialidad="", fecha="", hora="")
     cuerpo = con_canal(peticion("agendar_cita", params, "14523987", todos=False, esperando="cedula"), "voz")
-    assert cliente.post("/webhook", json=cuerpo).json() == {}
+    assert cliente.post("/webhook", json=cuerpo).json() == DEJA_A_DIALOGFLOW

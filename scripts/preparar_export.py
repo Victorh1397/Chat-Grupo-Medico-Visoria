@@ -24,24 +24,35 @@ CARPETA = RAIZ / "agente"
 ZIP_ENTREGA = RAIZ / "entrega" / "agente_dialogflow.zip"
 CABECERAS_SECRETAS = {"x-visoria-token"}
 MARCADOR = "<WEBHOOK_TOKEN>"
+# Datos propios de cada instalación (agente, ngrok): se conservan los del repositorio para que exportar desde
+# otro agente no cambie el repositorio sin que haya cambiado el agente
+CAMPOS_PROPIOS = ("displayName", "secondaryKey")
 
 
-def limpiar_agent_json(contenido: bytes) -> tuple[bytes, list[str]]:
+def limpiar_agent_json(contenido: bytes, anterior: dict | None = None) -> tuple[bytes, list[str]]:
     agente = json.loads(contenido)
     cabeceras = agente.get("webhook", {}).get("headers", {})
     limpiadas = [k for k in cabeceras if k.lower() in CABECERAS_SECRETAS]
     for clave in limpiadas:
         cabeceras[clave] = MARCADOR
+    if anterior:
+        for campo in CAMPOS_PROPIOS:
+            if campo in anterior:
+                agente[campo] = anterior[campo]
+        if anterior.get("webhook", {}).get("url"):
+            agente.setdefault("webhook", {})["url"] = anterior["webhook"]["url"]
     return (json.dumps(agente, indent=2, ensure_ascii=False) + "\n").encode(), limpiadas
 
 
 def main(origen: Path) -> None:
+    ruta_agente = CARPETA / "agent.json"
+    anterior = json.loads(ruta_agente.read_text(encoding="utf-8")) if ruta_agente.exists() else None
     salida = io.BytesIO()
     with zipfile.ZipFile(origen) as entrada, zipfile.ZipFile(salida, "w", zipfile.ZIP_DEFLATED) as limpio:
         for item in entrada.infolist():
             datos = entrada.read(item.filename)
             if item.filename == "agent.json":
-                datos, limpiadas = limpiar_agent_json(datos)
+                datos, limpiadas = limpiar_agent_json(datos, anterior)
                 print(f"Cabeceras sustituidas por {MARCADOR}: {limpiadas or 'ninguna'}")
             limpio.writestr(item.filename, datos)
 

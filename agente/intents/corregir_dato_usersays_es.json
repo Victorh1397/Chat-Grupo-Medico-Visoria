@@ -1,0 +1,234 @@
+[
+  {
+    "id": "24305a85-092f-4b2e-9372-9311998eab71",
+    "data": [
+      {
+        "text": "Quiero corregir un dato",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "eef8e38b-5f36-45c4-a67c-96354c58cf4b",
+    "data": [
+      {
+        "text": "Me equivoqué",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "713e3f09-7864-41cc-877c-08bbc5f0d3b9",
+    "data": [
+      {
+        "text": "Quiero corregir la ",
+        "userDefined": false
+      },
+      {
+        "text": "nacionalidad",
+        "meta": "@dato_cita",
+        "alias": "dato_cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 1,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "505f8429-602b-4ef0-afcd-f85709fab100",
+    "data": [
+      {
+        "text": "Me equivoqué con el ",
+        "userDefined": false
+      },
+      {
+        "text": "nombre",
+        "meta": "@dato_cita",
+        "alias": "dato_cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "91597453-ebfe-4987-a614-bb53531db77b",
+    "data": [
+      {
+        "text": "No, la ",
+        "userDefined": false
+      },
+      {
+        "text": "fecha",
+        "meta": "@dato_cita",
+        "alias": "dato_cita",
+        "userDefined": false
+      },
+      {
+        "text": " es otra",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "fb55f0da-946d-41a2-9ef2-c68cf3391dda",
+    "data": [
+      {
+        "text": "No, la ",
+        "userDefined": false
+      },
+      {
+        "text": "cédula",
+        "meta": "@dato_cita",
+        "alias": "dato_cita",
+        "userDefined": false
+      },
+      {
+        "text": " está mal",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "a7377a13-a782-445c-8340-15555b7cf787",
+    "data": [
+      {
+        "text": "Cambio la ",
+        "userDefined": false
+      },
+      {
+        "text": "especialidad",
+        "meta": "@dato_cita",
+        "alias": "dato_cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "6a545a32-4ad1-4f0e-bcc5-bef3f619e3f7",
+    "data": [
+      {
+        "text": "Mejor otra ",
+        "userDefined": false
+      },
+      {
+        "text": "hora",
+        "meta": "@dato_cita",
+        "alias": "dato_cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "10da2626-2d99-406d-a4be-d59dbcd20fdd",
+    "data": [
+      {
+        "text": "La ",
+        "userDefined": false
+      },
+      {
+        "text": "fecha",
+        "meta": "@dato_cita",
+        "alias": "dato_cita",
+        "userDefined": true
+      },
+      {
+        "text": " no es esa",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "678d3c59-b1fe-4b17-a68e-0c59975ea472",
+    "data": [
+      {
+        "text": "Quiero cambiar la ",
+        "userDefined": false
+      },
+      {
+        "text": "fecha",
+        "meta": "@dato_cita",
+        "alias": "dato_cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "acb3380f-28f9-48ac-a1d0-0876d09a2aea",
+    "data": [
+      {
+        "text": "La ",
+        "userDefined": false
+      },
+      {
+        "text": "cédula",
+        "meta": "@dato_cita",
+        "alias": "dato_cita",
+        "userDefined": false
+      },
+      {
+        "text": " está mal",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "69ed1cce-2b0f-4b82-a936-9a8f414f635b",
+    "data": [
+      {
+        "text": "Me equivoqué con la ",
+        "userDefined": false
+      },
+      {
+        "text": "cédula",
+        "meta": "@dato_cita",
+        "alias": "dato_cita",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  }
+]

@@ -1,5 +1,107 @@
 [
   {
+    "id": "347e65b6-fe8c-4e35-8034-79415559e377",
+    "data": [
+      {
+        "text": "¿",
+        "userDefined": false
+      },
+      {
+        "text": "Mi",
+        "meta": "@sys.unit-length-name",
+        "alias": "unit-length-name",
+        "userDefined": false
+      },
+      {
+        "text": " hija de ",
+        "userDefined": false
+      },
+      {
+        "text": "15 años",
+        "meta": "@sys.age",
+        "alias": "age",
+        "userDefined": false
+      },
+      {
+        "text": " puede ir sola?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "fd06be53-23df-4e4b-b99a-a16693dd3910",
+    "data": [
+      {
+        "text": "¿Los niños pueden entrar solos?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "cd951dfe-d5ea-4b9e-9787-eac963d30836",
+    "data": [
+      {
+        "text": "¿",
+        "userDefined": false
+      },
+      {
+        "text": "Un",
+        "meta": "@sys.number",
+        "alias": "number",
+        "userDefined": false
+      },
+      {
+        "text": " menor puede venir sin acompañante?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
+    "id": "64c409dd-5b11-4b9c-a188-0d44c04dd4e6",
+    "data": [
+      {
+        "text": "¿",
+        "userDefined": false
+      },
+      {
+        "text": "Mi",
+        "meta": "@sys.unit-length-name",
+        "alias": "unit-length-name",
+        "userDefined": false
+      },
+      {
+        "text": " hijo menor de edad puede ir solo a ",
+        "userDefined": false
+      },
+      {
+        "text": "la consulta",
+        "meta": "@sys.location",
+        "alias": "location",
+        "userDefined": false
+      },
+      {
+        "text": "?",
+        "userDefined": false
+      }
+    ],
+    "isTemplate": false,
+    "count": 0,
+    "lang": "es",
+    "updated": 0
+  },
+  {
     "id": "9bd0d57a-1e83-48c7-ab28-aa27c06972d2",
     "data": [
       {
