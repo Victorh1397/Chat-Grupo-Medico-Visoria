@@ -1,5 +1,9 @@
 # Guion del vídeo de demostración
 
+> **Nota:** este guion es el de la grabación original (macOS, dominio de ngrok de Victor, antes de las specs 09 y 10). Si se graba
+> de nuevo, hay que adaptarlo: el dominio de ngrok y los atajos de macOS, y la corrección de datos y la base vectorial, que no
+> aparecen en las escenas. El vídeo del enunciado dura como máximo 3 minutos.
+
 Spec: [99 — Entregables](../specs/99-entregables/spec.md) (R4). El vídeo debe mostrar la conversación **por voz de principio a
 fin**, el **flujo con contexto** (cita con confirmación) y una **pregunta resuelta con los documentos**; además se enseña el
 extra de **Telegram**.
