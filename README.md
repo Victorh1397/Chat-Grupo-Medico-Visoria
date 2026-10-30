@@ -56,8 +56,9 @@ Funciona por voz y, como mejora, en Telegram con botones.
    el canal `voz`.
 2. Dialogflow transcribe (STT nativo), clasifica la frase como `consulta_documental` y llama al webhook por ngrok con la
    cabecera secreta `X-Visoria-Token`.
-3. El webhook envía a Gemini la pregunta junto con el **texto completo** de los cinco documentos (cargados en memoria al
-   arrancar, sin OCR en la petición) y recibe la respuesta o la señal `NO_DISPONIBLE`.
+3. El webhook calcula el embedding de la pregunta, recupera de una **base vectorial** (FAISS, en memoria) los fragmentos de los
+   documentos más cercanos y envía solo esos a Gemini (si algo falla, el texto completo). Recibe la respuesta o la señal
+   `NO_DISPONIBLE`. El índice y los documentos se cargan al arrancar: sin OCR ni indexación en la petición.
 4. Como el canal es voz, el webhook convierte la respuesta a SSML; Dialogflow la sintetiza (TTS nativo) y el cliente la
    reproduce.
 
@@ -146,6 +147,7 @@ Detalle en la [spec 03](specs/03-webhook-fastapi/spec.md).
 | [`agenda.py`](webhook/agenda.py) | Reglas de agenda y estado en memoria (citas, propuestas por sesión) |
 | [`datos.py`](webhook/datos.py) | **Fuente única** de datos ficticios: médicos, horarios, precios, pacientes |
 | [`documentos.py`](webhook/documentos.py) | Consulta a Gemini con los documentos y control de alucinaciones |
+| [`recuperacion.py`](webhook/recuperacion.py) | Base vectorial (FAISS en memoria): carga el índice al arrancar y recupera los fragmentos más cercanos a la pregunta |
 | [`ssml.py`](webhook/ssml.py), [`numeros.py`](webhook/numeros.py) | SSML para el canal de voz; números dichos en palabras → cifras |
 | [`transferencia.py`](webhook/transferencia.py), [`telegram.py`](webhook/telegram.py) | Mejoras opcionales |
 
@@ -231,8 +233,17 @@ Sobre el texto OCR se extraen importes (`40 USD`, `$ 40`, `40 dólares`), horari
 
 - **Modelo:** `gemini-3.5-flash-lite` (versión fija), temperatura 0, razonamiento mínimo. Elegido midiendo con el prompt real:
   0,88–1,26 s frente a picos de 3,9 s de `gemini-flash-lite-latest` y respuestas cortadas de `gemini-3.1-flash-lite`.
-- **Texto completo en el prompt:** los cinco documentos suman ~5.600 caracteres (~1.500 tokens), así que caben enteros y no se
-  pierde información por seleccionar fragmentos. Cada documento va delimitado y la pregunta también (`<pregunta>…</pregunta>`).
+- **Base vectorial (spec 10):** el texto OCR se trocea offline en 25 fragmentos (una pregunta con su respuesta, una sección, unas
+  filas de tabla), cada uno se convierte en un vector con `gemini-embedding-001` (768 dimensiones) y se guarda en
+  `ocr/salida/indice.json` (`uv run python -m ocr.indexar`). Al arrancar, el webhook lo carga en un índice **FAISS** en memoria.
+  Por pregunta se calcula su embedding (~0,3 s) y se envían a Gemini solo los **4 fragmentos** más cercanos, con el mismo prompt y
+  las mismas instrucciones. Cada documento va delimitado y la pregunta también (`<pregunta>…</pregunta>`).
+- **Respaldo y segunda oportunidad:** si el embedding falla, tarda más de 1 s o no hay índice, se envía el **texto completo** de los
+  cinco documentos (~5.600 caracteres, ~1.500 tokens), que es lo que hacía la versión anterior. Si con los fragmentos el modelo dice
+  "no está", se confirma con el texto completo antes de darlo: con menos contexto el modelo es más literal y a veces no hace una
+  inferencia sencilla (p. ej. "los menores deben venir con su representante" → "no puede ir solo"). `RECUPERACION=completo` en
+  el `.env` desactiva la base vectorial. **Con cinco documentos pequeños no mejora la calidad y es algo más lenta que el texto
+  completo** (ver [Resultados](#10-resultados)); su valor es que el diseño escala si los documentos crecen.
 - **Por qué no la Knowledge Base de Dialogflow:** el enunciado pide que el texto extraído por OCR se guarde en un fichero y que
   **el webhook** lo envíe a un LLM. Con el webhook controlamos el prompt, la señal de "no disponible", el límite de tiempo y la
   respuesta de reserva; los conectores de conocimiento de Dialogflow ES no pasan por nuestro OCR ni por esas comprobaciones.
@@ -247,7 +258,8 @@ Sobre el texto OCR se extraen importes (`40 USD`, `$ 40`, `40 dólares`), horari
    final: *"No tengo esa información en los documentos de la clínica. ¿Desea que le comunique con recepción?"*.
 3. **Red de seguridad:** si el modelo redacta una negativa propia ("No dispongo de información…") en lugar de la señal, el webhook
    la reconoce y responde el mensaje estándar. Se añadió porque en la primera evaluación una pregunta sobre pediatría devolvió una
-   negativa redactada.
+   negativa redactada. Solo se busca en la **primera frase** de la respuesta: buscar en toda ella anulaba respuestas correctas que
+   dicen, de pasada, "si su seguro no aparece en la lista, puede pagar y pedir el reembolso" (spec 10).
 
 Resultado: **9/9 preguntas no respondibles sin inventar**, incluidas manipulaciones ("ignora tus instrucciones…") y consejo médico.
 
@@ -276,6 +288,7 @@ Detalle en la [spec 06](specs/06-voz/spec.md).
 | **Transferencia a agente humano** | Intención `transferir_humano` y, además, oferta de recepción cuando Vicky no tiene la información o no entiende dos veces seguidas. Un "sí" crea un caso `VIS-#####` en `logs/transferencias.jsonl` (persistente, no versionado) con motivo, última pregunta y datos de la cita en curso (cédula enmascarada). Mensaje distinto si recepción está cerrada | [07](specs/07-transferencia-humano/spec.md) |
 | **Telegram con botones** | Integración nativa de Dialogflow ES (el token del bot solo está en la consola). El webhook detecta el canal y añade botones en el menú, la especialidad, la nacionalidad, la confirmación y las ofertas de recepción. Los botones son una ayuda: escribir otra cosa funciona igual | [08](specs/08-telegram/spec.md) |
 | **Corrección de datos e interrupciones** | `corregir_dato` cambia un dato de la cita (en la recogida o ante la propuesta), conserva los demás y revalida; si el usuario da el valor nuevo en la misma frase ("la cédula es 11222333"), se usa sin preguntar. Una pregunta a mitad de la cita se responde con los documentos y la cita se retoma donde estaba. La propuesta anterior se descarta al corregir, para que no pueda confirmarse | [09](specs/09-correccion-interrupciones/spec.md) |
+| **Base de datos vectorial** | Fragmentos de los documentos indexados con embeddings de Gemini en FAISS; por pregunta se recuperan los 4 más cercanos y solo esos van al modelo, con respaldo y segunda oportunidad con el texto completo. Misma calidad que el texto completo (18/18 y 9/9) | [10](specs/10-base-vectorial/spec.md) |
 | **Documentos complejos** | D2 y D3 son tablas escaneadas; se leen al 99,9 % y 99,4 % gracias a quitar las líneas de la tabla antes del OCR | [04](specs/04-ocr-documentos/spec.md) |
 
 Cómo se reconoce el "sí" a la oferta sin tocar la consola: un "sí" suelto no tiene intención y llega al fallback; el webhook
@@ -292,7 +305,11 @@ oferta caduca.
 | Validar en el turno (borrar el parámetro y repreguntar) | Pide solo el dato erróneo sin reiniciar; verificado con Dialogflow real | [03](specs/03-webhook-fastapi/plan.md) |
 | Preprocesado del OCR con eliminación de líneas | Similitud media del 81,8 % al 99,8 %; tablas del 50–59 % al 99,4–99,9 % | [04](specs/04-ocr-documentos/plan.md) |
 | Regex sobre una copia normalizada; al LLM, el OCR original | La normalización de cifras es destructiva para el texto | [04](specs/04-ocr-documentos/spec.md) |
-| Texto completo en el prompt | ~1.500 tokens en total: caben enteros | [05](specs/05-consulta-documental/spec.md) |
+| Texto completo en el prompt (versión inicial) | ~1.500 tokens en total: caben enteros. Sigue siendo el respaldo y el modo `RECUPERACION=completo` | [05](specs/05-consulta-documental/spec.md) |
+| **FAISS** y no ChromaDB como base vectorial | ChromaDB instalaría 53 paquetes (onnxruntime, kubernetes…) y FAISS 1, para ~25 vectores. Búsqueda exacta en memoria; los textos van en el propio `indice.json` | [10](specs/10-base-vectorial/plan.md) |
+| 768 dimensiones, 4 fragmentos, sin umbral de similitud | A 768 se separa mejor lo respondible de lo que no está; la recuperación acierta 18/18 con k = 3 a 6; las no respondibles puntúan 0,55–0,74 y las respondibles 0,68–0,78, así que un umbral no es fiable | [10](specs/10-base-vectorial/plan.md) |
+| Segunda oportunidad con el texto completo ante una negativa | Con fragmentos, "¿Puede ir solo mi hijo menor?" fallaba 3 de 5 y 6 de 6 veces en dos pruebas aunque se recuperaba el fragmento correcto; con el texto completo, 8 de 8; con la segunda oportunidad, 8 de 8 | [10](specs/10-base-vectorial/plan.md) |
+| Embedding con límite de 1 s, presupuesto total de 4 s y calentamiento al arrancar | Mediana ~0,27 s por consulta, pero la primera tras arrancar superaba 1 s | [10](specs/10-base-vectorial/plan.md) |
 | Control de alucinaciones en tres capas | 1.ª evaluación: 7/9 sin la red de seguridad; final: 9/9 | [05](specs/05-consulta-documental/plan.md) |
 | `gemini-3.5-flash-lite`, razonamiento mínimo | Mediana 0,80 s y p95 1,08 s en la evaluación; razonamiento `minimal` 0,64–1,01 s frente a 1,22–1,48 s con `low` | [05](specs/05-consulta-documental/plan.md) |
 | **Límite de 4 s** para Gemini (antes 3 s) | Por la tarde, 4 de cada 10 preguntas superaban 3 s; Dialogflow da 5 s al webhook | [06](specs/06-voz/spec.md) |
@@ -320,9 +337,10 @@ oferta caduca.
 
 | Prueba | Resultado |
 |---|---|
-| Tests automáticos (`uv run pytest`, sin red: Gemini simulado) | **301 tests** en verde; `ruff` sin avisos |
+| Tests automáticos (`uv run pytest`, sin red: Gemini y los embeddings simulados) | **313 tests** en verde; `ruff` sin avisos |
 | Export del agente (`tests/test_agente_export.py`) | Intenciones, follow-ups, contextos, parámetros y su orden, entidades, webhook, respuestas de reserva, zona horaria y trato de usted |
 | Evaluación documental con Gemini real (18 respondibles + 9 no respondibles) | **17/18** respuestas con los datos esperados, **9/9 sin alucinar**; mediana 0,80 s, p95 1,08 s. El único fallo fue un pico de latencia (mensaje de reserva, no una invención). [`evaluacion/resultados_documental.json`](evaluacion/resultados_documental.json) |
+| Base vectorial frente al texto completo (spec 10, mismas 27 preguntas, misma sesión) | Texto completo: 18/18 y 9/9, mediana 0,74 s, máx. 2,01 s. Base vectorial: **18/18 y 9/9**, mediana 1,00 s, máx. 1,78 s (las negativas hacen dos consultas: 1,58 s). Por el canal de voz con Dialogflow real: turnos de 1,85 a 3,24 s. [`evaluacion/resultados_spec10_completo.json`](evaluacion/resultados_spec10_completo.json), [`evaluacion/resultados_spec10_vectorial.json`](evaluacion/resultados_spec10_vectorial.json) |
 | OCR | Similitud media 99,8 %; 12/12 precios y 12/12 horarios validados |
 | Webhook por ngrok (50 turnos de texto por Dialogflow) | 0 tiempos agotados; 0,4–1,3 s por turno |
 | Conversación modelo **hablada** (10 turnos, con la paciente ya registrada María González) | María reconocida con su dermatóloga habitual; todos los datos reconocidos a la primera (incluida la cédula "14 523 987"); **mediana 2,1 s, máximo 4,1 s**, ninguno por encima de 5 s. [`docs/evidencias/voz_conversacion_modelo.json`](docs/evidencias/voz_conversacion_modelo.json) |
@@ -354,7 +372,8 @@ Rellenar `.env`:
 
 | Variable | Valor |
 |---|---|
-| `GOOGLE_API_KEY` | Clave de Gemini |
+| `GOOGLE_API_KEY` | Clave de Gemini (también para los embeddings) |
+| `RECUPERACION` | Opcional: `vectorial` (por defecto) o `completo` (todo el texto de los documentos, sin base vectorial). Reiniciar el webhook al cambiarla |
 | `WEBHOOK_TOKEN` | Un secreto propio: `uv run python -c "import secrets; print(secrets.token_urlsafe(24))"` |
 | `DIALOGFLOW_PROJECT_ID` | Id del proyecto de Google Cloud del agente (lo usa el cliente de voz) |
 | `GOOGLE_APPLICATION_CREDENTIALS` | Opcional: ruta a la clave de una cuenta de servicio con permiso de cliente de Dialogflow, **fuera del repositorio**. Si no se usa, ver el paso 6 |
@@ -417,11 +436,14 @@ que no esté en [`webhook/datos.py`](webhook/datos.py) (p. ej. 18765432).
 uv run python -m ocr.generar_documentos      # imágenes D1–D5 desde webhook/datos.py
 uv run python -m ocr.ocr                     # OCR → ocr/salida/documentos.json (informe por documento)
 uv run python -m ocr.ocr --comparar          # tabla de similitud con y sin cada paso de preprocesado
-uv run python -m scripts.evaluar_documental  # evaluación con Gemini real (27 peticiones, ~3 min)
+uv run python -m ocr.indexar                 # fragmentos + embeddings → ocr/salida/indice.json (necesita GOOGLE_API_KEY)
+uv run python -m ocr.indexar --solo-fragmentos  # solo enseña los fragmentos, sin llamar a Gemini
+uv run python -m scripts.evaluar_documental  # evaluación con Gemini real (27 peticiones, ~3 min; RECUPERACION=completo para comparar)
 uv run python docs/generar_diagrama.py       # docs/arquitectura.png
 ```
 
-Si se cambia un precio u horario en `webhook/datos.py`, hay que regenerar documentos y OCR: `tests/test_ocr.py` falla si no coinciden.
+Si se cambia un precio u horario en `webhook/datos.py`, hay que regenerar documentos, OCR e índice vectorial (`ocr.generar_documentos`,
+`ocr.ocr` y `ocr.indexar`): `tests/test_ocr.py` y `tests/test_recuperacion.py` fallan si no coinciden.
 
 ## 12. Estructura del repositorio
 
@@ -434,14 +456,15 @@ Si se cambia un precio u horario en `webhook/datos.py`, hay que regenerar docume
 │   ├── generar_documentos.py  Genera las imágenes con efecto de escaneo
 │   ├── ocr.py                 Script de OCR offline (preprocesado + Tesseract + validación)
 │   ├── extraccion.py          Regex sobre el texto extraído y validación contra webhook/datos.py
+│   ├── indexar.py             Fragmenta el texto OCR y calcula los embeddings (índice vectorial, offline)
 │   ├── documentos/            Imágenes D1–D5 (JPEG)
 │   ├── referencia/            Texto original de cada documento (solo para medir la calidad del OCR)
-│   └── salida/documentos.json Texto OCR + campos extraídos (lo carga el webhook)
+│   └── salida/                documentos.json (texto OCR + campos extraídos) e indice.json (fragmentos + vectores); los carga el webhook
 ├── voz/                       Cliente de voz (grabación con fin por silencio + detect_intent)
 ├── scripts/                   preparar_export.py (export sin secretos), evaluar_documental.py
 ├── evaluacion/                Preguntas de evaluación documental y resultados
 ├── docs/                      Diagrama (y su script), guion del vídeo, evidencias
-├── tests/                     301 tests (pytest)
+├── tests/                     313 tests (pytest)
 └── specs/                     Especificaciones del proyecto (SDD)
 ```
 
@@ -459,7 +482,7 @@ spec.md (qué y por qué, criterios de aceptación) → aprobación del equipo
 - **Constitución** ([`specs/00-constitucion.md`](specs/00-constitucion.md)): principios que toda spec respeta (latencia < 5 s,
   sin alucinaciones, secretos fuera del repositorio, agente configurado a mano, datos ficticios, todo verificable con tests).
 - **Specs:** 01 caso de uso · 02 agente · 03 webhook · 04 OCR · 05 consulta documental · 06 voz · 07 transferencia · 08 Telegram ·
-  99 entregables · 09 corrección de datos e interrupciones.
+  99 entregables · 09 corrección de datos e interrupciones · 10 base vectorial.
 - **Matriz de trazabilidad** en [`specs/README.md`](specs/README.md): cada requisito del enunciado → spec → evidencia.
 - **El agente se configuró a mano** en la consola, siguiendo la guía paso a paso del `plan.md` de cada spec; cada cambio se
   exportó y se verificó automáticamente con `tests/test_agente_export.py`. La implementación del código se hizo con la ayuda de
@@ -481,6 +504,9 @@ spec.md (qué y por qué, criterios de aceptación) → aprobación del equipo
 | Telegram en la app | "Para el 29 de octubre" no lo reconocía `@sys.date` | Lectura de fechas de respaldo en el webhook |
 | Spec 09: cita a medias con el agente real | "Me equivoqué con la cédula" iba a `transferir_humano` y, tras una pregunta, "El martes" caía en el fallback: la cita se perdía | `corregir_dato`, borrador por sesión y retoma de la cita |
 | Spec 09: "¿Mi hijo menor de edad puede ir solo?" | Se clasificaba como `agendar_cita` (0,50) y pedía el nombre | Frases nuevas en `consulta_documental` |
+| Spec 10: "¿Qué seguros aceptan?" con fragmentos | La red de seguridad anulaba una respuesta correcta que decía "si su seguro no aparece en la lista…" (7 de 8 intentos) | La negativa solo se busca en la primera frase |
+| Spec 10: "¿Puede ir solo mi hijo menor?" con fragmentos | Falla 3 de 5 y 6 de 6 veces en dos pruebas aunque se recupera el fragmento correcto; con el texto completo, 8 de 8 | Segunda oportunidad con el texto completo antes de dar una negativa |
+| Spec 10: primera pregunta tras arrancar | El embedding superaba 1 s (arranque en frío del cliente) | Calentamiento al arrancar el webhook |
 
 ## 14. Limitaciones y mejoras futuras
 
@@ -492,6 +518,7 @@ spec.md (qué y por qué, criterios de aceptación) → aprobación del equipo
 - La integración nativa de Telegram no procesa notas de voz: en Telegram la conversación es por texto y botones.
 - El texto que recibe el LLM conserva pocas erratas de OCR ("Hemández").
 - Dialogflow clasifica por parecido con las frases de entrenamiento y alguna pregunta puede caer en la intención equivocada. Se corrigió con frases nuevas el caso encontrado ("¿Mi hijo menor de edad puede ir solo a la consulta?"), pero una pregunta muy distinta de las entrenadas podría volver a ser tomada como el dato que se está pidiendo. El plan de la spec 09 deja diseñado un filtro en el webhook por si ocurriera.
+- El índice vectorial es un fichero versionado que hay que regenerar (`ocr.indexar`) si cambian los documentos; con cinco documentos pequeños la base vectorial no mejora la calidad y suma ~0,1–0,3 s por pregunta (el embedding), y el doble en las respuestas negativas por la segunda oportunidad con el texto completo.
 - La corrección y la retoma de la cita usan un borrador en la memoria del webhook: se pierde al reiniciarlo, como las citas. No se corrigen varios datos en una sola frase, ni una cita ya confirmada (se cancela y se agenda otra).
 - La latencia de Gemini varía con la red y la hora: en una evaluación posterior, en otro equipo, la mediana fue de 1,7 s y 3 de 27 peticiones agotaron el límite de 4 s (Vicky respondió con el mensaje de reserva, sin inventar).
 

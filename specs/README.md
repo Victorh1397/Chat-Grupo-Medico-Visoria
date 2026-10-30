@@ -23,6 +23,7 @@ Plantillas en [`_plantillas/`](_plantillas/). Principios en [`00-constitucion.md
 | 07 | [Extra: transferencia a agente humano](07-transferencia-humano/spec.md) | +1,5 | Hecha |
 | 08 | [Extra: Telegram (integración nativa, texto + botones)](08-telegram/spec.md) | +1,5 | Hecha |
 | 09 | [Extra: corrección de datos e interrupciones en la cita](09-correccion-interrupciones/spec.md) | +1,5 | Hecha |
+| 10 | [Extra: base de datos vectorial para la consulta documental](10-base-vectorial/spec.md) | +1,5 | Hecha |
 | 99 | [Entregables: README, diagrama, ZIP del agente, vídeo de demostración](99-entregables/spec.md) | Docs (1) | Hecha |
 
 Estados: Pendiente → Spec redactada → Spec aprobada → En implementación → Hecha.
@@ -45,6 +46,7 @@ Estados: Pendiente → Spec redactada → Spec aprobada → En implementación �
 | Vídeo de demostración por voz | 99 | Guion con escenas, tiempos y frases exactas: [`docs/guion_video.md`](../docs/guion_video.md) · vídeo: [Loom](https://www.loom.com/share/c8feadcc5a224d9badd42c9ce93e4c14) |
 | *Mejora opcional:* integración con Telegram con respuestas enriquecidas (botones) | 08 | Integración nativa de Dialogflow · `webhook/telegram.py` (botones `quickReplies` solo en Telegram) · `tests/test_telegram.py` · prueba en la app |
 | *Mejora opcional:* intención de transferencia a agente humano | 07 | `transferir_humano` + `webhook/transferencia.py` (oferta aceptada con "sí", oferta automática, caso con resumen y horario) · `tests/test_transferencia.py` · prueba por Dialogflow |
+| *Mejora opcional:* base de datos vectorial en lugar de contexto directo en el prompt | 10 | `ocr/indexar.py` (fragmentos + embeddings) → `ocr/salida/indice.json` · `webhook/recuperacion.py` (FAISS en memoria) · respaldo y segunda oportunidad con el texto completo en `webhook/documentos.py` · `tests/test_recuperacion.py` · evaluación comparativa de 27 preguntas: 18/18 y 9/9 en ambos modos (`evaluacion/resultados_spec10_*.json`, análisis en `specs/10-base-vectorial/plan.md`) |
 | *Mejora opcional:* gestión de interrupciones y corrección de datos a mitad de flujo mediante eventos | 09 | `corregir_dato` + `@dato_cita` (`agente/`) · `webhook/intenciones.py` (borrador por sesión, `ctx_recogida_cita`, retoma de la cita) · `tests/test_correccion.py` · pruebas con el agente real por texto, voz y Telegram (resultados en `specs/09-correccion-interrupciones/plan.md`) |
 
 ## Mejoras futuras (fuera del alcance actual)

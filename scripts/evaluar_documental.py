@@ -6,9 +6,14 @@ y guarda el resultado en evaluacion/resultados_documental.json.
 
 Uso:
     uv run python -m scripts.evaluar_documental
+    uv run python -m scripts.evaluar_documental --salida evaluacion/otro_fichero.json
+
+La variable RECUPERACION elige el contexto (spec 10): `vectorial` (por defecto, fragmentos de la base vectorial)
+o `completo` (todo el texto de los documentos).
 """
 
 import json
+import sys
 import time
 import unicodedata
 from datetime import datetime
@@ -19,7 +24,7 @@ from dotenv import load_dotenv
 RAIZ = Path(__file__).resolve().parents[1]
 load_dotenv(RAIZ / ".env")
 
-from webhook import documentos  # noqa: E402  (necesita GOOGLE_API_KEY ya cargada)
+from webhook import documentos, recuperacion  # noqa: E402  (necesita GOOGLE_API_KEY ya cargada)
 from webhook.documentos import NO_DISPONIBLE_AHORA, SIN_INFO_DOCUMENTAL  # noqa: E402
 
 PREGUNTAS = RAIZ / "evaluacion" / "preguntas_documentales.json"
@@ -43,10 +48,15 @@ def preguntar(pregunta: str) -> tuple[str, float]:
 
 
 def main() -> None:
+    # --salida <fichero>: para guardar cada modo (RECUPERACION=completo|vectorial) sin pisar el resultado anterior
+    argumentos = sys.argv[1:]
+    salida = Path(argumentos[argumentos.index("--salida") + 1]) if "--salida" in argumentos else RESULTADOS
     juego = json.loads(PREGUNTAS.read_text(encoding="utf-8"))
     filas = []
 
-    print(f"Modelo: {documentos.MODELO}\n")
+    print(f"Modelo: {documentos.MODELO} · recuperación: {documentos.modo_de_recuperacion()}\n")
+    if documentos.modo_de_recuperacion() == "vectorial":
+        recuperacion.calentar(esperar=True)  # como hace el webhook al arrancar: el arranque en frío no cuenta
     for p in juego["respondibles"]:
         respuesta, segundos = preguntar(p["pregunta"])
         ok = contiene(respuesta, p["debe_contener"])
@@ -70,9 +80,10 @@ def main() -> None:
         "segundos_p95": tiempos[int(len(tiempos) * 0.95) - 1],
         "segundos_maximo": tiempos[-1],
     }
-    RESULTADOS.write_text(json.dumps({
+    salida.write_text(json.dumps({
         "fecha": datetime.now().isoformat(timespec="seconds"),
         "modelo": documentos.MODELO,
+        "recuperacion": documentos.modo_de_recuperacion(),
         "resumen": resumen,
         "preguntas": filas,
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
