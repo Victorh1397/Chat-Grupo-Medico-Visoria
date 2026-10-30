@@ -48,6 +48,8 @@ PALABRA_NOMBRE = re.compile(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]+")
 NO_SON_NOMBRES = {"quiero", "necesito", "cita", "cancelar", "no", "si", "sí", "hola", "gracias",
                   "venezolano", "venezolana", "extranjero", "extranjera"}
 
+SIN_INFO_EN_CITA = "No tengo esa información en los documentos de la clínica."
+
 CIERRE = re.compile(r"^(no|no,? gracias|nada m[aá]s|eso es todo|es todo)[.!]*$", re.IGNORECASE)
 
 
@@ -82,6 +84,10 @@ def _retomar_cita(pet: PeticionDF, mensaje: str) -> dict:
     borrador = borradores.get(pet.sesion)
     if not pendiente or not borrador:
         return texto(mensaje)
+    # A mitad de la cita no se ofrece recepción: encadenaría dos preguntas seguidas (quien la quiera, la pide)
+    if mensaje in (SIN_INFO_DOCUMENTAL, SIN_INFO_FALLBACK):
+        mensaje = SIN_INFO_EN_CITA
+    mensaje = mensaje.replace(f" {transferencia.OFERTA}", "")
     return repreguntar(pet, pendiente, f"{mensaje} {PREGUNTAS[pendiente]}", destino=borrador)
 
 

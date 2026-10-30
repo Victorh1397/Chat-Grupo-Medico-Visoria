@@ -23,6 +23,17 @@ def test_ca5_pregunta_a_mitad_de_la_cita_se_responde_y_se_retoma(cliente, modelo
     assert contextos["agendar_cita_dialog_context"]["parameters"]["cedula"] == "14.523.987"
 
 
+def test_ca6_pregunta_sin_respuesta_a_mitad_de_la_cita_retoma_sin_ofrecer_recepcion(cliente):
+    parametros = datos_cita(especialidad="", fecha="", hora="")
+    cliente.post("/webhook", json=peticion("agendar_cita", parametros, "14523987", todos=False,
+                                           esperando="especialidad"))
+
+    res = cliente.post("/webhook", json=peticion("consulta_documental", {}, "¿Hacen resonancias?")).json()
+
+    sin_info = "No tengo esa información en los documentos de la clínica."
+    assert res["fulfillmentText"] == f"{sin_info} {PREGUNTAS['especialidad']}"
+
+
 def corregir(cliente, dato, texto):
     return cliente.post("/webhook", json=peticion("corregir_dato", {"dato_cita": dato}, texto)).json()
 
