@@ -21,7 +21,7 @@ Asistente conversacional por voz (Dialogflow ES + webhook FastAPI + OCR + Gemini
 - Pruebas contra Dialogflow real (`detect_intent`): espaciarlas ~2 s; la edición Trial limita las consultas por minuto.
 - Consulta documental: `webhook/documentos.py` (Gemini `gemini-3.5-flash-lite`). Los tests **siempre** simulan el modelo (`ModeloSimulado` en `tests/conftest.py`); la evaluación real es `uv run python -m scripts.evaluar_documental` (gasta 27 de las 500 peticiones diarias gratuitas, ~3 min).
 - Tests: `uv run pytest`. Lint: `uv run ruff check .`.
-- Tesseract con el idioma `spa` (Homebrew en macOS; instalador de UB-Mannheim en Windows). Solo hace falta para regenerar el OCR.
+- Tesseract con el idioma `spa` (Homebrew en macOS; instalador de UB-Mannheim en Windows). Solo hace falta para regenerar el OCR. En Windows, `tesseract` debe estar en el `PATH` y, si `spa` no está en su carpeta `tessdata`, definir `TESSDATA_PREFIX` hacia una carpeta que lo contenga.
 - Windows: `tzdata` está en las dependencias porque `zoneinfo` no trae zonas horarias. Si se cambia el `.env`, reiniciar el webhook.
 
 ## Reglas

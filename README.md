@@ -322,7 +322,7 @@ oferta caduca.
 
 ## 11. Cómo ejecutarlo
 
-Probado en macOS y en Windows 10, con Python 3.12 (en Windows se probaron los tests, el webhook, ngrok y el cliente de voz; el OCR no se regeneró). Los comandos de abajo se muestran para macOS/Linux; en Windows se indican las diferencias.
+Probado en macOS y en Windows 10, con Python 3.12 (en Windows se probaron los tests, el webhook, ngrok, el cliente de voz, Telegram y `ocr.ocr`; no se probó la generación de las imágenes con `ocr.generar_documentos`). Los comandos de abajo se muestran para macOS/Linux; en Windows se indican las diferencias.
 
 ### Requisitos
 
@@ -330,7 +330,7 @@ Probado en macOS y en Windows 10, con Python 3.12 (en Windows se probaron los te
 - Un proyecto de Google Cloud con la **Dialogflow API** habilitada y el [Google Cloud CLI](https://cloud.google.com/sdk/docs/install).
 - Una clave de **Gemini** de [Google AI Studio](https://aistudio.google.com/apikey) (el nivel gratuito basta).
 - Una cuenta gratuita de **ngrok** (macOS: `brew install ngrok`; Windows: `winget install ngrok.ngrok`; después `ngrok config add-authtoken <token>`) y un dominio fijo gratuito, que se crea en <https://dashboard.ngrok.com/domains>.
-- Solo para regenerar los documentos y el OCR: Tesseract con español (macOS: `brew install tesseract tesseract-lang`; Windows: instalador de UB-Mannheim, marcando el idioma español).
+- Solo para regenerar los documentos y el OCR: Tesseract con español (macOS: `brew install tesseract tesseract-lang`; Windows: instalador de UB-Mannheim con el idioma español instalado; el script no fija la ruta de Tesseract, así que `tesseract` debe estar en el `PATH`, y si el idioma `spa` no está en su carpeta `tessdata`, hay que indicar dónde está con la variable `TESSDATA_PREFIX`).
 - Windows: el Google Cloud CLI se instala con `winget install Google.CloudSDK`. Tras instalar ngrok o gcloud hay que abrir una terminal nueva (en VS Code, cerrar y reabrir el programa) para que reconozca los comandos.
 
 ### 1. Instalar y configurar
@@ -481,6 +481,8 @@ spec.md (qué y por qué, criterios de aceptación) → aprobación del autor
 - Algunas respuestas de Gemini siguen tardando más de 4 s de forma aleatoria; en ese caso Vicky da el mensaje de reserva, nunca inventa.
 - La integración nativa de Telegram no procesa notas de voz: en Telegram la conversación es por texto y botones.
 - El texto que recibe el LLM conserva pocas erratas de OCR ("Hemández").
+- Dialogflow clasifica por parecido con las frases de entrenamiento y algunas preguntas caen en la intención equivocada: en una prueba, "¿Mi hijo menor de edad puede ir solo a la consulta?" se clasificó como `agendar_cita` (confianza 0,50) en lugar de `consulta_documental`. Además, una vez dentro de una cita, cualquier pregunta se interpreta como el dato que se está pidiendo (no hay gestión de interrupciones).
+- La latencia de Gemini varía con la red y la hora: en una evaluación posterior, en otro equipo, la mediana fue de 1,7 s y 3 de 27 peticiones agotaron el límite de 4 s (Vicky respondió con el mensaje de reserva, sin inventar).
 
 **Mejoras futuras** (detalle en [`specs/README.md`](specs/README.md#mejoras-futuras-fuera-del-alcance-actual))
 - Corrección de datos a mitad de flujo mediante eventos ("me equivoqué con la cédula") y gestión de interrupciones.
