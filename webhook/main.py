@@ -12,13 +12,14 @@ import logging
 import os
 import secrets
 import time
+from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header, HTTPException, Request
 
-from webhook import intenciones, telegram, transferencia
+from webhook import intenciones, recuperacion, telegram, transferencia
 from webhook.dialogflow import PeticionDF, texto
-from webhook.documentos import DOCUMENTOS, MODELO
+from webhook.documentos import DOCUMENTOS, MODELO, modo_de_recuperacion
 from webhook.intenciones import FALLBACK, MANEJADORES, PREGUNTAS, agenda
 from webhook.ssml import a_ssml
 
@@ -27,7 +28,14 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s", datefmt="%H:%M:%S")
 log = logging.getLogger("visoria")
 
-app = FastAPI(title="Webhook Grupo Médico Visoria")
+@asynccontextmanager
+async def ciclo_de_vida(_app: FastAPI):
+    # Spec 10: la primera pregunta real no debe pagar el arranque en frío del cliente de embeddings (superaba 1 s)
+    recuperacion.calentar()
+    yield
+
+
+app = FastAPI(title="Webhook Grupo Médico Visoria", lifespan=ciclo_de_vida)
 
 
 def comprobar_token(token: str | None) -> None:
@@ -41,7 +49,8 @@ def comprobar_token(token: str | None) -> None:
 def estado():
     """Para comprobar de un vistazo que el túnel llega hasta aquí."""
     return {"estado": "ok", "servicio": "Vicky - Grupo Médico Visoria", "citas_en_agenda": len(agenda.citas),
-            "documentos_cargados": len(DOCUMENTOS), "modelo": MODELO}
+            "documentos_cargados": len(DOCUMENTOS), "modelo": MODELO, "recuperacion": modo_de_recuperacion(),
+            "fragmentos_indexados": len(recuperacion.INDICE.fragmentos) if recuperacion.INDICE else 0}
 
 
 @app.post("/webhook")

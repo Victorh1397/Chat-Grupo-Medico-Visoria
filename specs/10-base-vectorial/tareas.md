@@ -10,7 +10,7 @@ Plan: [plan.md](plan.md)
 - [x] T4. `webhook/recuperacion.py`: carga en FAISS al arrancar y `recuperar()` con límite de tiempo + test del cableado (Claude)
 - [x] T5. Integración en `webhook/documentos.py`: modo `RECUPERACION`, presupuesto de 4 s, respaldo al texto completo y registro de
       fragmentos + tests de respaldo y de que al modelo solo llegan los fragmentos recuperados (Claude)
-- [ ] T6. Evaluación comparativa de las 27 preguntas en los dos modos y ajuste de k y del tamaño de fragmento; resultados en `plan.md`
+- [x] T6. Evaluación comparativa de las 27 preguntas en los dos modos y ajuste de k y del tamaño de fragmento; resultados en `plan.md`
       (Claude; consume peticiones de la cuota gratuita)
 - [ ] T7. Pruebas con el agente real: voz (latencia del turno completo) y Telegram, CA-7 (tú + Claude)
 - [ ] T8. Documentación: constitución, CLAUDE.md, README, notas en las specs 04 y 05, `.env.example`, diagrama y `specs/README.md` (Claude)

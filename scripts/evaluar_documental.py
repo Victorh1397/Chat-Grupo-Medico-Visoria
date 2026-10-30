@@ -24,7 +24,7 @@ from dotenv import load_dotenv
 RAIZ = Path(__file__).resolve().parents[1]
 load_dotenv(RAIZ / ".env")
 
-from webhook import documentos  # noqa: E402  (necesita GOOGLE_API_KEY ya cargada)
+from webhook import documentos, recuperacion  # noqa: E402  (necesita GOOGLE_API_KEY ya cargada)
 from webhook.documentos import NO_DISPONIBLE_AHORA, SIN_INFO_DOCUMENTAL  # noqa: E402
 
 PREGUNTAS = RAIZ / "evaluacion" / "preguntas_documentales.json"
@@ -55,6 +55,8 @@ def main() -> None:
     filas = []
 
     print(f"Modelo: {documentos.MODELO} · recuperación: {documentos.modo_de_recuperacion()}\n")
+    if documentos.modo_de_recuperacion() == "vectorial":
+        recuperacion.calentar(esperar=True)  # como hace el webhook al arrancar: el arranque en frío no cuenta
     for p in juego["respondibles"]:
         respuesta, segundos = preguntar(p["pregunta"])
         ok = contiene(respuesta, p["debe_contener"])

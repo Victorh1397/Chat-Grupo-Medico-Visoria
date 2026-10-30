@@ -95,6 +95,38 @@ Con la clave del equipo, 4 fragmentos de ejemplo y 5 consultas:
 La latencia del embedding (~0,3 s) cabe holgadamente en el presupuesto de 4 s. La diferencia entre respondibles y no respondibles abre la
 puerta a un umbral de similitud, pero el plan no lo da por hecho: se decide con la evaluación (T6).
 
+## Resultados de la evaluación comparativa (T6)
+
+**Recuperación sola** (sin generar respuesta): para las 18 preguntas respondibles, los datos necesarios están en los fragmentos
+recuperados con **k = 3, 4, 5 y 6** (18/18 en todos). Se fija **k = 4**, con margen sobre el mínimo. Las preguntas no respondibles
+puntúan 0,55–0,74 y las respondibles 0,68–0,78: **se solapan, así que un umbral de similitud no es fiable** y la decisión de "no está en
+los documentos" sigue siendo del modelo, como antes. Tamaño de fragmento: 25 fragmentos de ≤ 300 caracteres; no hizo falta ajustarlo.
+
+**Evaluación de las 27 preguntas con Gemini real**, misma sesión y mismo código (`evaluacion/resultados_spec10_*.json`):
+
+| | Texto completo | Base vectorial |
+|---|---|---|
+| Respondibles | 18/18 | 18/18 |
+| No respondibles sin inventar | 9/9 | 9/9 |
+| Errores o tiempo agotado | 0 | 0 |
+| Latencia: mediana / p95 / máximo | 0,74 / 1,01 / 2,01 s | 0,83 / 0,96 / 1,21 s |
+
+Conclusión honesta: con cinco documentos pequeños la base vectorial **no mejora la calidad** (el texto completo ya cabía de sobra) y cuesta
+unos 0,1 s de mediana por el embedding; a cambio envía menos texto al modelo y el peor caso no empeora. Su valor es que el diseño escala
+si los documentos crecen.
+
+**Hallazgos durante la evaluación**
+1. **Regresión latente de la spec 05 destapada por los fragmentos.** La red de seguridad contra negativas redactadas (`NEGATIVA`) buscaba
+   "no aparece", "no figura"… en toda la respuesta. Una respuesta correcta que dice de pasada "si su seguro **no aparece** en la lista,
+   puede pagar y pedir el reembolso" se convertía en "no tengo esa información" (7 de 8 intentos con la base vectorial en
+   "¿Qué seguros aceptan?"). Ahora se mira solo la **primera frase**, que es donde está una negativa real; `NO_DISPONIBLE` se sigue
+   buscando en todo el texto. Test añadido a la batería existente.
+2. **Arranque en frío del embedding.** La primera consulta tras arrancar superaba el límite de 1 s y esa pregunta se quedaba sin
+   recuperación (caía al texto completo, sin romper nada). El webhook calienta el cliente al arrancar (`recuperacion.calentar()`) y la
+   evaluación también.
+3. **Límite de peticiones por minuto de Gemini.** Al repetir una pregunta cada 2 s aparecieron errores 429. La evaluación espacia las
+   preguntas 6 s, como ya hacía.
+
 ## Riesgos y mitigación
 
 - **La recuperación pierde información** que el texto completo no perdía (p. ej. una pregunta que necesita dos tablas). Mitigación:

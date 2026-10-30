@@ -224,6 +224,9 @@ def responder_con_documentos(pregunta: str, sin_informacion: str, documentos: li
 
     log.info("GEMINI (%.0f ms): %s", (time.perf_counter() - inicio) * 1000, bruta.strip())
     respuesta = limpiar(bruta)
-    if not respuesta or NO_DISPONIBLE in bruta.upper() or NEGATIVA.search(respuesta):
+    # La negativa va al principio. Mirar toda la respuesta anulaba respuestas correctas que dicen, de pasada,
+    # "si su seguro no aparece en la lista, puede pagar y pedir el reembolso" (spec 10, T6)
+    primera_frase = re.split(r"(?<=[.!?])\s", respuesta, maxsplit=1)[0]
+    if not respuesta or NO_DISPONIBLE in bruta.upper() or NEGATIVA.search(primera_frase):
         return sin_informacion
     return respuesta

@@ -71,6 +71,18 @@ def cargar_indice(ruta: Path = RUTA_INDICE) -> Indice | None:
 INDICE = cargar_indice()
 
 
+def calentar(esperar: bool = False) -> None:
+    """
+    Primera consulta de embeddings, para que el arranque en frío (cliente y conexión) no caiga sobre una pregunta
+    real: medido, la primera superaba el límite de 1 s y esa pregunta se quedaba sin recuperación.
+    """
+    if INDICE is None:
+        return
+    futuro = _hilos.submit(incrustar, ["calentamiento"], "RETRIEVAL_QUERY")
+    if esperar:
+        futuro.result(timeout=10)
+
+
 def recuperar(pregunta: str, k: int = FRAGMENTOS_POR_PREGUNTA, indice: Indice | None = None) -> list[dict]:
     """Los k fragmentos más cercanos a la pregunta. Lanza una excepción si no hay índice o el embedding falla."""
     indice = INDICE if indice is None else indice

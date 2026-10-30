@@ -83,6 +83,8 @@ def test_r3_negativa_con_palabras_del_modelo(modelo, negativa):
     "No, los menores de edad deben venir acompañados por su representante.",
     "No se recomienda conducir después del fondo de ojo con dilatación.",
     "No requiere ayuno.",
+    # una condición de pasada no es una negativa (spec 10, T6)
+    "Aceptamos Seguros Araguaney y Salud Llanera. Si su seguro no aparece en la lista, puede pagar y pedir reembolso.",
 ])
 def test_r3_respuestas_que_empiezan_por_no_no_son_negativas(modelo, respuesta_valida):
     modelo.respuesta = respuesta_valida
