@@ -113,7 +113,23 @@ Conversación: cita hasta la cédula, pregunta "¿Tienen estacionamiento?", "El 
 - **Cuota de Dialogflow Trial.** Pruebas espaciadas ~2 s, como indica CLAUDE.md.
 - **Las IDs de intención son del agente.** El código obtiene la ID de la propia petición, nunca de valores fijos.
 
-## Verificación
+## Resultados de la verificación (agente real)
+
+| Criterio | Resultado |
+|---|---|
+| CA-1, CA-2 | "Me equivoqué con la cédula" → `corregir_dato` (1,00), Vicky pide solo la cédula; "999" se rechaza explicando que tiene entre 6 y 8 cifras; "14523987" sigue con la fecha |
+| CA-3 | Con la propuesta hecha, "No, la fecha es otra" → pide la fecha; "El jueves" → nueva propuesta con la hora conservada → "Sí" confirma. La propuesta anterior se descarta |
+| R1.3 | "La cédula es 11222333" se toma de la frase: el evento `INICIAR_CITA` con parámetros rellena la cita y Vicky propone con la cédula nueva sin preguntar |
+| CA-5, CA-6 | "¿Tienen estacionamiento?" y "¿Hay un sitio para comer cerca?" a mitad de la cita: se responde (o se dice que no está en los documentos, sin ofrecer recepción) y se repite la pregunta pendiente |
+| CA-7 | "¿Mi hijo menor de edad puede ir solo a la consulta?" → `consulta_documental` en conversación nueva y a mitad de la cita |
+| CA-8, CA-10 | `uv run pytest`: 301 tests en verde; `uv run ruff check .` sin avisos |
+| CA-9 | Voz (cliente de voz): "me equivoqué de número de cédula" → `corregir_dato`, con SSML en el canal de voz. Telegram: corrección ("Me equivoqué de cedula") y pregunta a mitad de la cita ("Puedo ir con mi hijo?") sin SSML |
+
+Hallazgos de la verificación: el parámetro de `corregir_dato` se llama `dato_cita` en la consola (el webhook acepta también `dato`); un
+"Me equivoqué" sin decir el dato funciona porque la respuesta "la cédula" vuelve a coincidir con `corregir_dato`, sin hacer obligatorio el
+parámetro; y el filtro de preguntas absorbidas (T7) no hizo falta.
+
+## Verificación (plan)
 
 | Criterio | Cómo se comprueba |
 |---|---|

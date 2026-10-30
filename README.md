@@ -39,7 +39,7 @@ llamada: pedir cita y hacer preguntas frecuentes (cómo llegar, precios, horario
 nacionalidad, cédula validada con regex, especialidad, fecha y hora), reconoce a los pacientes que ya se atendieron y les
 propone a su mismo médico, aplica los horarios reales de cada médico y pide confirmación; y responde las preguntas frecuentes
 **solo** con la información de cinco documentos de la clínica leídos por OCR, diciendo explícitamente cuando algo no está en
-ellos y ofreciendo pasar con recepción. También consulta horarios, historial, cancela citas y transfiere a una persona.
+ellos y ofreciendo pasar con recepción. También consulta horarios, historial, cancela citas, deja corregir un dato sin repetir los demás y transfiere a una persona.
 Funciona por voz y, como mejora, en Telegram con botones.
 
 ## 2. Arquitectura
@@ -69,7 +69,8 @@ Zona horaria `America/Barbados` (la consola no ofrece `America/Caracas`; ambas s
 
 ### Intenciones
 
-Seis intenciones significativas (el enunciado pide 5–6), bienvenida, fallback y cuatro follow-ups del flujo de cita: 12 en total.
+Siete intenciones significativas (el enunciado pide 5–6 como base: cinco son el núcleo y dos, `transferir_humano` y `corregir_dato`,
+vienen de mejoras opcionales), bienvenida, fallback y cuatro follow-ups del flujo de cita: 13 en total.
 
 | Intención | Propósito | Parámetros | Webhook |
 |---|---|---|---|
@@ -84,6 +85,7 @@ Seis intenciones significativas (el enunciado pide 5–6), bienvenida, fallback 
 | **`consultar_historial`** | Consultas anteriores y citas pendientes de un paciente | `cedula` | Sí |
 | **`cancelar_cita`** | Cancela la próxima cita pendiente del paciente | `cedula` | Sí |
 | **`transferir_humano`** | Pasa con recepción: crea un caso `VIS-#####` | — | Sí |
+| **`corregir_dato`** | Cambia un dato de la cita en curso ("me equivoqué con la cédula") y vuelve a pedir solo ese. Solo coincide mientras hay una cita: exige el contexto `ctx_recogida_cita`, que crea el webhook | `dato_cita` (opcional) | Sí |
 | `Default Fallback Intent` | Despedida ante "no gracias"; si no, intenta responder con los documentos y, si tampoco, ofrece recepción | — | Sí |
 
 Toda intención con webhook tiene una **respuesta estática de reserva** en la consola, para que Vicky no se quede callada si el
@@ -96,6 +98,7 @@ webhook no responde.
 | `@cedula` | **Regex**, dos expresiones en este orden: `[1-9][0-9]{5,8}` (dígitos seguidos) y `[1-9][0-9]{0,2}([.,\s][0-9]{3}){1,2}` (con separadores de miles) | `agendar_cita`, `consultar_historial`, `cancelar_cita` |
 | `@nacionalidad` | Personalizada: `V` (venezolano/a, de Venezuela…) y `E` (extranjero/a y gentilicios frecuentes) | `agendar_cita` |
 | `@especialidad` | Personalizada con sinónimos ("piel" → Dermatología, "ojos" → Oftalmología, "corazón" → Cardiología…) | `agendar_cita`, `consultar_horarios`, `consulta_documental` |
+| `@dato_cita` | Personalizada con sinónimos: `nombre`, `apellido`, `nacionalidad`, `cedula`, `especialidad`, `fecha`, `hora` | `corregir_dato` |
 | `@sys.given-name`, `@sys.last-name`, `@sys.date`, `@sys.time` | Sistema | Nombre, apellido, fecha y hora |
 
 **Por qué dos expresiones en `@cedula` y en ese orden:** Dialogflow se queda con la primera coincidencia aunque sea parcial. Con una
@@ -270,6 +273,7 @@ Detalle en la [spec 06](specs/06-voz/spec.md).
 |---|---|---|
 | **Transferencia a agente humano** | Intención `transferir_humano` y, además, oferta de recepción cuando Vicky no tiene la información o no entiende dos veces seguidas. Un "sí" crea un caso `VIS-#####` en `logs/transferencias.jsonl` (persistente, no versionado) con motivo, última pregunta y datos de la cita en curso (cédula enmascarada). Mensaje distinto si recepción está cerrada | [07](specs/07-transferencia-humano/spec.md) |
 | **Telegram con botones** | Integración nativa de Dialogflow ES (el token del bot solo está en la consola). El webhook detecta el canal y añade botones en el menú, la especialidad, la nacionalidad, la confirmación y las ofertas de recepción. Los botones son una ayuda: escribir otra cosa funciona igual | [08](specs/08-telegram/spec.md) |
+| **Corrección de datos e interrupciones** | `corregir_dato` cambia un dato de la cita (en la recogida o ante la propuesta), conserva los demás y revalida; si el usuario da el valor nuevo en la misma frase ("la cédula es 11222333"), se usa sin preguntar. Una pregunta a mitad de la cita se responde con los documentos y la cita se retoma donde estaba. La propuesta anterior se descarta al corregir, para que no pueda confirmarse | [09](specs/09-correccion-interrupciones/spec.md) |
 | **Documentos complejos** | D2 y D3 son tablas escaneadas; se leen al 99,9 % y 99,4 % gracias a quitar las líneas de la tabla antes del OCR | [04](specs/04-ocr-documentos/spec.md) |
 
 Cómo se reconoce el "sí" a la oferta sin tocar la consola: un "sí" suelto no tiene intención y llega al fallback; el webhook
@@ -294,6 +298,8 @@ oferta caduca.
 | SSML solo en el canal de voz | En texto y Telegram las etiquetas se verían | [06](specs/06-voz/spec.md) |
 | Voz por defecto del agente | Aoede sumaba ~0,9 s por turno | [06](specs/06-voz/plan.md) |
 | Botones de Telegram añadidos por el webhook | Un único punto de control; los demás canales no cambian | [08](specs/08-telegram/spec.md) |
+| **Borrador de la cita por sesión** y contexto propio `ctx_recogida_cita` | Con el agente real, `ctx_cita_en_curso` no existe durante la recogida y la petición de una pregunta a mitad de la cita no trae ningún dato; los contextos de recogida caducan en 1–2 turnos | [09](specs/09-correccion-interrupciones/plan.md) |
+| Corregir con `repreguntar()` o con el evento `INICIAR_CITA` | Reabrir la recogida desde otra intención funciona; el evento con parámetros rellena la cita cuando el valor nuevo viene en la misma frase | [09](specs/09-correccion-interrupciones/plan.md) |
 | Datos de la clínica en un único módulo | Los documentos D2/D3 y la agenda salen de la misma fuente; un test falla si no coinciden | [03](specs/03-webhook-fastapi/spec.md), [04](specs/04-ocr-documentos/spec.md) |
 
 ## 9. Qué pasa si algo falla
@@ -312,7 +318,7 @@ oferta caduca.
 
 | Prueba | Resultado |
 |---|---|
-| Tests automáticos (`uv run pytest`, sin red: Gemini simulado) | **290 tests** en verde; `ruff` sin avisos |
+| Tests automáticos (`uv run pytest`, sin red: Gemini simulado) | **301 tests** en verde; `ruff` sin avisos |
 | Export del agente (`tests/test_agente_export.py`) | Intenciones, follow-ups, contextos, parámetros y su orden, entidades, webhook, respuestas de reserva, zona horaria y trato de usted |
 | Evaluación documental con Gemini real (18 respondibles + 9 no respondibles) | **17/18** respuestas con los datos esperados, **9/9 sin alucinar**; mediana 0,80 s, p95 1,08 s. El único fallo fue un pico de latencia (mensaje de reserva, no una invención). [`evaluacion/resultados_documental.json`](evaluacion/resultados_documental.json) |
 | OCR | Similitud media 99,8 %; 12/12 precios y 12/12 horarios validados |
@@ -433,7 +439,7 @@ Si se cambia un precio u horario en `webhook/datos.py`, hay que regenerar docume
 ├── scripts/                   preparar_export.py (export sin secretos), evaluar_documental.py
 ├── evaluacion/                Preguntas de evaluación documental y resultados
 ├── docs/                      Diagrama (y su script), guion del vídeo, evidencias
-├── tests/                     290 tests (pytest)
+├── tests/                     301 tests (pytest)
 └── specs/                     Especificaciones del proyecto (SDD)
 ```
 
@@ -451,7 +457,7 @@ spec.md (qué y por qué, criterios de aceptación) → aprobación del autor
 - **Constitución** ([`specs/00-constitucion.md`](specs/00-constitucion.md)): principios que toda spec respeta (latencia < 5 s,
   sin alucinaciones, secretos fuera del repositorio, agente configurado a mano, datos ficticios, todo verificable con tests).
 - **Specs:** 01 caso de uso · 02 agente · 03 webhook · 04 OCR · 05 consulta documental · 06 voz · 07 transferencia · 08 Telegram ·
-  99 entregables. La corrección de datos a mitad de flujo (spec 09) se planteó y se dejó como mejora futura para cerrar la entrega.
+  99 entregables · 09 corrección de datos e interrupciones (spec posterior a la entrega inicial, redactada y aprobada por el equipo).
 - **Matriz de trazabilidad** en [`specs/README.md`](specs/README.md): cada requisito del enunciado → spec → evidencia.
 - **El agente se configuró a mano** en la consola, siguiendo la guía paso a paso del `plan.md` de cada spec; cada cambio se
   exportó y se verificó automáticamente con `tests/test_agente_export.py`. La implementación del código se hizo con la ayuda de
@@ -471,6 +477,8 @@ spec.md (qué y por qué, criterios de aceptación) → aprobación del autor
 | Primera conversación por voz | El usuario no sabía qué horas había | Vicky dice el horario y el primer hueco libre |
 | Segunda conversación por voz | Una cédula mal dictada pasaba sin notarse | Nombre y cédula en la confirmación |
 | Telegram en la app | "Para el 29 de octubre" no lo reconocía `@sys.date` | Lectura de fechas de respaldo en el webhook |
+| Spec 09: cita a medias con el agente real | "Me equivoqué con la cédula" iba a `transferir_humano` y, tras una pregunta, "El martes" caía en el fallback: la cita se perdía | `corregir_dato`, borrador por sesión y retoma de la cita |
+| Spec 09: "¿Mi hijo menor de edad puede ir solo?" | Se clasificaba como `agendar_cita` (0,50) y pedía el nombre | Frases nuevas en `consulta_documental` |
 
 ## 14. Limitaciones y mejoras futuras
 
@@ -481,11 +489,11 @@ spec.md (qué y por qué, criterios de aceptación) → aprobación del autor
 - Algunas respuestas de Gemini siguen tardando más de 4 s de forma aleatoria; en ese caso Vicky da el mensaje de reserva, nunca inventa.
 - La integración nativa de Telegram no procesa notas de voz: en Telegram la conversación es por texto y botones.
 - El texto que recibe el LLM conserva pocas erratas de OCR ("Hemández").
-- Dialogflow clasifica por parecido con las frases de entrenamiento y algunas preguntas caen en la intención equivocada: en una prueba, "¿Mi hijo menor de edad puede ir solo a la consulta?" se clasificó como `agendar_cita` (confianza 0,50) en lugar de `consulta_documental`. Además, una vez dentro de una cita, cualquier pregunta se interpreta como el dato que se está pidiendo (no hay gestión de interrupciones).
+- Dialogflow clasifica por parecido con las frases de entrenamiento y alguna pregunta puede caer en la intención equivocada. Se corrigió con frases nuevas el caso encontrado ("¿Mi hijo menor de edad puede ir solo a la consulta?"), pero una pregunta muy distinta de las entrenadas podría volver a ser tomada como el dato que se está pidiendo. El plan de la spec 09 deja diseñado un filtro en el webhook por si ocurriera.
+- La corrección y la retoma de la cita usan un borrador en la memoria del webhook: se pierde al reiniciarlo, como las citas. No se corrigen varios datos en una sola frase, ni una cita ya confirmada (se cancela y se agenda otra).
 - La latencia de Gemini varía con la red y la hora: en una evaluación posterior, en otro equipo, la mediana fue de 1,7 s y 3 de 27 peticiones agotaron el límite de 4 s (Vicky respondió con el mensaje de reserva, sin inventar).
 
 **Mejoras futuras** (detalle en [`specs/README.md`](specs/README.md#mejoras-futuras-fuera-del-alcance-actual))
-- Corrección de datos a mitad de flujo mediante eventos ("me equivoqué con la cédula") y gestión de interrupciones.
 - Elegir la hora automáticamente ante "por la mañana" o "la que tenga" y aceptar un "sí" a la hora sugerida.
 - Más frases de cierre ("ok gracias", "adiós") resueltas sin consultar a Gemini.
 - Corregir en el texto para el LLM los nombres de médicos mal leídos por el OCR.

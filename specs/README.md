@@ -22,7 +22,7 @@ Plantillas en [`_plantillas/`](_plantillas/). Principios en [`00-constitucion.md
 | 06 | [Voz extremo a extremo (cliente de voz, SSML, latencia)](06-voz/spec.md) | Voz (2) | Hecha |
 | 07 | [Extra: transferencia a agente humano](07-transferencia-humano/spec.md) | +1,5 | Hecha |
 | 08 | [Extra: Telegram (integración nativa, texto + botones)](08-telegram/spec.md) | +1,5 | Hecha |
-| 09 | [Extra: corrección de datos e interrupciones en la cita](09-correccion-interrupciones/spec.md) | +1,5 | Spec aprobada |
+| 09 | [Extra: corrección de datos e interrupciones en la cita](09-correccion-interrupciones/spec.md) | +1,5 | Hecha |
 | 99 | [Entregables: README, diagrama, ZIP del agente, vídeo de demostración](99-entregables/spec.md) | Docs (1) | Hecha |
 
 Estados: Pendiente → Spec redactada → Spec aprobada → En implementación → Hecha.
@@ -40,18 +40,18 @@ Estados: Pendiente → Spec redactada → Spec aprobada → En implementación �
 | Regex sobre el texto extraído | 04 | `ocr/extraccion.py` (importes, horarios, teléfonos, fechas) · validación 12/12 precios y horarios contra el webhook · `tests/test_ocr.py` |
 | Texto en fichero + LLM con contexto | 04, 05 | `ocr/salida/documentos.json` (spec 04) · `webhook/documentos.py` con Gemini 3.5 Flash-Lite · evaluación 17/18 aciertos, mediana 0,8 s (`evaluacion/resultados_documental.json`) |
 | Control de alucinaciones | 05 | Instrucciones + señal `NO_DISPONIBLE` + red de seguridad · 9/9 preguntas sin respuesta (incluidas manipulación y consejo médico) sin inventar · `tests/test_documentos.py` |
-| ZIP del agente + script OCR + webhook | 02, 03, 04, 99 | `entrega/agente_dialogflow.zip` (generado sin secretos con `scripts/preparar_export.py`; idéntico a `agente/`, 41 tests de `tests/test_agente_export.py`, sin token del webhook ni de Telegram) · `webhook/` · `ocr/` |
-| README (caso de uso, diagrama, intenciones, decisiones, instrucciones) | 99 | [`README.md`](../README.md) (secciones 1, 2, 3, 8 y 11) · diagrama generado por código: `docs/generar_diagrama.py` → `docs/arquitectura.png` · instrucciones probadas en un clon limpio (`uv sync`, 290 tests, webhook arrancado, 401 sin token) |
+| ZIP del agente + script OCR + webhook | 02, 03, 04, 99 | `entrega/agente_dialogflow.zip` (generado sin secretos con `scripts/preparar_export.py`; idéntico a `agente/`, 45 tests de `tests/test_agente_export.py`, sin token del webhook ni de Telegram) · `webhook/` · `ocr/` |
+| README (caso de uso, diagrama, intenciones, decisiones, instrucciones) | 99 | [`README.md`](../README.md) (secciones 1, 2, 3, 8 y 11) · diagrama generado por código: `docs/generar_diagrama.py` → `docs/arquitectura.png` · instrucciones probadas en un clon limpio (`uv sync`, tests en verde, webhook arrancado, 401 sin token) |
 | Vídeo de demostración por voz | 99 | Guion con escenas, tiempos y frases exactas: [`docs/guion_video.md`](../docs/guion_video.md) · vídeo: [Loom](https://www.loom.com/share/c8feadcc5a224d9badd42c9ce93e4c14) |
 | *Mejora opcional:* integración con Telegram con respuestas enriquecidas (botones) | 08 | Integración nativa de Dialogflow · `webhook/telegram.py` (botones `quickReplies` solo en Telegram) · `tests/test_telegram.py` · prueba en la app |
 | *Mejora opcional:* intención de transferencia a agente humano | 07 | `transferir_humano` + `webhook/transferencia.py` (oferta aceptada con "sí", oferta automática, caso con resumen y horario) · `tests/test_transferencia.py` · prueba por Dialogflow |
+| *Mejora opcional:* gestión de interrupciones y corrección de datos a mitad de flujo mediante eventos | 09 | `corregir_dato` + `@dato_cita` (`agente/`) · `webhook/intenciones.py` (borrador por sesión, `ctx_recogida_cita`, retoma de la cita) · `tests/test_correccion.py` · pruebas con el agente real por texto, voz y Telegram (resultados en `specs/09-correccion-interrupciones/plan.md`) |
 
 ## Mejoras futuras (fuera del alcance actual)
 
 | Origen | Mejora | Motivo |
 |---|---|---|
 | Spec 06 | Al preguntar la hora: elegir automáticamente el primer horario libre ante "en la mañana", "por la tarde" o "la que tenga", y aceptar "sí" a la hora sugerida | Detectado en la prueba por voz; requiere que el webhook cierre él mismo la recogida de datos. Por ahora Vicky informa de la disponibilidad (R2b) |
-| Hoja de ruta (spec 09, no realizada) | Corrección de datos a mitad de flujo mediante eventos ("me equivoqué con la cédula": volver a pedir solo ese dato sin perder los demás) y gestión de interrupciones (responder una pregunta a mitad de la cita y retomarla) | Mejora opcional del enunciado que se dejó fuera por decisión del autor para cerrar la entrega; diseño previsto: intención `corregir_dato` + evento que reactiva `agendar_cita` y restauración de los datos con contextos |
 | Spec 08 | Restringir el bot de Telegram a una lista de usuarios (`TELEGRAM_USUARIOS_PERMITIDOS` en `.env`) | Proteger la cuota gratuita de Gemini; por ahora el bot queda abierto (decisión del autor) |
 | Spec 06 | Ampliar las frases de cierre ("gracias", "ok gracias", "adiós", "chao", "hasta luego") para despedirse sin consultar a Gemini | En la prueba por voz, "okay gracias" llegó a Gemini, que respondió una cortesía propia en lugar de `NO_DISPONIBLE` |
 | Spec 04 | Corregir en el texto para el LLM **solo los nombres de los médicos** que el OCR lee mal (p. ej. "Hemández" → "Hernández"), comparándolos con `webhook/datos.py` | Evitar que Vicky pronuncie un nombre con errores de OCR. Descartado por ahora: el LLM recibe el texto OCR sin modificar |

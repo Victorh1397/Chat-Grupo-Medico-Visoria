@@ -1,6 +1,6 @@
 # Spec 09 — Corrección de datos e interrupciones en la cita (mejora opcional)
 
-- **Estado:** Spec aprobada
+- **Estado:** Hecha
 - **Rúbrica:** Mejoras opcionales (hasta +1,5): *"Gestión de interrupciones y corrección de datos a mitad de flujo mediante eventos"*.
 - **Depende de:** [Spec 02](../02-agente-dialogflow/spec.md), [Spec 03](../03-webhook-fastapi/spec.md), [Spec 05](../05-consulta-documental/spec.md), [Spec 06](../06-voz/spec.md), [Spec 08](../08-telegram/spec.md)
 
