@@ -6,9 +6,14 @@ y guarda el resultado en evaluacion/resultados_documental.json.
 
 Uso:
     uv run python -m scripts.evaluar_documental
+    uv run python -m scripts.evaluar_documental --salida evaluacion/otro_fichero.json
+
+La variable RECUPERACION elige el contexto (spec 10): `vectorial` (por defecto, fragmentos de la base vectorial)
+o `completo` (todo el texto de los documentos).
 """
 
 import json
+import sys
 import time
 import unicodedata
 from datetime import datetime
@@ -43,10 +48,13 @@ def preguntar(pregunta: str) -> tuple[str, float]:
 
 
 def main() -> None:
+    # --salida <fichero>: para guardar cada modo (RECUPERACION=completo|vectorial) sin pisar el resultado anterior
+    argumentos = sys.argv[1:]
+    salida = Path(argumentos[argumentos.index("--salida") + 1]) if "--salida" in argumentos else RESULTADOS
     juego = json.loads(PREGUNTAS.read_text(encoding="utf-8"))
     filas = []
 
-    print(f"Modelo: {documentos.MODELO}\n")
+    print(f"Modelo: {documentos.MODELO} · recuperación: {documentos.modo_de_recuperacion()}\n")
     for p in juego["respondibles"]:
         respuesta, segundos = preguntar(p["pregunta"])
         ok = contiene(respuesta, p["debe_contener"])
@@ -70,9 +78,10 @@ def main() -> None:
         "segundos_p95": tiempos[int(len(tiempos) * 0.95) - 1],
         "segundos_maximo": tiempos[-1],
     }
-    RESULTADOS.write_text(json.dumps({
+    salida.write_text(json.dumps({
         "fecha": datetime.now().isoformat(timespec="seconds"),
         "modelo": documentos.MODELO,
+        "recuperacion": documentos.modo_de_recuperacion(),
         "resumen": resumen,
         "preguntas": filas,
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

@@ -3,7 +3,9 @@ Consulta documental con Gemini y control de alucinaciones (spec 05).
 
 El texto OCR de los documentos se carga UNA VEZ al arrancar desde ocr/salida/documentos.json
 (generado offline en la spec 04): ni Tesseract ni OCR dentro de la petición, porque Dialogflow corta a los 5 s.
-Con 5 documentos (~1.500 tokens) todo el texto cabe en el prompt ("context stuffing").
+Con 5 documentos (~1.500 tokens) todo el texto cabe en el prompt ("context stuffing"). Desde la spec 10 se envían
+solo los fragmentos más cercanos a la pregunta (base vectorial, webhook/recuperacion.py) y el texto completo queda
+como respaldo.
 """
 
 import json
@@ -16,6 +18,8 @@ from pathlib import Path
 
 from google import genai
 from google.genai import types
+
+from webhook import recuperacion
 
 log = logging.getLogger("visoria")
 
@@ -116,19 +120,20 @@ def cliente() -> genai.Client:
 _hilos = ThreadPoolExecutor(max_workers=8, thread_name_prefix="gemini")
 
 
-def preguntar_con_limite(prompt: str, instrucciones: str = INSTRUCCIONES) -> str:
+def preguntar_con_limite(prompt: str, instrucciones: str = INSTRUCCIONES, tiempo_maximo: float | None = None) -> str:
     """
-    Respuesta de Gemini en como máximo TIEMPO_MAXIMO_S, con una petición de respaldo a los RESPALDO_S.
-    Lanza TimeoutError si ninguna llega a tiempo, o el error de la petición si todas fallan.
+    Respuesta de Gemini en como máximo `tiempo_maximo` (por defecto TIEMPO_MAXIMO_S), con una petición de respaldo a los
+    RESPALDO_S. Lanza TimeoutError si ninguna llega a tiempo, o el error de la petición si todas fallan.
     Las llamadas que no se usan siguen en segundo plano y se descartan.
     """
+    maximo = TIEMPO_MAXIMO_S if tiempo_maximo is None else tiempo_maximo
     inicio = time.perf_counter()
     pendientes = {_hilos.submit(preguntar_al_modelo, prompt, instrucciones)}
     respaldo_enviado = False
     error = None
     while pendientes:
         transcurrido = time.perf_counter() - inicio
-        limite = TIEMPO_MAXIMO_S if respaldo_enviado else min(RESPALDO_S, TIEMPO_MAXIMO_S)
+        limite = maximo if respaldo_enviado else min(RESPALDO_S, maximo)
         terminadas, pendientes = wait(pendientes, timeout=max(limite - transcurrido, 0), return_when=FIRST_COMPLETED)
         for llamada in terminadas:
             if llamada.exception() is None:
@@ -136,12 +141,12 @@ def preguntar_con_limite(prompt: str, instrucciones: str = INSTRUCCIONES) -> str
             error = llamada.exception()
         if terminadas:
             continue  # falló una: se espera a la otra, si la hay
-        if not respaldo_enviado and RESPALDO_S < TIEMPO_MAXIMO_S:
+        if not respaldo_enviado and RESPALDO_S < maximo:
             log.info("Gemini tarda más de %.1f s: se envía una petición de respaldo", RESPALDO_S)
             pendientes.add(_hilos.submit(preguntar_al_modelo, prompt, instrucciones))
             respaldo_enviado = True
             continue
-        raise TimeoutError(f"Gemini no respondió en {TIEMPO_MAXIMO_S} s")
+        raise TimeoutError(f"Gemini no respondió en {maximo:.1f} s")
     raise error
 
 
@@ -162,20 +167,56 @@ def preguntar_al_modelo(prompt: str, instrucciones: str = INSTRUCCIONES) -> str:
     return respuesta.text or ""
 
 
+def modo_de_recuperacion() -> str:
+    """'vectorial' (por defecto) o 'completo', con la variable RECUPERACION; se lee en cada pregunta."""
+    return os.environ.get("RECUPERACION", "vectorial").strip().lower()
+
+
+def agrupar_fragmentos(fragmentos: list[dict]) -> list[dict]:
+    """Fragmentos recuperados -> documentos con el formato de siempre (un fragmento tras otro, separados por [...])."""
+    por_documento: dict[str, dict] = {}
+    for f in sorted(fragmentos, key=lambda f: f["id"]):
+        doc = por_documento.setdefault(f["doc"], {"id": f["doc"], "titulo": f["titulo"], "textos": []})
+        doc["textos"].append(f["texto"])
+    return [{"id": d["id"], "titulo": d["titulo"], "texto": "\n[...]\n".join(d["textos"])}
+            for d in por_documento.values()]
+
+
+def seleccionar_documentos(pregunta: str, completos: list[dict]) -> list[dict]:
+    """Spec 10: solo los fragmentos más cercanos a la pregunta; ante cualquier fallo, el texto completo de siempre."""
+    if modo_de_recuperacion() != "vectorial":
+        return completos
+    try:
+        fragmentos = recuperacion.recuperar(pregunta)
+    except Exception as e:  # sin índice, embedding lento o caído, cuota (429)...
+        log.warning("Sin recuperación vectorial (%s: %s): se envía el texto completo", type(e).__name__, str(e)[:100])
+        return completos
+    if not fragmentos:
+        return completos
+    log.info("RECUPERADOS: %s", ", ".join(f"{f['id']} ({f['puntuacion']:.2f})" for f in fragmentos))
+    return agrupar_fragmentos(fragmentos)
+
+
 def responder_con_documentos(pregunta: str, sin_informacion: str, documentos: list[dict] | None = None,
                              breve: bool = False) -> str:
     """
     Respuesta de Vicky a una pregunta sobre la clínica, usando solo los documentos.
     `sin_informacion` es el texto si la respuesta no está en ellos (control de alucinaciones).
+    Si no se indican `documentos`, se usan los fragmentos recuperados de la base vectorial o, si falla, todos.
     """
+    recuperar = documentos is None
     documentos = DOCUMENTOS if documentos is None else documentos
     if not documentos:
         return NO_DISPONIBLE_AHORA
 
     inicio = time.perf_counter()
+    if recuperar:
+        documentos = seleccionar_documentos(pregunta, documentos)
     try:
+        # El tiempo del embedding sale del mismo presupuesto: el turno completo no pasa de TIEMPO_MAXIMO_S
+        restante = max(TIEMPO_MAXIMO_S - (time.perf_counter() - inicio), 0.0)
         bruta = preguntar_con_limite(construir_prompt(pregunta, documentos),
-                                     INSTRUCCIONES_VOZ if breve else INSTRUCCIONES)
+                                     INSTRUCCIONES_VOZ if breve else INSTRUCCIONES, restante)
     except Exception as e:  # tiempo agotado, cuota (429), red...: nunca dejar al usuario en silencio
         log.warning("Gemini no respondió (%s: %s) en %.0f ms", type(e).__name__, str(e)[:120],
                     (time.perf_counter() - inicio) * 1000)

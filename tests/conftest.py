@@ -44,6 +44,17 @@ def modelo(monkeypatch):
 
 
 @pytest.fixture(autouse=True)
+def sin_embeddings(monkeypatch):
+    """Los tests no llaman a Gemini ni para los embeddings: sin ellos la consulta usa el texto completo (spec 10)."""
+    from webhook import recuperacion
+
+    def sin_red(*args, **kwargs):
+        raise ConnectionError("sin red en los tests")
+
+    monkeypatch.setattr(recuperacion, "incrustar", sin_red)
+
+
+@pytest.fixture(autouse=True)
 def entorno(monkeypatch, tmp_path):
     from webhook import transferencia
 
