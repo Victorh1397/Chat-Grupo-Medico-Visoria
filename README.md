@@ -11,6 +11,8 @@ en FastAPI aplica las reglas de la clínica y Gemini responde las preguntas con 
 Evaluación final de *Herramientas de IA Clásica* (Máster en IA, Cloud Computing y DevOps). Todos los datos (clínica,
 médicos, pacientes, documentos) son **ficticios**.
 
+**Autoría:** Victor Mendez y Lucia Mateo.
+
 ## Índice
 
 1. [Caso de uso](#1-caso-de-uso)
@@ -449,19 +451,19 @@ El proyecto se desarrolló con **Spec-Driven Development**: no se escribió cód
 funcionalidad siguió el mismo ciclo, documentado en [`specs/`](specs/README.md):
 
 ```
-spec.md (qué y por qué, criterios de aceptación) → aprobación del autor
-  → plan.md (cómo) + tareas.md → aprobación del autor
+spec.md (qué y por qué, criterios de aceptación) → aprobación del equipo
+  → plan.md (cómo) + tareas.md → aprobación del equipo
   → implementación → verificación contra los criterios → commit feat(NN)
 ```
 
 - **Constitución** ([`specs/00-constitucion.md`](specs/00-constitucion.md)): principios que toda spec respeta (latencia < 5 s,
   sin alucinaciones, secretos fuera del repositorio, agente configurado a mano, datos ficticios, todo verificable con tests).
 - **Specs:** 01 caso de uso · 02 agente · 03 webhook · 04 OCR · 05 consulta documental · 06 voz · 07 transferencia · 08 Telegram ·
-  99 entregables · 09 corrección de datos e interrupciones (spec posterior a la entrega inicial, redactada y aprobada por el equipo).
+  99 entregables · 09 corrección de datos e interrupciones.
 - **Matriz de trazabilidad** en [`specs/README.md`](specs/README.md): cada requisito del enunciado → spec → evidencia.
 - **El agente se configuró a mano** en la consola, siguiendo la guía paso a paso del `plan.md` de cada spec; cada cambio se
   exportó y se verificó automáticamente con `tests/test_agente_export.py`. La implementación del código se hizo con la ayuda de
-  un asistente de programación (Claude Code), siempre a partir de specs, planes y tareas aprobados por el autor.
+  un asistente de programación (Claude Code), siempre a partir de specs, planes y tareas aprobados por el equipo.
 
 **Decisiones que cambiaron gracias a las pruebas** (cada plan tiene una sección de resultados con los datos):
 
