@@ -200,6 +200,8 @@ D2 y D3 se generan **desde `webhook/datos.py`**: si cambia un precio, se regener
 ### Pipeline offline (se ejecuta una vez, nunca dentro de una petición)
 
 `uv run python -m ocr.ocr`: preprocesado → Tesseract 5 (`spa`, `--psm 6`) → regex y validación → `ocr/salida/documentos.json`.
+Después, `uv run python -m ocr.indexar` trocea ese texto y calcula los embeddings → `ocr/salida/indice.json` (spec 10, ver
+[Consulta con Gemini](#consulta-con-gemini)).
 
 Cada paso del preprocesado se justificó **midiendo la similitud** con el texto de referencia (`uv run python -m ocr.ocr --comparar`):
 
@@ -330,6 +332,8 @@ oferta caduca.
 | El webhook está caído, ngrok cerrado o el token no coincide | Dialogflow usa la respuesta estática de reserva de cada intención |
 | Error interno en el webhook | Mensaje de disculpa; nunca un error HTTP ni silencio |
 | Falta `ocr/salida/documentos.json` | El webhook arranca igualmente y dice que no puede consultar la documentación |
+| Falta `ocr/salida/indice.json`, el embedding falla o tarda más de 1 s | Se envía a Gemini el texto completo de los documentos, como antes de la base vectorial; el motivo queda en el log y el usuario no nota nada |
+| Con los fragmentos recuperados el modelo dice que el dato no está | Se confirma con el texto completo antes de darlo (queda tiempo del presupuesto de 4 s) |
 | El usuario no se entiende dos veces seguidas | Oferta de pasar con recepción |
 | Se reinicia el webhook | Se pierden las citas nuevas (están en memoria); la cita de ejemplo de Miguel Torres se vuelve a crear. Los casos de transferencia sí se conservan |
 
