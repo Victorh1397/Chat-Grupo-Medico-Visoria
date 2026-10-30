@@ -322,15 +322,16 @@ oferta caduca.
 
 ## 11. Cómo ejecutarlo
 
-Probado en macOS con Python 3.12.
+Probado en macOS y en Windows 10, con Python 3.12 (en Windows se probaron los tests, el webhook, ngrok y el cliente de voz; el OCR no se regeneró). Los comandos de abajo se muestran para macOS/Linux; en Windows se indican las diferencias.
 
 ### Requisitos
 
 - [uv](https://docs.astral.sh/uv/) (gestiona Python 3.12 y las dependencias).
 - Un proyecto de Google Cloud con la **Dialogflow API** habilitada y el [Google Cloud CLI](https://cloud.google.com/sdk/docs/install).
 - Una clave de **Gemini** de [Google AI Studio](https://aistudio.google.com/apikey) (el nivel gratuito basta).
-- Una cuenta gratuita de **ngrok** (`brew install ngrok` y `ngrok config add-authtoken <token>`).
-- Solo para regenerar los documentos y el OCR: Tesseract con español (`brew install tesseract tesseract-lang`).
+- Una cuenta gratuita de **ngrok** (macOS: `brew install ngrok`; Windows: `winget install ngrok.ngrok`; después `ngrok config add-authtoken <token>`) y un dominio fijo gratuito, que se crea en <https://dashboard.ngrok.com/domains>.
+- Solo para regenerar los documentos y el OCR: Tesseract con español (macOS: `brew install tesseract tesseract-lang`; Windows: instalador de UB-Mannheim, marcando el idioma español).
+- Windows: el Google Cloud CLI se instala con `winget install Google.CloudSDK`. Tras instalar ngrok o gcloud hay que abrir una terminal nueva (en VS Code, cerrar y reabrir el programa) para que reconozca los comandos.
 
 ### 1. Instalar y configurar
 
@@ -338,7 +339,7 @@ Probado en macOS con Python 3.12.
 git clone https://github.com/Victorh1397/Chat-Grupo-Medico-Visoria.git
 cd Chat-Grupo-Medico-Visoria
 uv sync
-cp .env.example .env
+cp .env.example .env      # Windows (PowerShell): Copy-Item .env.example .env
 ```
 
 Rellenar `.env`:
@@ -366,7 +367,7 @@ uv run ruff check .
 
 ```bash
 uv run uvicorn webhook.main:app --port 8000     # terminal 1
-ngrok http 8000                                 # terminal 2: muestra la URL pública (https://…ngrok-free.dev)
+ngrok http --url=<tu-dominio> 8000              # terminal 2: expone el webhook en tu dominio fijo (https://…ngrok-free.dev)
 ```
 
 Comprobar `https://<url-de-ngrok>/` en el navegador: debe devolver `{"estado": "ok", …, "documentos_cargados": 5}`
@@ -387,7 +388,9 @@ uv run python -m voz.cliente_voz          # Enter para hablar; la grabación ter
 uv run python -m voz.cliente_voz --texto  # escribir en lugar de hablar (Vicky sigue respondiendo con voz)
 ```
 
-macOS pedirá permiso de micrófono para la terminal (Ajustes del Sistema → Privacidad y seguridad → Micrófono).
+macOS pedirá permiso de micrófono para la terminal (Ajustes del Sistema → Privacidad y seguridad → Micrófono). En Windows, hay que ejecutar el comando desde la carpeta del repositorio y, si no se oye o no se graba, revisar Configuración → Privacidad → Micrófono.
+
+Si se cambia el `.env`, hay que reiniciar el webhook: solo lee las variables al arrancar.
 Cada turno muestra lo que se entendió, la intención, la respuesta y la latencia; al salir, la mediana y el máximo.
 
 Para una prueba completa, ver la conversación de ejemplo de la [spec 01](specs/01-caso-de-uso/spec.md#conversación-modelo-base-del-vídeo)
@@ -473,7 +476,7 @@ spec.md (qué y por qué, criterios de aceptación) → aprobación del autor
 
 **Limitaciones conocidas**
 - Las citas nuevas viven en memoria y se pierden al reiniciar el webhook (suficiente para una demo; no hay base de datos).
-- El webhook corre en el Mac del autor: si el equipo se duerme o se cierra ngrok, Vicky responde con las respuestas de reserva.
+- El webhook corre en el ordenador de quien lo ejecuta: si el equipo se duerme o se cierra ngrok, Vicky responde con las respuestas de reserva.
 - Cuotas gratuitas: Gemini (15 peticiones por minuto y 500 al día) y la edición Trial de Dialogflow. Los tests nunca llaman a Gemini.
 - Algunas respuestas de Gemini siguen tardando más de 4 s de forma aleatoria; en ese caso Vicky da el mensaje de reserva, nunca inventa.
 - La integración nativa de Telegram no procesa notas de voz: en Telegram la conversación es por texto y botones.
