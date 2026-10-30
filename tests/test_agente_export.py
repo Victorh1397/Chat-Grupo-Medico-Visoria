@@ -32,8 +32,10 @@ FOLLOW_UPS = [
     "agendar_cita - no - yes",
     "agendar_cita - no - no",
 ]
-CON_WEBHOOK = SIGNIFICATIVAS + ["agendar_cita - yes", "agendar_cita - no - yes", "Default Fallback Intent",
-                                "Default Welcome Intent", "agendar_cita - no"]  # las dos últimas: botones de Telegram
+EXTRAS = ["corregir_dato"]  # spec 09 (mejora opcional): no cuenta entre las 5-6 significativas del enunciado
+# Las dos últimas: botones de Telegram
+CON_WEBHOOK = SIGNIFICATIVAS + EXTRAS + ["agendar_cita - yes", "agendar_cita - no - yes", "Default Fallback Intent",
+                                         "Default Welcome Intent", "agendar_cita - no"]
 
 
 # Utilidades
@@ -72,7 +74,7 @@ def parametros(datos: dict) -> list[dict]:
 # CA-1: intenciones
 
 def test_ca1_estan_todas_las_intenciones():
-    esperadas = SIGNIFICATIVAS + FOLLOW_UPS + ["Default Welcome Intent", "Default Fallback Intent"]
+    esperadas = SIGNIFICATIVAS + EXTRAS + FOLLOW_UPS + ["Default Welcome Intent", "Default Fallback Intent"]
     presentes = {p.stem for p in (AGENTE / "intents").glob("*.json") if not p.stem.endswith("_usersays_es")}
     assert set(esperadas) == presentes
 
@@ -221,6 +223,24 @@ def test_ca8_webhook_activado_y_respuesta_de_reserva(nombre):
 def test_ca8_webhook_en_slot_filling(nombre):
     # consultar_horarios: para formular con botones la pregunta de la especialidad en Telegram (spec 08)
     assert intencion(nombre)["webhookForSlotFilling"] is True
+
+
+# Spec 09: corrección de datos
+
+def test_spec09_corregir_dato_solo_existe_con_la_cita_en_curso():
+    datos = intencion("corregir_dato")
+    assert datos["contexts"] == ["ctx_recogida_cita"]  # lo crea el webhook (webhook/intenciones.py)
+    assert "@dato_cita" in [p["dataType"] for p in parametros(datos)]
+    assert len(frases("corregir_dato")) >= 10
+
+
+def test_spec09_dato_cita_tiene_los_siete_datos_de_la_cita():
+    valores = {e["value"] for e in leer("entities/dato_cita_entries_es.json")}
+    assert valores == {"nombre", "apellido", "nacionalidad", "cedula", "especialidad", "fecha", "hora"}
+
+
+def test_spec09_consulta_documental_reconoce_la_pregunta_de_los_menores():
+    assert any("menor" in f.lower() for f in frases("consulta_documental"))
 
 
 # CA-9: zona horaria

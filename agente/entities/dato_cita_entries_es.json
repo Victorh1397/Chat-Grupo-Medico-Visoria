@@ -1,0 +1,52 @@
+[
+  {
+    "value": "nombre",
+    "synonyms": [
+      "nombre"
+    ]
+  },
+  {
+    "value": "apellido",
+    "synonyms": [
+      "apellido"
+    ]
+  },
+  {
+    "value": "nacionalidad",
+    "synonyms": [
+      "nacionalidad",
+      "si soy venezolano",
+      "si soy extranjero"
+    ]
+  },
+  {
+    "value": "cedula",
+    "synonyms": [
+      "cedula",
+      "cédula",
+      "documento",
+      "número de cédula",
+      "documento de identidad"
+    ]
+  },
+  {
+    "value": "especialidad",
+    "synonyms": [
+      "especialidad"
+    ]
+  },
+  {
+    "value": "fecha",
+    "synonyms": [
+      "fecha",
+      "día"
+    ]
+  },
+  {
+    "value": "hora",
+    "synonyms": [
+      "hora",
+      "horario"
+    ]
+  }
+]

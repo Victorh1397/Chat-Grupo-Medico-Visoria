@@ -1,0 +1,85 @@
+{
+  "id": "b7c9a635-4f80-4ff8-a06e-d3e3bf407550",
+  "name": "corregir_dato",
+  "auto": true,
+  "contexts": [
+    "ctx_recogida_cita"
+  ],
+  "responses": [
+    {
+      "resetContexts": false,
+      "action": "dato",
+      "affectedContexts": [
+        {
+          "name": "ctx_recogida_cita",
+          "lifespan": 5
+        }
+      ],
+      "parameters": [
+        {
+          "id": "d260c4ba-bd85-4601-87d2-b5b32c194649",
+          "name": "dato_cita",
+          "required": false,
+          "dataType": "@dato_cita",
+          "value": "$dato_cita",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        },
+        {
+          "id": "55fedcfd-52cd-4744-a200-401c82b63308",
+          "name": "location",
+          "required": false,
+          "dataType": "@sys.location",
+          "value": "$location",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        },
+        {
+          "id": "24838a73-e073-4516-ad35-743c06140d92",
+          "name": "number",
+          "required": false,
+          "dataType": "@sys.number",
+          "value": "$number",
+          "defaultValue": "",
+          "isList": false,
+          "prompts": [],
+          "promptMessages": [],
+          "noMatchPromptMessages": [],
+          "noInputPromptMessages": [],
+          "outputDialogContexts": []
+        }
+      ],
+      "messages": [
+        {
+          "type": "0",
+          "title": "",
+          "textToSpeech": "",
+          "lang": "es",
+          "speech": [
+            "Disculpe, ¿qué dato desea cambiar?"
+          ],
+          "condition": ""
+        }
+      ],
+      "speech": []
+    }
+  ],
+  "priority": 500000,
+  "webhookUsed": true,
+  "webhookForSlotFilling": false,
+  "fallbackIntent": false,
+  "events": [],
+  "conditionalResponses": [],
+  "condition": "",
+  "conditionalFollowupEvents": []
+}

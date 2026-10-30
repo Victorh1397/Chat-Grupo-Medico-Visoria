@@ -15,7 +15,7 @@ Plan: [plan.md](plan.md)
 - [x] T6. `webhook/intenciones.py`: retoma de la cita tras `consulta_documental` y fallback + test (Claude)
 - [x] T7. Pregunta absorbida por `agendar_cita`: **no necesaria**. Con las frases de la T3, Dialogflow clasifica bien las preguntas
       probadas, también a mitad de la cita (ver plan). Sin filtro, sin test (Claude)
-- [ ] T8. Nuevo export del agente y `tests/test_agente_export.py` actualizado (tú exportas, Claude incorpora)
+- [x] T8. Nuevo export del agente y `tests/test_agente_export.py` actualizado (tú exportas, Claude incorpora)
 - [ ] T9. Pruebas por `detect_intent` (espaciadas ~2 s), por voz y en Telegram: CA-1 a CA-9 (Claude + tú)
 - [ ] T10. Verificar CA-8 y CA-10: `uv run pytest` y `uv run ruff check .` (Claude)
 - [ ] T11. Actualizar `README.md` y `specs/README.md` (estado, trazabilidad, quitar la mejora futura 09) y commit `feat(09): …` (Claude)

@@ -1,0 +1,9 @@
+{
+  "id": "90702a79-4b4b-4fd9-9f2f-0a3ddc6dfb9b",
+  "name": "dato_cita",
+  "isOverridable": true,
+  "isEnum": false,
+  "isRegexp": false,
+  "automatedExpansion": false,
+  "allowFuzzyExtraction": false
+}
