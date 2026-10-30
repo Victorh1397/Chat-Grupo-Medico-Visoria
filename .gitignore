@@ -27,3 +27,14 @@ logs/
 
 # Registros de las sesiones de voz (se versiona solo el de la demo, copiado a docs/)
 voz/registros/
+
+# Enunciado de la evaluación (material de la asignatura, no es nuestro)
+enunciado_*.md
+
+# Configuración local de Claude Code (permisos y preferencias personales)
+.claude/settings.local.json
+CLAUDE.local.md
+
+# Ficheros de sistema de Windows
+Thumbs.db
+desktop.ini
