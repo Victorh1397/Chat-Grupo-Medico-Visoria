@@ -134,10 +134,10 @@ def dibujar() -> Image.Image:
     # Dialogflow ES
     c.caja(580, 150, 1120, 510, DIALOGFLOW, "Dialogflow ES · agente Grupo-Medico-Visoria", [
         "• STT nativo: audio → texto",
-        "• 12 intenciones (11 llaman al webhook)",
+        "• 13 intenciones (12 llaman al webhook)",
         "• Entidades",
         "   (@cedula con regex, @especialidad, @nacionalidad)",
-        "• Contexto ctx_cita_en_curso",
+        "• Contextos ctx_cita_en_curso y ctx_recogida_cita",
         "• Follow-ups sí / no de la confirmación",
         "• Respuestas estáticas de reserva si el webhook falla",
         "• TTS nativo: texto o SSML → audio",
@@ -175,8 +175,8 @@ def dibujar() -> Image.Image:
         "• Validación de la cédula con regex (dos niveles)",
         "• Agenda: disponibilidad, reserva y código de cita",
         "• Respuestas dinámicas y SSML (solo canal de voz)",
-        "• Transferencia a recepción",
-        "• Botones de Telegram",
+        "• Transferencia a recepción y botones de Telegram",
+        "• Base vectorial FAISS: fragmentos de la pregunta",
         "• Respuesta de reserva si algo falla",
     ], tamano=17)
 
@@ -194,7 +194,7 @@ def dibujar() -> Image.Image:
     ], tamano=17)
 
     c.flecha([(1120, 700), (1340, 700)])
-    c.etiqueta(1230, 655, ["pregunta + texto completo", "de los documentos"])
+    c.etiqueta(1230, 655, ["pregunta + fragmentos", "(o texto completo)"])
     c.flecha([(1340, 800), (1120, 800)])
     c.etiqueta(1230, 757, ["respuesta breve", "o NO_DISPONIBLE"])
 
@@ -209,18 +209,20 @@ def dibujar() -> Image.Image:
     c.texto(50, 962, "LÍNEA OFFLINE  ·  se ejecuta una vez antes de arrancar, nunca dentro de una petición", 16, True,
             OFFLINE[1])
     pasos = [
-        (60, 330, OFFLINE, "webhook/datos.py", ["fuente única de los datos"]),
-        (400, 680, OFFLINE, "Documentos D1–D5", ["JPG · generar_documentos.py"]),
-        (750, 1030, OFFLINE, "OCR Tesseract (spa)", ["con preprocesado de imagen"]),
-        (1100, 1380, OFFLINE, "Regex + validación", ["contra webhook/datos.py"]),
-        (1450, 1740, FICHERO, "documentos.json", ["ocr/salida/ · texto y datos"]),
+        (60, 275, OFFLINE, "webhook/datos.py", ["fuente de los datos"]),
+        (304, 519, OFFLINE, "Documentos", ["D1–D5 · JPG escaneados"]),
+        (548, 763, OFFLINE, "OCR Tesseract", ["(spa) + preprocesado"]),
+        (792, 1007, OFFLINE, "Regex", ["y validación de datos"]),
+        (1036, 1251, FICHERO, "documentos.json", ["ocr/salida/ · texto"]),
+        (1280, 1495, OFFLINE, "ocr.indexar", ["trocea + embeddings"]),
+        (1524, 1739, FICHERO, "indice.json", ["fragmentos y vectores"]),
     ]
     for x1, x2, colores, titulo, lineas in pasos:
         c.caja(x1, 1000, x2, 1095, colores, titulo, lineas, tamano_titulo=18, tamano=15, centrado=True)
     for (_, fin, *_), (inicio, *_) in zip(pasos, pasos[1:]):
         c.flecha([(fin, 1047), (inicio, 1047)])
 
-    c.flecha([(1595, 1000), (1595, 918), (1000, 918), (1000, 880)], discontinua=True)
+    c.flecha([(1631, 1000), (1631, 918), (1000, 918), (1000, 880)], discontinua=True)
     c.etiqueta(1300, 896, ["se carga una vez al arrancar el webhook"], tamano=15)
 
     return c.imagen

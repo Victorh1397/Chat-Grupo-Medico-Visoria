@@ -1,6 +1,6 @@
 # Spec 10 — Base de datos vectorial para la consulta documental (mejora opcional)
 
-- **Estado:** Spec aprobada
+- **Estado:** En implementación
 - **Rúbrica:** Mejoras opcionales (hasta +1,5): *"Base de datos vectorial (ChromaDB, FAISS) en lugar de contexto directo en el prompt"*.
 - **Depende de:** [Spec 04](../04-ocr-documentos/spec.md), [Spec 05](../05-consulta-documental/spec.md), [Spec 06](../06-voz/spec.md)
 

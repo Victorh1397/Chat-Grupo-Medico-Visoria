@@ -13,5 +13,5 @@ Plan: [plan.md](plan.md)
 - [x] T6. Evaluación comparativa de las 27 preguntas en los dos modos y ajuste de k y del tamaño de fragmento; resultados en `plan.md`
       (Claude; consume peticiones de la cuota gratuita)
 - [ ] T7. Pruebas con el agente real: voz (latencia del turno completo) y Telegram, CA-7 (tú + Claude)
-- [ ] T8. Documentación: constitución, CLAUDE.md, README, notas en las specs 04 y 05, `.env.example`, diagrama y `specs/README.md` (Claude)
+- [x] T8. Documentación: constitución, CLAUDE.md, README, notas en las specs 04 y 05, `.env.example`, diagrama y `specs/README.md` (Claude)
 - [ ] T9. `uv run pytest` y `uv run ruff check .`; commit `feat(10): …` (Claude)

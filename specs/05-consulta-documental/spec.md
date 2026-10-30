@@ -83,7 +83,7 @@ espaciadas para respetar la cuota gratuita, e informa de aciertos, alucinaciones
 
 | Tema | Decisión | Motivo |
 |---|---|---|
-| Contexto | Todo el texto de los 5 documentos en el prompt ("context stuffing") | ~5.600 caracteres (~1.500 tokens): cabe sin problema y no se pierde información |
+| Contexto | Todo el texto de los 5 documentos en el prompt ("context stuffing") | ~5.600 caracteres (~1.500 tokens): cabe sin problema y no se pierde información. *Desde la [spec 10](../10-base-vectorial/spec.md) se envían por defecto los fragmentos recuperados de una base vectorial y el texto completo queda como respaldo y como modo `RECUPERACION=completo`* |
 | Señal de "no disponible" | El modelo devuelve `NO_DISPONIBLE` y el webhook pone el texto final | Comprobable en tests y en la evaluación; el mensaje al usuario es siempre el mismo |
 | Modelo | Gemini Flash-Lite, razonamiento mínimo, temperatura 0 | Latencia y respuestas deterministas |
 | Límite de tiempo | 3 s | Deja margen para Dialogflow y el túnel dentro de los 5 s |
