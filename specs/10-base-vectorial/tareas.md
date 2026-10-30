@@ -12,6 +12,8 @@ Plan: [plan.md](plan.md)
       fragmentos + tests de respaldo y de que al modelo solo llegan los fragmentos recuperados (Claude)
 - [x] T6. Evaluación comparativa de las 27 preguntas en los dos modos y ajuste de k y del tamaño de fragmento; resultados en `plan.md`
       (Claude; consume peticiones de la cuota gratuita)
-- [ ] T7. Pruebas con el agente real: voz (latencia del turno completo) y Telegram, CA-7 (tú + Claude)
+- [x] T7. Pruebas con el agente real: voz (latencia del turno completo) y Telegram, CA-7 (tú + Claude). Telegram: preguntas documentales,
+      una con errata, una sin respuesta y una a mitad de la cita, sin SSML. Voz: turnos de 1,85–3,24 s por el canal de voz con
+      Dialogflow real (cliente en modo texto; sin conversación hablada con micrófono)
 - [x] T8. Documentación: constitución, CLAUDE.md, README, notas en las specs 04 y 05, `.env.example`, diagrama y `specs/README.md` (Claude)
-- [ ] T9. `uv run pytest` y `uv run ruff check .`; commit `feat(10): …` (Claude)
+- [x] T9. `uv run pytest` y `uv run ruff check .`; commit `feat(10): …` (Claude)
