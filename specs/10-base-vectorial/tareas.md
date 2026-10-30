@@ -2,8 +2,9 @@
 
 Plan: [plan.md](plan.md)
 
-- [ ] T1. Prueba corta antes de escribir código definitivo: instalar `faiss-cpu`, confirmar con la clave real que el modelo de
-      embeddings está disponible (dimensión, latencia, cuota) y que normalizar y buscar con FAISS funciona (Claude)
+- [x] T1. Prueba corta antes de escribir código definitivo: instalar `faiss-cpu`, confirmar con la clave real que el modelo de
+      embeddings está disponible (dimensión, latencia, cuota) y que normalizar y buscar con FAISS funciona (Claude). Resultado en
+      `plan.md`: `gemini-embedding-001`, 768 dimensiones, ~270 ms por consulta, FAISS correcto
 - [ ] T2. `ocr/indexar.py`: `fragmentar()` sin red + test (Claude)
 - [ ] T3. Generar `ocr/salida/indice.json` con embeddings reales + test de sincronía con `documentos.json` (Claude)
 - [ ] T4. `webhook/recuperacion.py`: carga en FAISS al arrancar y `recuperar()` con límite de tiempo + test del cableado (Claude)

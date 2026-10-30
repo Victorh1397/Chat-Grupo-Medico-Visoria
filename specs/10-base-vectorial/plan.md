@@ -77,6 +77,24 @@ emergencia sin tocar código.
 ### Sin cambios en la consola de Dialogflow
 Toda la lógica está en el webhook. No hay tareas de consola ni nuevo export del agente.
 
+## Resultados de la prueba T1
+
+Con la clave del equipo, 4 fragmentos de ejemplo y 5 consultas:
+
+| Observación | Dato |
+|---|---|
+| Modelos con `embedContent` | `gemini-embedding-001`, `gemini-embedding-2` y `gemini-embedding-2-preview` |
+| Modelo elegido | `gemini-embedding-001` |
+| Latencia de una consulta | Mediana ~270 ms, máx. 286 ms (768 y 256 dimensiones) |
+| Latencia de un lote de 4 fragmentos | 280–360 ms |
+| FAISS (`IndexFlatIP` con vectores normalizados) | Funciona; 4 de 4 consultas respondibles devuelven el fragmento correcto en primer lugar |
+| Separación respondible / no respondible | A 768 dimensiones: respondibles 0,74–0,78 y "¿Hacen resonancias?" (no está en los documentos) 0,62. A 256 la separación es menor (0,79–0,81 frente a 0,73) |
+| Dimensión elegida | **768** |
+| Cuota de embeddings | No se expone en la respuesta de la API; se vigila con los errores 429 en T3 y T6 |
+
+La latencia del embedding (~0,3 s) cabe holgadamente en el presupuesto de 4 s. La diferencia entre respondibles y no respondibles abre la
+puerta a un umbral de similitud, pero el plan no lo da por hecho: se decide con la evaluación (T6).
+
 ## Riesgos y mitigación
 
 - **La recuperación pierde información** que el texto completo no perdía (p. ej. una pregunta que necesita dos tablas). Mitigación:
