@@ -109,11 +109,12 @@ los documentos" sigue siendo del modelo, como antes. Tamaño de fragmento: 25 fr
 | Respondibles | 18/18 | 18/18 |
 | No respondibles sin inventar | 9/9 | 9/9 |
 | Errores o tiempo agotado | 0 | 0 |
-| Latencia: mediana / p95 / máximo | 0,74 / 1,01 / 2,01 s | 0,83 / 0,96 / 1,21 s |
+| Latencia: mediana / p95 / máximo | 0,74 / 1,01 / 2,01 s | 1,00 / 1,66 / 1,78 s |
+| Latencia de las no respondibles (mediana) | 0,75 s | 1,58 s (dos consultas, ver hallazgo 3) |
 
-Conclusión honesta: con cinco documentos pequeños la base vectorial **no mejora la calidad** (el texto completo ya cabía de sobra) y cuesta
-unos 0,1 s de mediana por el embedding; a cambio envía menos texto al modelo y el peor caso no empeora. Su valor es que el diseño escala
-si los documentos crecen.
+Conclusión honesta: con cinco documentos pequeños la base vectorial **no mejora la calidad** (el texto completo ya cabía de sobra), es algo
+**más lenta** en la mediana (+0,26 s) y las negativas cuestan el doble de tiempo. A cambio envía menos texto al modelo y el diseño escala
+si los documentos crecen. Con este corpus, el modo `completo` es el más simple y rápido; por eso se conserva como alternativa y respaldo.
 
 **Hallazgos durante la evaluación**
 1. **Regresión latente de la spec 05 destapada por los fragmentos.** La red de seguridad contra negativas redactadas (`NEGATIVA`) buscaba
@@ -124,7 +125,14 @@ si los documentos crecen.
 2. **Arranque en frío del embedding.** La primera consulta tras arrancar superaba el límite de 1 s y esa pregunta se quedaba sin
    recuperación (caía al texto completo, sin romper nada). El webhook calienta el cliente al arrancar (`recuperacion.calentar()`) y la
    evaluación también.
-3. **Límite de peticiones por minuto de Gemini.** Al repetir una pregunta cada 2 s aparecieron errores 429. La evaluación espacia las
+3. **Con fragmentos, el modelo es más literal.** "Mi hijo menor de edad puede ir solo a la consulta?" (llega sin "¿" por voz) se
+   contesta bien con el texto completo (8 de 8) pero solo en 2 de 5 intentos con los fragmentos recuperados, aunque la recuperación
+   acierta siempre (`D5-03`, que contiene "los menores de edad deben venir con su representante"). Se probó k = 4, 6 y 8, fragmentos sin
+   repeticiones ni separadores, y documentos enteros de los fragmentos hallados (D1 + D5): todo entre 0/6 y 4/6, sin patrón. Lo que sí
+   funciona es dar **una segunda oportunidad con el texto completo** antes de dar una negativa (8 de 8). Así la calidad nunca es peor que
+   la del texto completo: los fragmentos solo deciden las respuestas afirmativas, y las negativas, verdaderas o falsas, las decide el
+   texto completo como hasta ahora (hay un mínimo de 1 s de presupuesto para hacerlo).
+4. **Límite de peticiones por minuto de Gemini.** Al repetir una pregunta cada 2 s aparecieron errores 429. La evaluación espacia las
    preguntas 6 s, como ya hacía.
 
 ## Riesgos y mitigación

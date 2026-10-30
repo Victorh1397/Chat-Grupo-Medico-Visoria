@@ -32,6 +32,8 @@ TIEMPO_MAXIMO_S = 4.0
 # Gemini responde casi siempre en < 1 s, pero algunas respuestas tardan > 4 s al azar: si a los 1,5 s no hay respuesta,
 # se envía una segunda petición idéntica y se usa la primera que llegue ("hedged request", spec 06)
 RESPALDO_S = 1.5
+# Si queda menos que esto del presupuesto, no se confirma una negativa con el texto completo (spec 10)
+SEGUNDA_OPORTUNIDAD_MIN_S = 1.0
 PLAZO_SERVIDOR_MS = 10_000  # la API no acepta plazos menores; el límite real de 3 s se aplica en nuestro lado
 NO_DISPONIBLE = "NO_DISPONIBLE"
 
@@ -204,29 +206,41 @@ def responder_con_documentos(pregunta: str, sin_informacion: str, documentos: li
     `sin_informacion` es el texto si la respuesta no está en ellos (control de alucinaciones).
     Si no se indican `documentos`, se usan los fragmentos recuperados de la base vectorial o, si falla, todos.
     """
-    recuperar = documentos is None
-    documentos = DOCUMENTOS if documentos is None else documentos
-    if not documentos:
+    completos = DOCUMENTOS if documentos is None else documentos
+    if not completos:
         return NO_DISPONIBLE_AHORA
 
     inicio = time.perf_counter()
-    if recuperar:
-        documentos = seleccionar_documentos(pregunta, documentos)
+    usados = seleccionar_documentos(pregunta, completos) if documentos is None else completos
     try:
-        # El tiempo del embedding sale del mismo presupuesto: el turno completo no pasa de TIEMPO_MAXIMO_S
-        restante = max(TIEMPO_MAXIMO_S - (time.perf_counter() - inicio), 0.0)
-        bruta = preguntar_con_limite(construir_prompt(pregunta, documentos),
-                                     INSTRUCCIONES_VOZ if breve else INSTRUCCIONES, restante)
+        respuesta = consultar(pregunta, usados, breve, inicio)
+        if (respuesta is None and usados is not completos
+                and TIEMPO_MAXIMO_S - (time.perf_counter() - inicio) >= SEGUNDA_OPORTUNIDAD_MIN_S):
+            # Con menos contexto el modelo es más literal y a veces no hace una inferencia sencilla que sí hace con
+            # todo el texto (p. ej. "los menores deben venir con su representante" -> "no puede ir solo"): una negativa
+            # con fragmentos se confirma con el texto completo antes de darla (spec 10, T6)
+            log.info("Sin respuesta con los fragmentos: segunda oportunidad con el texto completo")
+            respuesta = consultar(pregunta, completos, breve, inicio)
     except Exception as e:  # tiempo agotado, cuota (429), red...: nunca dejar al usuario en silencio
         log.warning("Gemini no respondió (%s: %s) en %.0f ms", type(e).__name__, str(e)[:120],
                     (time.perf_counter() - inicio) * 1000)
         return NO_DISPONIBLE_AHORA
+    return sin_informacion if respuesta is None else respuesta
 
+
+def consultar(pregunta: str, documentos: list[dict], breve: bool, inicio: float) -> str | None:
+    """
+    Respuesta del modelo con estos documentos, o None si dice que el dato no está. El tiempo ya gastado (p. ej. el
+    embedding) sale del mismo presupuesto: el turno completo no pasa de TIEMPO_MAXIMO_S.
+    """
+    restante = max(TIEMPO_MAXIMO_S - (time.perf_counter() - inicio), 0.0)
+    bruta = preguntar_con_limite(construir_prompt(pregunta, documentos),
+                                 INSTRUCCIONES_VOZ if breve else INSTRUCCIONES, restante)
     log.info("GEMINI (%.0f ms): %s", (time.perf_counter() - inicio) * 1000, bruta.strip())
     respuesta = limpiar(bruta)
     # La negativa va al principio. Mirar toda la respuesta anulaba respuestas correctas que dicen, de pasada,
     # "si su seguro no aparece en la lista, puede pagar y pedir el reembolso" (spec 10, T6)
     primera_frase = re.split(r"(?<=[.!?])\s", respuesta, maxsplit=1)[0]
     if not respuesta or NO_DISPONIBLE in bruta.upper() or NEGATIVA.search(primera_frase):
-        return sin_informacion
+        return None
     return respuesta

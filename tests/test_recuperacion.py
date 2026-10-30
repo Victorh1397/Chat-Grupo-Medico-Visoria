@@ -61,6 +61,33 @@ def test_ca5_si_falla_la_recuperacion_se_envia_el_texto_completo(monkeypatch, mo
     assert "estacionamiento propio" in modelo.prompts[0] and "Patricia Medina" in modelo.prompts[0]
 
 
+def modelo_en_secuencia(monkeypatch, respuestas):
+    """Cada llamada al modelo devuelve la siguiente respuesta; devuelve la lista de prompts recibidos."""
+    prompts, pendientes = [], list(respuestas)
+
+    def falso(prompt, instrucciones=""):
+        prompts.append(prompt)
+        return pendientes.pop(0)
+
+    monkeypatch.setattr(documentos, "preguntar_al_modelo", falso)
+    return prompts
+
+
+def test_una_negativa_con_fragmentos_se_confirma_con_el_texto_completo(monkeypatch):
+    monkeypatch.setattr(recuperacion, "recuperar", lambda pregunta, **kw: [ESTACIONAMIENTO])
+    respuesta = "No, deben venir con su representante."
+    prompts = modelo_en_secuencia(monkeypatch, ["NO_DISPONIBLE", respuesta])
+    assert responder_con_documentos("¿Puede ir solo mi hijo?", SIN_INFO_DOCUMENTAL) == respuesta
+    assert "Patricia Medina" not in prompts[0] and "Patricia Medina" in prompts[1]
+
+
+def test_si_el_texto_completo_tambien_dice_que_no_esta_se_da_la_negativa(monkeypatch):
+    monkeypatch.setattr(recuperacion, "recuperar", lambda pregunta, **kw: [ESTACIONAMIENTO])
+    prompts = modelo_en_secuencia(monkeypatch, ["NO_DISPONIBLE", "NO_DISPONIBLE"])
+    assert responder_con_documentos("¿Hacen resonancias?", SIN_INFO_DOCUMENTAL) == SIN_INFO_DOCUMENTAL
+    assert len(prompts) == 2
+
+
 def test_el_modo_completo_no_recupera(monkeypatch, modelo):
     monkeypatch.setenv("RECUPERACION", "completo")
     monkeypatch.setattr(recuperacion, "recuperar", lambda *a, **kw: pytest.fail("no debe recuperar"))
