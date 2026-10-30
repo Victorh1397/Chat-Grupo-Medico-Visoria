@@ -2,11 +2,13 @@
 
 Plan: [plan.md](plan.md)
 
-- [ ] T1. Prueba corta con el agente real, antes de escribir código: con una cita a medias, comprobar qué contextos y parámetros llegan al
-      webhook y si `repreguntar()` reabre la recogida con un dato vaciado (Claude lee el registro; tú haces la conversación)
+- [x] T1. Prueba corta con el agente real: qué contextos y parámetros llegan al webhook con una cita a medias (Claude). Resultado en
+      `plan.md`: no hay `ctx_cita_en_curso` durante la recogida ni datos en la petición de la pregunta; hace falta borrador por sesión
+- [ ] T1b. Prueba provisional (código desechable) de las dos incógnitas: (a) una respuesta del webhook con solo contextos conserva la
+      pregunta de Dialogflow; (b) reabrir la recogida desde otra intención con el dato vaciado (Claude; se descarta o se integra en T5)
 - [ ] T2. Consola: entidad `@dato_cita` e intención `corregir_dato` con sus frases (tú, guía del plan)
 - [ ] T3. Consola: frases nuevas en `consulta_documental` para menores y acompañantes (tú)
-- [ ] T4. `webhook/dialogflow.py`: `repreguntar()` con intención de destino y lectura de datos desde `ctx_cita_en_curso` (Claude)
+- [ ] T4. Borrador de la cita por sesión y contexto `ctx_recogida_cita` en cada turno de `agendar_cita`; `repreguntar()` con intención de destino (Claude)
 - [ ] T5. `webhook/intenciones.py`: manejador `corregir_dato` + test (Claude)
 - [ ] T6. `webhook/intenciones.py`: retoma de la cita tras `consulta_documental` y fallback + test (Claude)
 - [ ] T7. `webhook/intenciones.py`: pregunta absorbida por `agendar_cita` (filtro + retoma) + test (Claude)
