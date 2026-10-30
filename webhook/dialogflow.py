@@ -105,13 +105,16 @@ def texto(mensaje: str) -> dict:
     return {"fulfillmentText": mensaje}
 
 
-def evento(nombre: str) -> dict:
-    """Activa la intención que tenga este evento, como si el usuario la hubiera pedido."""
-    return {"followupEventInput": {"name": nombre, "languageCode": "es"}}
+def evento(nombre: str, parametros: dict | None = None) -> dict:
+    """Activa la intención que tenga este evento, como si el usuario la hubiera pedido (con `parametros` ya dados)."""
+    entrada = {"name": nombre, "languageCode": "es"}
+    if parametros:
+        entrada["parameters"] = parametros
+    return {"followupEventInput": entrada}
 
 
 def repreguntar(pet: PeticionDF, parametro: str, mensaje: str, cambios: dict | None = None,
-                destino: dict | None = None) -> dict:
+                destino: dict | None = None, cerrar_confirmacion: bool | None = None) -> dict:
     """
     Vuelve a abrir la recogida de datos preguntando `parametro`, que queda vacío.
 
@@ -123,6 +126,8 @@ def repreguntar(pet: PeticionDF, parametro: str, mensaje: str, cambios: dict | N
 
     `destino` (spec 09) reabre la recogida de OTRA intención desde la actual, p. ej. para retomar la cita tras
     contestar una pregunta: {"intencion": nombre, "intencion_id": id, "valores": datos ya dados}.
+    `cerrar_confirmacion` fuerza (True) o evita (False) cerrar los contextos de confirmación; por defecto se cierran
+    solo si la recogida ya había terminado en esta misma intención.
     """
     intencion = destino["intencion"] if destino else pet.intencion
     intencion_id = destino["intencion_id"] if destino else pet.intencion_id
@@ -141,8 +146,8 @@ def repreguntar(pet: PeticionDF, parametro: str, mensaje: str, cambios: dict | N
         nombre = pet.nombre_corto(c)
         if PREFIJO_ESPERANDO in nombre and nombre != esperado:
             salida.append({"name": c["name"], "lifespanCount": 0})
-    if pet.todos_los_datos and not destino:
-        for nombre in ("ctx_cita_en_curso", f"{pet.intencion}-followup"):
+    if (pet.todos_los_datos and not destino) if cerrar_confirmacion is None else cerrar_confirmacion:
+        for nombre in ("ctx_cita_en_curso", f"{intencion}-followup"):
             salida.append({"name": base + nombre, "lifespanCount": 0})
 
     return {"fulfillmentText": mensaje, "outputContexts": salida}

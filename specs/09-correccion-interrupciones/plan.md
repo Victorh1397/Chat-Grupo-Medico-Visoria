@@ -40,7 +40,7 @@ turno de la cita para que `corregir_dato` solo se active durante ella.
 | Elemento | Detalle |
 |---|---|
 | Entidad `@dato_cita` | Personalizada, sin regex. Valores: `nombre`, `apellido`, `nacionalidad`, `cedula`, `especialidad`, `fecha`, `hora`, cada uno con sinónimos ("documento", "día", "horario"…) |
-| Intención `corregir_dato` | Contexto de entrada `ctx_recogida_cita` (lo crea el webhook mientras hay una cita en marcha, también ante la propuesta; así solo coincide durante una cita). Parámetro `dato` (`@dato_cita`, **no obligatorio**). Webhook activado. Respuesta estática de reserva |
+| Intención `corregir_dato` | Contexto de entrada `ctx_recogida_cita` (lo crea el webhook mientras hay una cita en marcha, también ante la propuesta; así solo coincide durante una cita). Parámetro `dato_cita` (así lo nombra la consola, como la entidad; el webhook también acepta `dato`; **no obligatorio**). Webhook activado. Respuesta estática de reserva |
 | Frases de `corregir_dato` | "Me equivoqué con la cédula", "La fecha no es esa", "Quiero cambiar la hora", "No, la cédula está mal", "Cambio la especialidad", "Me equivoqué" (sin dato) |
 | `consulta_documental` | Frases nuevas sobre menores, acompañantes, retrasos… ("¿Mi hijo menor de edad puede ir solo a la consulta?") para CA-7 |
 
@@ -65,7 +65,9 @@ frases con "no, …" van en `corregir_dato` para que gane la más específica. S
   borrador. La petición de esos turnos no trae ningún dato de la cita (T1), por eso el borrador es imprescindible.
 - Si Gemini no tiene el dato, se da el mensaje habitual y también se retoma.
 
-**Preguntas absorbidas por `agendar_cita` (R2.4)**
+**Preguntas absorbidas por `agendar_cita` (R2.4) — no hizo falta.** Tras añadir las frases de la T3, Dialogflow clasifica como
+`consulta_documental` todas las preguntas probadas durante la cita (menores de edad, comida cerca, precio del cardiólogo), tanto
+en conversación nueva como a mitad de la recogida. El filtro se deja como diseño de reserva por si apareciera algún caso:
 - Solo cuando Dialogflow **no entendió el dato esperado** (parámetro vacío tras el turno) y el texto parece pregunta (signos de
   interrogación o palabra interrogativa inicial: qué, cuál, cuánto, cómo, dónde, cuándo, quién, puedo, tienen, hay…), se llama a
   `responder_con_documentos` y se retoma. Si no es pregunta, el comportamiento actual no cambia.

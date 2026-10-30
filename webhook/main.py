@@ -83,7 +83,7 @@ async def webhook(request: Request, x_visoria_token: str | None = Header(default
 
     # Spec 09: mientras hay una cita en marcha, contexto propio para que `corregir_dato` solo coincida entonces.
     # Va después del bloque de Telegram porque ese distingue una respuesta vacía (pregunta de Dialogflow).
-    if pet.intencion == "agendar_cita":
+    if pet.intencion in ("agendar_cita", "corregir_dato"):
         respuesta = intenciones.marcar_cita_en_curso(pet, respuesta)
 
     # SSML solo en el canal de voz: en el simulador o en Telegram las etiquetas se verían como texto

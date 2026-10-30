@@ -87,9 +87,47 @@ def _retomar_cita(pet: PeticionDF, mensaje: str) -> dict:
 
 def marcar_cita_en_curso(pet: PeticionDF, respuesta: dict) -> dict:
     """Contexto propio que existe mientras hay una cita en marcha: solo entonces coincide `corregir_dato` (spec 09)."""
-    respuesta.setdefault("outputContexts", []).append(
-        {"name": f"{pet.sesion}/contexts/ctx_recogida_cita", "lifespanCount": 5})
+    if pet.sesion in borradores:
+        respuesta.setdefault("outputContexts", []).append(
+            {"name": f"{pet.sesion}/contexts/ctx_recogida_cita", "lifespanCount": 5})
     return respuesta
+
+
+QUE_DATO = "¿Qué dato desea corregir: nombre, nacionalidad, cédula, especialidad, fecha u hora?"
+CEDULA_EN_FRASE = re.compile(r"\d[\d.,\s]{4,}\d")
+
+
+def _valor_en_frase(dato: str, frase: str) -> str:
+    """Nuevo valor dicho en la misma frase de la corrección ("la cédula es 14523987"); '' si no hay."""
+    if dato == "cedula":
+        encontrado = CEDULA_EN_FRASE.search(frase)
+        return solo_digitos(encontrado.group()) if encontrado else ""
+    if dato == "fecha":
+        dia = leer_fecha_texto(frase, modulo_agenda.ahora().date())
+        return como_dialogflow(dia) if dia else ""
+    return ""
+
+
+def corregir_dato(pet: PeticionDF) -> dict:
+    """Spec 09: cambia un dato de la cita en curso, conserva los demás y pide solo ese (o lo toma de la frase)."""
+    borrador = borradores.get(pet.sesion)
+    if not borrador:
+        return texto("No tengo ninguna cita en curso. ¿Desea agendar una nueva cita?")
+    dato = pet.parametro("dato_cita") or pet.parametro("dato")  # la consola nombra el parámetro como la entidad
+    if dato not in PREGUNTAS:
+        return texto(QUE_DATO)
+
+    nuevo = _valor_en_frase(dato, pet.texto)
+    cambios = {dato: nuevo} if nuevo else {dato: "", **({"apellido": ""} if dato == "nombre" else {})}
+    valores = {**borrador["valores"], **cambios}
+    agenda.descartar(pet.sesion)  # la propuesta anterior (si la había) ya no vale: no puede confirmarse
+    faltante = next((p for p in PREGUNTAS if not valores[p]), None)
+    if not faltante:  # con el dato nuevo ya están los siete: se vuelve a validar y a proponer
+        pregunta_anterior.pop(pet.sesion, None)
+        return evento("INICIAR_CITA", valores)
+    pregunta_anterior[pet.sesion] = faltante
+    return repreguntar(pet, faltante, f"De acuerdo. {PREGUNTAS[faltante]}", cambios, destino=borrador,
+                       cerrar_confirmacion=True)
 
 
 def _esperando_en(respuesta: dict) -> str:
@@ -404,6 +442,7 @@ MANEJADORES: dict[str, Callable[[PeticionDF], dict]] = {
     "agendar_cita - yes": agendar_cita_si,
     "agendar_cita - no": agendar_cita_no,
     "agendar_cita - no - yes": agendar_cita_empezar_de_nuevo,
+    "corregir_dato": corregir_dato,
     "consultar_horarios": consultar_horarios,
     "consultar_historial": consultar_historial,
     "cancelar_cita": cancelar_cita,
